@@ -1,0 +1,17 @@
+.Rproj.user
+.Rhistory
+.Rdata
+.httr-oauth
+.DS_Store
+.quarto
+
+
+_targets
+*.rds
+*.feather
+*.dta
+*.csv.gz
+
+
+*.html
+*._cache
