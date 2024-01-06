@@ -19,15 +19,32 @@ knitr::opts_chunk$set(
 The goal of CVR_Harvard-MIT is to coordinate the data combination of the "Harvard" and "MIT" team's CVR data. 
 
 
-
-
 The goal of `01_compare-pres-counts` is to count presidential candidates votes between the two teams. `share/viz.html` creates a dashboard to compare.
 
 
 The goal of `02_tab-medsl` is for Shiro to tabulate MEDSL's export and check it with the Harvard team's counts. 
 
+# Version of Main Dataset
 
-# Notes
+The large CVR datasets are **not** tracked in git. They are instead stored in each analyst's local directories. 
+
+The **latest version** of MEDSL's full CVR data is from @mreece13:
+
+```{r}
+fs::dir_info("data/MEDSL/cvrs_statewide") |> 
+  dplyr::select(path, birth_time, modification_time)
+```
+
+The MD5 hash of the underlying zipfile is
+
+```{bash}
+md5 data/MEDSL/cvrs_statewide.zip
+```
+
+
+
+
+# Meeting Notes
 
 
 Notes from 2024-01-05 meeting: 
