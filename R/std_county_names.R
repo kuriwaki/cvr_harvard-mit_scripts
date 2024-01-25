@@ -22,6 +22,17 @@ fix_county_name <- function(cn) {
       "PALM" ~ "PALM BEACH",
       "JOE DAVIESS" ~ "JO DAVIESS",
       "BALTIMORE COUNTY" ~ "BALTIMORE",
+      "BLECKLY" ~ "BLECKLEY",
+      "CHATOOGA" ~ "CHATTOOGA",
+      "EMMANUEL" ~ "EMANUEL",
+      "BLOOMINGTON" ~ "MCLEAN",
+      "GUADELUPE" ~ "GUADALUPE",
+      "GLASKCOCK" ~ "GLASCOCK",
+      "MIAMI DADE" ~ "MIAMI-DADE",
+      "OUTGAMIE" ~ "OUTAGAMIE",
+      "KING" ~ "KINGS",
+      "QUEEN ANNE" ~ "QUEEN ANNE'S",
+      "ST. MARY" ~ "ST. MARY'S", # Remove if Louisiana added
       .default = cn
     )
 }
