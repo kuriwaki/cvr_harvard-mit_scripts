@@ -1,0 +1,78 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/sk2983/Dropbox/CVR_Harvard-MIT/prepare/02_merge-party_snyder.log
+  log type:  text
+ opened on:  26 Jan 2024, 20:05:46
+
+. 
+. * long data ()
+. use "~/Projects/snyder_subset_dta", clear
+
+. local label lab_item: value label item
+
+. local label lab_state: value label state
+
+. local label lab_county: value label county
+
+. 
+. * format metadata
+. preserve 
+
+. use "~/Dropbox/CVR_Data_Shared/data_main/item_choice_info.dta", clear
+
+. encode item, gen(item_lab) label(lab_item)
+
+. encode state, gen(state_lab) label(lab_state)
+
+. encode county, gen(county_lab) label(lab_county)
+
+. drop item state county
+
+. rename item_lab item
+
+. rename state_lab state
+
+. rename county_lab county
+
+. keep state county column choice_id item dist choice party incumbent
+
+. save tmp_itemchoice_info, replace
+(file tmp_itemchoice_info.dta not found)
+file tmp_itemchoice_info.dta saved
+
+. restore
+
+. 
+. * Merge
+. merge m:1 state county column choice_id using tmp_itemchoice_info
+(variable item was byte, now long to accommodate using data's values)
+(variable state was byte, now long to accommodate using data's values)
+(variable county was int, now long to accommodate using data's values)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       610,004
+        from master                   533,625  (_merge==1)
+        from using                     76,379  (_merge==2)
+
+    Matched                       168,453,037  (_merge==3)
+    -----------------------------------------
+
+. noisily tab _merge
+
+   Matching result from |
+                  merge |      Freq.     Percent        Cum.
+------------------------+-----------------------------------
+        Master only (1) |    533,625        0.32        0.32
+         Using only (2) |     76,379        0.05        0.36
+            Matched (3) |168,453,037       99.64      100.00
+------------------------+-----------------------------------
+                  Total |169,063,041      100.00
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/sk2983/Dropbox/CVR_Harvard-MIT/prepare/02_merge-party_snyder.log
+  log type:  text
+ closed on:  26 Jan 2024, 20:08:20
+----------------------------------------------------------------------------------------------------------------------------------------------------
