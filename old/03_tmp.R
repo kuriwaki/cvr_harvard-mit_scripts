@@ -169,15 +169,25 @@ ggplot(county_map |>
          left_join(harv_counts |>
                      transmute(cov_harv = cov_DR > .8,
                                problem_harv = cov_DR > 1.05,
-                               county_fips) |>
-                     left_join(medsl_count |>
-                                 transmute(cov_mit = cov_DR > .8,
-                                           problem_mit = cov_DR > 1.05,
-                                           county_fips)) |>
-                     mutate(both = ifelse(problem_harv & problem_mit, "Both",
-                                          ifelse(problem_harv & !problem_mit, "Harvard only",
-                                                 ifelse(!problem_harv & problem_mit, "MEDSL only", NA)))))) +
+                               county_fips)) |>
+         left_join(medsl_count |>
+                     transmute(cov_mit = cov_DR > .8,
+                               problem_mit = cov_DR > 1.05,
+                               county_fips)) |>
+         mutate(cov_harv = ifelse(is.na(cov_harv), FALSE, cov_harv),
+                problem_harv = ifelse(is.na(problem_harv), FALSE, problem_harv),
+                cov_mit = ifelse(is.na(cov_mit), FALSE, cov_mit),
+                problem_mit = ifelse(is.na(problem_mit), FALSE, problem_mit),
+                both = ifelse(problem_harv & problem_mit, "Both",
+                              ifelse(problem_harv & !problem_mit, "Harvard only",
+                                     ifelse(!problem_harv & problem_mit, "MEDSL only", NA))))) +
   geom_sf(data = state_map, linewidth = .5, inherit.aes = FALSE, fill = "transparent") +
   geom_sf(aes(fill = both), linewidth = .1) +
   ggthemes::theme_map() + scale_fill_discrete(na.value = "transparent") + ggtitle("Coverage > 1.05")
+
+exp_counts <- harv_counts |> transmute(st, county_fips, harv_dr = sum_DR) |>
+  full_join(medsl_count |> transmute(mit_dr = sum_DR, county_fips, st)) |>
+  left_join(validation |> transmute(county_fips, val_dr = val_DR))
+
+write.csv(exp_counts, "data/tmp_harv-medsl-total.csv")
 
