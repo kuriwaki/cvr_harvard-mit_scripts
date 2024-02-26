@@ -432,6 +432,7 @@ foreach k of local filelist {;
   drop if cvr_id == .;
 
   keep state county cvr_id column item choice_id;
+  compress;
 
   append using "~/Downloads/snyder_subset_dta";
 
@@ -452,5 +453,5 @@ save "~/Projects/snyder_subset_dta", replace;
 scalar t2 = c(current_time);
 display (clock(t2, "hms") - clock(t1, "hms")) / (1000*60) " minutes";
 // 94 minutes by compressing each time
-
+// 4.7 hours without compressing?
 

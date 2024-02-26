@@ -4,7 +4,7 @@
 .httr-oauth
 .DS_Store
 .quarto
-
+Icon
 
 _targets
 *.rds
@@ -13,6 +13,8 @@ _targets
 *.csv.gz
 *.parquet
 *.zip
+*.pdf
+*.csv
 
 *.html
 *._cache
