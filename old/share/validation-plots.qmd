@@ -1,0 +1,79 @@
+---
+title: "CVR Validation Plots"
+date: today
+format: 
+  html:
+    self-contained: true
+execute:
+  echo: false
+  warning: false
+---
+
+```{r}
+#| include: false
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(plotly)
+})
+```
+
+# Congressional Plots
+
+```{r}
+cong_summary <- read_csv(here("share/cong_summary.csv"), show_col_types = FALSE)
+
+ush_plot <- plot_ly(
+  data = cong_summary |> 
+    filter(item == "US_REP"), 
+  x = ~valid_DR, 
+  y = ~harv_DR, 
+  text = ~paste0("District: ", dist, "<br>Counties: ", harv_counties), 
+  mode = "markers", 
+  type = "scatter", 
+  marker = list(size = 10),
+  width = 500,
+  height = 500)
+
+
+ush_plot |> 
+    layout(
+        title = "2020 US House Validation",
+         xaxis = list(title = "Actual Total Votes",
+                      scaleanchor="y", scaleratio=1),
+         yaxis = list(title = "CVR Total Votes",
+                      scaleanchor="x", scaleratio=1))  |> 
+    add_trace(x = c(0, ~max(harv_DR, na.rm = T)), 
+              y = c(0, ~max(harv_DR, na.rm = T)), 
+              text = NA, mode = "lines", 
+              marker = list(size = 1), 
+              line = list(color = "rgba(0, 0, 0, 0.2)"), showlegend = FALSE)
+```
+
+# Presidential Plot
+
+```{r}
+pres_summary <- read_csv(here("share/counts_flag.csv"), show_col_types = FALSE)
+
+pres_plot <- plot_ly(data = pres_summary, 
+                     x = ~valid_DR, 
+                     y = ~harv_DR, 
+                     text = ~paste0("County: ", county_name, ", ", st), 
+                     mode = "markers", 
+                     type = "scatter", 
+                     marker = list(size = 10),
+                     width = 500,
+                     height = 500)
+
+pres_plot |> 
+  layout(title = "2020 Presidential Validation",
+         xaxis = list(title = "Actual Total Votes",
+                      scaleanchor="y", scaleratio=1),
+         yaxis = list(title = "CVR Total Votes",
+                      scaleanchor="x", scaleratio=1)) |> 
+    add_trace(x = c(0, ~max(harv_DR, na.rm = T)), 
+              y = c(0, ~max(harv_DR, na.rm = T)), 
+              text = NA, mode = "lines", 
+              marker = list(size = 1), 
+              line = list(color = "rgba(0, 0, 0, 0.2)"), showlegend = FALSE)
+```

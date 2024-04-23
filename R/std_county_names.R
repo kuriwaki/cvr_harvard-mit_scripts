@@ -32,7 +32,8 @@ fix_county_name <- function(cn) {
       "OUTGAMIE" ~ "OUTAGAMIE",
       "KING" ~ "KINGS",
       "QUEEN ANNE" ~ "QUEEN ANNE'S",
-      "ST. MARY" ~ "ST. MARY'S", # Remove if Louisiana added
+      "CHIPPEWAH" ~ "CHIPPEWA",
+      "EMMETT" ~ "EMMET",
       .default = cn
     )
 }

@@ -4,7 +4,7 @@
 .httr-oauth
 .DS_Store
 .quarto
-Icon
+Icon*
 
 _targets
 *.rds
@@ -15,6 +15,9 @@ _targets
 *.zip
 *.pdf
 *.csv
+*.sql
 
 *.html
 *._cache
+old/reports/viz_cache
+data/MEDSL/md5sums.txt

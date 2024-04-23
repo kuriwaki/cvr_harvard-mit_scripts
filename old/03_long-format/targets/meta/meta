@@ -1,0 +1,20 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+cong_summary|stem|5eaeedb85bdf5c8a|e26da1e1225b11e3|4e39802a239f2604|1630204595||t19782.1608628983s|c33a5d597ae9c1bc|8217|rds|local|vector|||0.211||
+cong_summary_website|stem|67ff4e4803a63129|f51a1d6b72b3071e|becce5a05f53e669|901312925||t19783.7054354272s|aa756e138a311ca1|5354|rds|local|vector|||0.052||
+count_inconsist|stem|7750b43e8d8100ba|e9d61eb97596b559|ea1c2838cd4a269d|2059147311||t19767.027351587s|2c0cb605a4ebba51|2720|rds|local|vector|||0.155||
+count_inconsist_harv|stem|976058a9a405965f|9a0402e4a1d163e9|35c31e8b4c0137a7|-1949884111||t19780.6615171823s|a1c456b03adbfbf8|44|rds|local|vector|||0.074||
+count_inconsist_medsl|stem|976058a9a405965f|bb8f7119251f8e68|77d61bf86b8d3053|-566084036||t19767.782704372s|a1c456b03adbfbf8|44|rds|local|vector|||0.143||
+counts_flag_website|stem|4dced98785656040|7f3c20b10da4849f|abac2f540d583277|397519312||t19787.0115139965s|851673c4442c9aa6|10457|rds|local|vector|||0.067||
+countycodes|stem|bcaec9f8608b3338|a12fc087d69a8971|ef46db3751d8e999|1309854721||t19787.0054323206s|be92ce44851b9d4b|24061|rds|local|vector|||0.154||
+fix_county_name|function|298794e60735a51e|||||||||||||||
+harv_long|stem|b9efdb833beabf0d|2290c704be005f25|ef2a3f2727b143ad|-406087191||t19787.0054629138s|f11d62acaeb67425|92702|rds|local|vector|||2.62||
+harv_parq|stem|d837b93ae780c4da|5951d94c3f49274c|ef46db3751d8e999|-71210047||t19787.0054304608s|f016e0f964daa265|4387|rds|local|vector|||0.008||
+harv_pres|stem|0def81a22aad18e8|175e8812b38f7b7c|c2be9e7eb1f295be|-1637700667||t19787.0055496797s|47ad1d797e75e302|3657|rds|local|vector|||0.005||
+medsl_long|stem|b5744a6d71a71ef6|0deb46ec192b82f7|041125d6c556a267|-1213728328||t19787.005549569s|d16e551f8b2efb1f|212991|rds|local|vector|||7.447||
+medsl_parq|stem|d837b93ae780c4da|dac0953beb9ce621|ef46db3751d8e999|59166393||t19787.0054302732s|f016e0f964daa265|4387|rds|local|vector|||0.376||
+medsl_pres|stem|6d2cf0cf5ec0318d|b59cb8a3884c012e|11d9c86a5ab1f669|-898113153||t19787.0055497764s|35dbcd57878b24e3|5296|rds|local|vector|||0.005||
+pres_changes|stem|d84b82b7af6c6fb9|5eb6ecb2a7659047|eb921e1b51d9a50f|1512355801||t19774.6269499605s|ff8e4b4dcdc0a9ed|4464|rds|local|vector|||0.001||
+pres_summary|stem|a0357ee99dcb2bd0|41a53142ec9c1f6d|55a94a0c76cf9696|-1855735526||t19787.0115131466s|67e901cdca772845|9185|rds|local|vector|||0.032||
+std_county_name|function|62570750e47740ec|||||||||||||||
+validation|stem|29c82ad44d8ba47f|b54728ff7c46011d|ef46db3751d8e999|-281971835||t19786.9949351255s|0e671c0ef3c76cca|47688|rds|local|vector|||0.495|1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat|
+write_cong_summary|stem|5eaeedb85bdf5c8a|3d5c97bacf2ce491|becce5a05f53e669|-613651037||t19782.1617318063s|c33a5d597ae9c1bc|8217|rds|local|vector|||0.59||

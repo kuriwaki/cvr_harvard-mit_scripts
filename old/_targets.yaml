@@ -1,0 +1,11 @@
+01_compare-pres-counts:
+  script: 01_compare-pres-counts/_targets.R
+  store: 01_compare-pres-counts/targets/
+
+02_tab-medsl:
+  script: 02_tab-medsl/_targets.R
+  store: 02_tab-medsl/_targets/
+
+03_long-format:
+  script: 03_long-format/_targets.R
+  store: 03_long-format/targets/
