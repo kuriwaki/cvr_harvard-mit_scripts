@@ -9,7 +9,7 @@ username <- Sys.info()["user"]
 
 # other users should make a different clause
 if (username %in% c("shirokuriwaki", "sk2983")) {
-  path_source <- "~/Dropbox/precincts20.sql" # only works for shirokuriwaki
+  path_source <- "~/Dropbox/CVR_parquet/precinct/precincts_20240429.zip" # only works for shirokuriwaki
   path_outdir <- "~/Dropbox/CVR_parquet"
 }
 
@@ -18,10 +18,8 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 # Downloaded from https://github.com/MEDSL/precinct_sql_databases
 # last line 9910028 - 63
 tictoc::tic()
-ret_all <- read_tsv(
+ret_all <- read_csv(
   file = path_source,
-  skip = 62,
-  n_max = 9909966,
   col_names = c("precinct", "office", "party_detailed", "party_simplified", "mode",
                 "votes", "county_name", "county_fips", "jurisdiction_name",
                 "jurisdiction_fips", "candidate", "district",
@@ -109,5 +107,3 @@ write_pq <- function(obj, pq_name, dir = path_outdir) {
 write_pq(ret_sel,          "returns/by-precinct-mode")
 write_pq(county_summ,      "returns/by-county")
 write_pq(county_mode_summ, "returns/by-county-mode")
-
-
