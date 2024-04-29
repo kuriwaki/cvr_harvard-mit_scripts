@@ -1,5 +1,4 @@
 # Clean validation dataset from MEDSL to our format
-library(dataverse)
 library(tidyverse)
 library(arrow)
 library(fs)
@@ -61,42 +60,38 @@ ret_sel <- ret_all |>
                                     candidate == "WRITEIN" ~ "WRITEIN",
                                     candidate == "OVERVOTES" ~ "OVERVOTE",
                                     .default = party_detailed)) |>
-  # match with Mason's definition of district
+  # replace statewide office's district with
   mutate(district = replace(district, office == "US PRESIDENT", "FEDERAL")) |>
   mutate(dist_state = replace(state, !office %in% c("GOVERNOR", "US SENATE"), NA),
          district = coalesce(dist_state, district),
-         district = str_pad(district, width = 3, pad = "0")) # ALASKA ST SEN needs padding
+         district = str_pad(district, width = 3, pad = "0")) |> # ALASKA ST SEN needs padding
+  mutate(district = replace(district, state == "GEORGIA" & special, "GEORGIA-III"))
 
 
-# sum by county x mode
+# sum by county x mode ------
+by_vars <- c("state", "county_name", "county_fips", "jurisdiction_name",
+             "jurisdiction_fips",  "office", "district",
+             "magnitude",  "special", "writein",
+             "mode",
+             "party_detailed", "party_simplified", "candidate")
+
 county_mode_summ <- ret_sel |>
   summarize(
     votes = sum(votes, na.rm = TRUE),
-    .by = c("state", "county_name", "county_fips", "jurisdiction_name",
-            "jurisdiction_fips",  "office", "district",
-            "magnitude",  "special", "writein",
-            "mode",
-            "party_detailed", "party_simplified", "candidate",
-            )
+    .by = by_vars
   )
 
 # sum by county
 county_summ <- county_mode_summ |>
   summarize(
     votes = sum(votes, na.rm = TRUE),
-    votes = sum(votes, na.rm = TRUE),
-    .by = c("state", "county_name", "county_fips", "jurisdiction_name",
-            "jurisdiction_fips",  "office", "district",
-            "magnitude",  "special", "writein",
-            "party_detailed", "party_simplified", "candidate",
-    )
+    .by = setdiff(by_vars, "mode")
   )
 
 
 # write to parquet ---
 write_pq <- function(obj, pq_name, dir = path_outdir) {
   obj |>
-    group_by(state, office) |>
     write_dataset(
       fs::path(dir, pq_name),
       format = "parquet",
