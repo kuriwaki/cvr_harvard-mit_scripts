@@ -8,35 +8,28 @@ username <- Sys.info()["user"]
 
 # other users should make a different clause
 if (username %in% c("shirokuriwaki", "sk2983")) {
-  path_source <- "~/Dropbox/CVR_parquet/precinct/precincts_20240429.zip" # only works for shirokuriwaki
+  path_source <- "~/Dropbox/CVR_parquet/returns/raw/precincts_20240429.zip" # only works for shirokuriwaki
   path_outdir <- "~/Dropbox/CVR_parquet"
 }
 
 
 # Read whole data -----
-# Downloaded from https://github.com/MEDSL/precinct_sql_databases
-# last line 9910028 - 63
+## from @sbaltzmit
 tictoc::tic()
 ret_all <- read_csv(
   file = path_source,
-  col_names = c("precinct", "office", "party_detailed", "party_simplified", "mode",
-                "votes", "county_name", "county_fips", "jurisdiction_name",
-                "jurisdiction_fips", "candidate", "district",
-                "dataverse", "year", "stage", "state", "special", "writein",
-                "state_po", "state_fips", "state_cen", "state_ic", "date",
-                "readme_check", "magnitude"),
-  col_types = "ccccciciciccciccllciiidli")
+  col_types = "ccccciciccccciccllciiiDli")
 tictoc::toc()
 
 statewide = c("ALASKA", "RHODE ISLAND")
 
 # only the top six offices -----
-## moist of data reformatting
+## most of data reformatting
 ret_sel <- ret_all |>
   tidylog::filter(office %in% c("US PRESIDENT", "US HOUSE", "US SENATE",
                                 "STATE HOUSE", "STATE SENATE", "GOVERNOR")) |>
-  mutate(jurisdiction_name = replace(jurisdiction_fips, state %in% statewide, NA)) |>
-  mutate(jurisdiction_fips = replace(jurisdiction_name, state %in% statewide, NA),
+  mutate(jurisdiction_name = replace(jurisdiction_name, state %in% statewide, NA)) |>
+  mutate(jurisdiction_fips = replace(jurisdiction_fips, state %in% statewide, NA),
          county_name = replace(county_name, state %in% statewide, "STATEWIDE")) |>
   arrange(state_fips, county_fips) |>
   select(state,
