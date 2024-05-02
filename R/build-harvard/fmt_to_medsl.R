@@ -4,7 +4,8 @@
 #'
 fmt_harv_to_medsl <- function(tbl) {
 
-  atlarge <- c("ALASKA", "DELAWARE", "WYOMING", "VERMONT", "MONTANA", "NORTH DAKOTA", "SOUTH DAKOTA")
+  atlarge <- c("ALASKA", "DELAWARE", "WYOMING", "VERMONT", "MONTANA",
+               "NORTH DAKOTA", "SOUTH DAKOTA")
 
 
   tbl |>

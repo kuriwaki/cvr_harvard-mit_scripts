@@ -1,17 +1,19 @@
 library(arrow)
 library(tidyverse)
 library(fs)
-library(duckplyr)
 
 
 # Output locations
-PATH_projdir <- "~/Dropbox/CVR_Data_Shared/data_main"
-PATH_long <- "~/Downloads/stata_init/*/*/*.parquet" # for duckplyr::duckplyr_df_from_parquet()
-PATH_long <- "~/Downloads/stata_init/" # for arrow::open_dataset()
-PATH_merged <- "~/Downloads/stata_long" # Change to Dropbox CVR_Data_Shared when final
+username <- Sys.info()["user"]
 
-# Datasets
-## item_info0 has
+# other users should make a different clause
+if (username %in% c("shirokuriwaki", "sk2983")) {
+  PATH_projdir <- "~/Dropbox/CVR_Data_Shared/data_main"
+  PATH_long <- "~/Downloads/stata_init/" # for arrow::open_dataset()
+  PATH_merged <- "~/Downloads/stata_long" # Change to Dropbox CVR_Data_Shared when final
+}
+
+# Datasets -- metadata----
 meta <- open_dataset(
   path(PATH_projdir, "to-parquet", "item_choice_info"))
 ds_orig <- open_dataset(PATH_long)

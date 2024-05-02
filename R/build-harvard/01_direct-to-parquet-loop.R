@@ -1,9 +1,11 @@
+# Read from Snyder Dropbox
 library(tidyverse)
 library(purrr)
 library(haven)
 library(arrow)
 library(glue)
 library(fs)
+
 
 #' changes CA_Orange_long.dta to c("CA", "Orange")
 parse_js_fname <- function(chr) {
@@ -13,10 +15,15 @@ parse_js_fname <- function(chr) {
 }
 
 # Output locations ------
-PATH_projdir <- "~/Dropbox/CVR_Data_Shared/data_main"
-# Save to local tempfile. Hardcoding this path because
-# this repo is on Dropbox and I don't want to save a huge file to Dropbox
-PATH_long <- "~/Downloads/stata_init"
+username <- Sys.info()["user"]
+
+# other users should make a different clause
+if (username %in% c("shirokuriwaki", "sk2983")) {
+  PATH_projdir <- "~/Dropbox/CVR_Data_Shared/data_main"
+  # Save to local tempfile. Hardcoding this path because
+  # this repo is on Dropbox and I don't want to save a huge file to Dropbox
+  PATH_long <- "~/Downloads/stata_init"
+}
 
 
 # Metadata file into parquet -----
@@ -77,7 +84,7 @@ walk(
       # follows Snyder DROP SOME CASES OF DUPLICATED cvr_id in `analysis_all_politics_partisan.do`
       # (seems to remove 5% of rows in LA county for example -- maybe RCV?)
       # Stata code here is `egen x = count(cvr_id), by(cvr_id column)` followed by `drop if x > 1`. Not sure if this is the same
-      tidylog::filter(n() == 1, .by = c(cvr_id, column)) |> 
+      tidylog::filter(n() == 1, .by = c(cvr_id, column)) |>
       mutate(
         state = st,
         county = ct,

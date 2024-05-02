@@ -4,11 +4,17 @@
 library(tidyverse)
 library(arrow)
 library(duckplyr)
-source("fmt_to_medsl.R")
 
 
-PATH_merged2 = "~/Downloads/stata_long/*/*/*.parquet"
-PATH_medsl_share = "~/Dropbox/CVR_parquet/harvard/"
+username <- Sys.info()["user"]
+
+# other users should make a different clause
+if (username %in% c("shirokuriwaki", "sk2983")) {
+  PATH_merged2 = "~/Downloads/stata_long/*/*/*.parquet"
+  PATH_medsl_share = "~/Dropbox/CVR_parquet/build-harvard/"
+}
+
+source("R/build-harvard/fmt_to_medsl.R")
 
 # Datasets
 ds <- duckplyr_df_from_parquet(PATH_merged2)
@@ -22,6 +28,7 @@ for (st in states_vec) {
     filter(item %in% c("US_PRES", "US_REP", "US_SEN", "US_SEN (S)", "ST_SEN", "ST_REP", "ST_GOV")) |>
     fmt_harv_to_medsl() |>
     group_by(state, county_name) |>
+    # WRITE
     write_dataset(
       path = PATH_medsl_share,
       format = "parquet",
@@ -29,5 +36,3 @@ for (st in states_vec) {
   cli::cli_alert_info("{st}")
 }
 
-# med <- open_dataset("~/Downloads/pass1/")
-# med |> filter(county_name == "CLEAR CREEK") |> count(office, contest, sort = TRUE) |> collect()
