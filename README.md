@@ -3,7 +3,7 @@
 
 # CVR_Harvard-MIT
 
-###### Shiro Kuriwaki and Mason Reece (project leads)
+##### Project leads: Shiro Kuriwaki and Mason Reece
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -11,13 +11,13 @@
 The goal of CVR_Harvard-MIT is to coordinate the “Harvard” and “MIT”
 team’s CVR data.
 
-As of 2024-04-24, previous files for exploratory analysis were cleared.
-The github repo is kept for issue tracking purposes only.
+The github repo is kept for *issue tracking purposes* and *maintaining
+data construction scripts* only.
 
 - As of 2024-04-24, there should be no data or critical scripts stored
-  in this repo. Some scripts in `R/prepare` are useful as they describe
-  how certian cleaned datasets were made.
+  in this repo. Some scripts in `R` are useful as they describe how
+  certian cleaned datasets were made.
 
 - We may share a Dropbox to share cleaned data in the future.
 
-- See `CVR_parquet` for subsets of cleaned data.
+- See the Dropbox `CVR_parquet` for subsets of cleaned data.
