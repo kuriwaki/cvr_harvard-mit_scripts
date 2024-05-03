@@ -16,6 +16,7 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 # Datasets -- metadata----
 meta <- open_dataset(
   path(PATH_projdir, "to-parquet", "item_choice_info"))
+
 ds_orig <- open_dataset(PATH_long)
 
 
@@ -24,12 +25,16 @@ ds_orig <- open_dataset(PATH_long)
 # Have to do this state by state since my R crashes otherwise
 states_vec <- distinct(ds_orig, state) |> pull(state, as_vector = TRUE)
 
+tictoc::tic()
 for (st in states_vec) {
 
   ds <- ds_orig |>
     filter(state == st) |>
     inner_join(
-      select(meta, state:dist, choice_id, party, level,
+      select(meta,
+             state:dist, choice_id,
+             party, level,
+             office_type,
              nonpartisan, unexp_term,
              incumbent, spending, measure, multi_county, num_votes),
       by = c("state", "county", "column", "item", "choice_id"),
@@ -76,3 +81,5 @@ for (st in states_vec) {
       format = "parquet",
       existing_data_behavior = "delete_matching")
 }
+tictoc::toc()
+# 10 min

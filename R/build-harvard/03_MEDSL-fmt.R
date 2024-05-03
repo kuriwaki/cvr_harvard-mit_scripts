@@ -1,5 +1,5 @@
 # Format to MEDSL's variables,
-# then limit to state leg and up
+# limited to state legislature and up
 
 library(tidyverse)
 library(arrow)
@@ -11,7 +11,7 @@ username <- Sys.info()["user"]
 # other users should make a different clause
 if (username %in% c("shirokuriwaki", "sk2983")) {
   PATH_merged2 = "~/Downloads/stata_long/*/*/*.parquet"
-  PATH_medsl_share = "~/Dropbox/CVR_parquet/build-harvard/"
+  PATH_medsl_share = "~/Dropbox/CVR_parquet/harvard"
 }
 
 source("R/build-harvard/fmt_to_medsl.R")
