@@ -1,10 +1,10 @@
 # Read from Snyder Dropbox
 library(tidyverse)
-library(purrr)
 library(haven)
 library(arrow)
 library(glue)
 library(fs)
+
 
 
 #' changes CA_Orange_long.dta to c("CA", "Orange")
@@ -20,14 +20,25 @@ username <- Sys.info()["user"]
 # other users should make a different clause
 if (username %in% c("shirokuriwaki", "sk2983")) {
   PATH_projdir <- "~/Dropbox/CVR_Data_Shared/data_main"
-  # Save to local tempfile. Hardcoding this path because
-  # this repo is on Dropbox and I don't want to save a huge file to Dropbox
   PATH_long <- "~/Downloads/stata_init"
 }
 
 
 # Metadata file into parquet -----
 read_dta(path(PATH_projdir, "item_choice_info.dta")) |>
+  mutate(
+    level = replace(level, level == "", "L"),
+    office_type = case_when(
+      level == "N" ~ "federal",
+      level == "S" & (nonpartisan == 0 | is.na(nonpartisan)) & measure == 0 ~ "state partisan",
+      level == "L" & (nonpartisan == 0 | is.na(nonpartisan)) & measure == 0 ~ "local partisan",
+      level == "S" & (nonpartisan == 1 | nonpartisan == 2) & measure == 0 ~ "state nonpartisan",
+      level == "L" & (nonpartisan == 1 | nonpartisan == 2) & measure == 0 ~ "local nonpartisan",
+      level == "S" & measure == 1 ~ "state measure",
+      level == "L" & measure == 1 ~ "local measure"
+    ),
+    .after = item
+  ) |>
   write_dataset(path(PATH_projdir, "to-parquet", "item_choice_info"), format = "parquet")
 
 read_dta(path(PATH_projdir, "../analysis_all_politics_partisan/tmp0.dta")) |>
@@ -35,7 +46,7 @@ read_dta(path(PATH_projdir, "../analysis_all_politics_partisan/tmp0.dta")) |>
 
 
 # All files -- setup -----
-filenames <- read_csv(path(PATH_projdir, "to-parquet", "input_files.txt")) |>
+filenames <- read_csv("R/build-harvard/input_files.txt") |>
   pull(file)
 
 paths_to_merge <-
@@ -76,7 +87,7 @@ walk(
         select(cvr_id, cvr_id_merged) |> # one row per cvr_id
         left_join(dat, by = "cvr_id", relationship = "one-to-many") |>
         mutate(cvr_id = coalesce(cvr_id_merged, cvr_id)) |>
-        tidylog::filter(!is.na(item) & !is.na(choice))
+        filter(!is.na(item) & !is.na(choice))
     }
 
     # Append county info and write
