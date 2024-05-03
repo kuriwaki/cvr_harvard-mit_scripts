@@ -11,7 +11,6 @@ fmt_harv_to_medsl <- function(tbl) {
   tbl |>
     mutate(
       county_name = str_to_upper(str_replace_all(county, "_", " ")),
-      district = na_if(str_pad(dist, width = 3, pad = "0"), "000"),
       office = case_match(item,
                           "US_PRES" ~ "US PRESIDENT",
                           "US_SEN" ~ "US SENATE",
@@ -60,12 +59,14 @@ fmt_harv_to_medsl <- function(tbl) {
                                "undervote")
     ) |>
     # district formatting for MEDSL
-    mutate(district = replace(district, office == "US PRESIDENT", "FEDERAL"),
+    mutate(district = str_pad(dist, width = 3, pad = "0"),
+           district = replace(district, office == "US PRESIDENT", "FEDERAL"),
            district = replace(district, office == "US HOUSE" & state %in% atlarge, "000")) |>
     mutate(dist_state = replace(state, !office %in% c("GOVERNOR", "US SENATE"), NA),
            district = coalesce(dist_state, district),
            district = replace(district, item == "US_SEN (S)" & state == "GEORGIA", "GEORGIA-III")) |> # class III senate seat
-    select(state, county_name, cvr_id, pid,
+    select(state, county_name, cvr_id,
+           pid,
            office,
            district, candidate,
            magnitude = num_votes,
