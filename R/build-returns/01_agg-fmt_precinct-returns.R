@@ -65,7 +65,9 @@ ret_sel <- ret_all |>
     party_detailed = replace(
       party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "INDEPENDENT"),
     party_simplified = replace(
-      party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "OTHER"))
+      party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "OTHER")) |>
+  # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/33
+  mutate(across(matches("party_"), \(x) case_match(x, "DEMOCRATIC FARMER LABOR" ~ "DEMOCRAT", .default = x)))
 
 
 # sum by county x mode ------
