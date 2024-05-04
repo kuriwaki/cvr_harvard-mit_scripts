@@ -58,9 +58,14 @@ ret_sel <- ret_all |>
   mutate(dist_state = replace(state, !office %in% c("GOVERNOR", "US SENATE"), NA),
          district = coalesce(dist_state, district),
          district = str_pad(district, width = 3, pad = "0")) |> # ALASKA ST SEN needs padding
+  # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/24
   mutate(district = replace(district, state == "GEORGIA" & special, "GEORGIA-III")) |>
-  tidylog::mutate(party_detailed = replace(party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "INDEPENDENT"),
-                  party_simplified = replace(party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "OTHER"))
+  # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/29
+  mutate(
+    party_detailed = replace(
+      party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "INDEPENDENT"),
+    party_simplified = replace(
+      party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "OTHER"))
 
 
 # sum by county x mode ------
