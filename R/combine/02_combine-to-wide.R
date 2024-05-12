@@ -58,23 +58,20 @@ count_m <- dsa_m |>
   ) |>
   filter(!(state == "ARIZONA" & office == "STATE HOUSE"),
          party_detailed %in% parties_use) |>
-  # match with Mason's definition of district -- remove when issues like https://github.com/kuriwaki/CVR_Harvard-MIT/issues/12
-  mutate(dist_state = replace(state, !office %in% c("GOVERNOR", "US SENATE"), NA),
-         dist_state = replace(dist_state, district == "GEORGIA-III", "GEORGIA-III"),
-         district = coalesce(dist_state, district),
-         dist_state = NULL) |>
   mutate(
     county_name = replace(county_name, state %in% c("ALASKA", "RHODE ISLAND"), "STATEWIDE"),
-    district = str_pad(district, width = 3, pad = "0")) |>  # TEMP FIX RHODE ISLAND https://github.com/kuriwaki/cvr_havard-mit_scripts/issues/23
+    # A few more https://github.com/kuriwaki/cvr_havard-mit_scripts/issues/23
+    district = str_pad(district, width = 3, pad = "0")) |>
   # count across "context" after modifying GA
   count(state, county_name, office, district,
         candidate, party_detailed,
         name = "votes", wt = votes) |>
   # https://github.com/kuriwaki/CVR_Harvard-MIT/issues/15
-  mutate(party_detailed = case_when(candidate == "UNDERVOTE" ~ "UNDERVOTE",
-                                    candidate == "WRITEIN" ~ "WRITEIN",
-                                    candidate == "OVERVOTE" ~ "OVERVOTE",
-                                    .default = party_detailed)) |>
+  mutate(party_detailed = case_when(
+    candidate == "UNDERVOTE" ~ "UNDERVOTE",
+    candidate == "WRITEIN" ~ "WRITEIN",
+    candidate == "OVERVOTE" ~ "OVERVOTE",
+    .default = party_detailed)) |>
   # top-two
   arrange(state, county_name, office, district, party_detailed, desc(votes)) |>
   mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name)) |>
@@ -102,22 +99,21 @@ count_v <- dsa_v |>
   # ALL COUNTIES ever mentioned in H or M
   semi_join(all_counties, by = c("state", "county_name"))
 
-# counties that don't appear in validation
-anti_join(all_counties, count_v, by = c("state", "county_name"))
+# Classifications ---
+colours <- read_csv(path(PATH_parq, "validation/classifications.csv"), show_col_types = FALSE)
 
-# Classifications --
-colours <- read_csv(path(CVR_parq, "validation/classifications.csv"), show_col_types = FALSE)
 
 # Together ------
-out <- count_h |>
-  full_join(count_m, by = c("state", "county_name", "office", "district", "party_detailed", "cand_rank")) |>
-  full_join(count_v, by = c("state", "county_name", "office", "district", "party_detailed", "cand_rank")) |>
+joinvars <- c("state", "county_name", "office", "district", "party_detailed", "cand_rank")
+out_cand <- count_h |>
+  full_join(count_m, by = joinvars) |>
+  full_join(count_v, by = joinvars) |>
   select(-cand_rank) |>
   arrange(state, county_name, desc(office), district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein)
 
 # one row per county
-out_county <- out |>
+out_county <- out_cand |>
   filter(party_detailed %in% c("REPUBLICAN", "DEMOCRAT", "LIBERTARIAN")) |>
   summarize(votes_h = sum(votes_h, na.rm = TRUE),
             votes_m = sum(votes_m, na.rm = TRUE),
@@ -138,21 +134,30 @@ out_county <- out |>
   ) |>
   # need to run this twice
   left_join(colours, by = c("state", "county_name" = "county")) |>
-  relocate(state, county_name, colour, matches("match_"), matches("uspres"), matches("ushou"), matches("ussen"))
+  relocate(state, county_name, colour,
+           matches("match_"), matches("uspres"), matches("ushou"), matches("ussen"))
+
+list(`by-county-district` = out_cand, `by-county` = out_county) |>
+  writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
+
+
+
+# check ---
+
+# counties that don't appear in validation (all should!)
+anti_join(all_counties, count_v, by = c("state", "county_name"))
 
 out_county |>
   mutate(match_h = as.integer(match_score_h == 1),
          match_m = as.integer(match_score_m == 1)) |>
   xtabs(~ match_h + match_m, data = _) |>
-  addmargins()
+  addmargins() |>
+  kableExtra::kbl(format = "pipe",
+                  caption = "Harvard exact match (rows) vs. MEDSL exact match (cols)") |>
+  write_lines("status/by-county_correct-H-vs-M.txt")
 
-list(`by-county-district` = out, `by-county` = out_county) |>
-  writexl::write_xlsx(path(CVR_parq, "combined/compare.xlsx"))
 
-
-
-# check ---
-out |>
+out2 <- out_cand |>
   filter(party_detailed %in% c("REPUBLICAN", "DEMOCRAT")) |>
   summarize(
     across(starts_with("votes_"), sum),
@@ -162,21 +167,20 @@ out |>
     diff_m  = votes_v - votes_m,
     diff_hm = votes_h - votes_m) |>
   summarize(
-    match_hm = all(diff_hm == 0, na.rm = TRUE),
+    agree_hm = all(diff_hm == 0, na.rm = TRUE),
     correct_h = all(diff_h == 0, na.rm = TRUE),
     correct_m = all(diff_m == 0, na.rm = TRUE),
     diff_h = sum(abs(votes_h - votes_v)),
     diff_m = sum(abs(votes_m - votes_v)),
     votes_v = sum(votes_v),
     n = n(),
-    .by = c(state, county_name)) -> out2
+    .by = c(state, county_name))
 
 out2 |>
-  tidylog::semi_join(filter(out_county, uspres_votes_m > 0, uspres_votes_h > 0),
-                     by = c("state", "county_name")) |>
-  count(match_hm)
+  tidylog::semi_join(
+    filter(out_county, uspres_votes_m > 0, uspres_votes_h > 0),
+    by = c("state", "county_name")) |>
+  count(agree_hm)|>
+  kableExtra::kbl(format = "pipe") |>
+  write_lines("status/by-county_H-M-agreement.txt")
 
-out2 |>
-  filter(correct_h == 1 | correct_m == 1)
-
-xtabs(~ col1 + col2, dat3) |> addmargins() |> kableExtra::kbl(format = "pipe")
