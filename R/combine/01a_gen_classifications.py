@@ -5,9 +5,11 @@ import os
 ################################################################################
 # Global variables
 ################################################################################
-BASE_DIR = '../'
-DATA_DIR = BASE_DIR + 'combined/'
-OUT_DIR = BASE_DIR + 'validation/templates/'
+# working directory is source directory
+BASE_DIR = '../../'
+DATA_DIR = '../../../../Dropbox/CVR_parquet/' # need to be flexible to other users
+OUT_DIR = BASE_DIR + 'status/'
+OUT_DIR2 = BASE_DIR + 'status/counties-classified/'
 
 #Define the difference and missingness proportions allowed for a yellow county
 Y_DIFF_TAU = 0.1
@@ -17,7 +19,7 @@ Y_MISS_TAU = 0.2
 ################################################################################
 # Compare
 ################################################################################
-both = pd.read_excel(DATA_DIR + 'compare.xlsx')
+both = pd.read_excel(DATA_DIR + 'combined/compare.xlsx')
 
 #Filter by party and create difference variables
 both = both.loc[(both.party_detailed == 'DEMOCRAT') |
@@ -64,7 +66,7 @@ for state in both.state.unique():
             rSum += 1
 
 for state in county_cols.keys():
-    fName = OUT_DIR + state + '.txt'
+    fName = OUT_DIR2 + state + '.txt'
     #Write each category to a file, formatted with spaces and indentation
     greens = [k for k,v in county_cols[state].items() if v == 'green']
     yellows = [k for k,v in county_cols[state].items() if v == 'yellow']
@@ -84,7 +86,7 @@ for state in county_cols.keys():
 f.close()
 
 #Build one spreadsheet with three variables: state, county, and colour
-with open(BASE_DIR+'validation/classifications.csv', 'w') as f:
+with open(DATA_DIR+'combined/classifications.csv', 'w') as f:
     f.write("state,county,colour\n")
     for state in county_cols.keys():
         for county in county_cols[state].keys():
@@ -93,15 +95,6 @@ with open(BASE_DIR+'validation/classifications.csv', 'w') as f:
             f.write(newRow)
 f.close()
 
-#How many yellows are we assigning to people by state?
-with open(BASE_DIR+'validation/summary.txt', 'w') as f:
-    for state in county_cols.keys():
-        gCount = sum([v=='green' for k,v in county_cols[state].items()])
-        yCount = sum([v=='yellow' for k,v in county_cols[state].items()])
-        rCount = sum([v=='red' for k,v in county_cols[state].items()])
-        f.write(f"{state}: {gCount} green counties, "+\
-                         f"{yCount} yellow counties, "+\
-                         f"{rCount} red counties.\n")
-f.close()
-
 print(f"Green: {gSum}\nYellow: {ySum}\nRed: {rSum}")
+with open(OUT_DIR+'colors.txt', 'w') as f:
+    f.write(f"Green: {gSum}\nYellow: {ySum}\nRed: {rSum}")
