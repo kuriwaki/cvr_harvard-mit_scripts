@@ -222,7 +222,7 @@ process_delim <- function(path, state = NA, county_name = NA, contests = NULL, n
     return(d)
   }
 
-  clean_data(d, state, county_name, type = "delim", contests = contests)
+  clean_data_write(d, state, county_name, type = "delim", contests = contests)
 }
 
 process_json <- function(dir, state = NA, county_name = NA, contests = NULL, contest_only = FALSE) {
@@ -346,7 +346,7 @@ process_json <- function(dir, state = NA, county_name = NA, contests = NULL, con
   
   plan(sequential)
 
-  return(clean_data(d, state, county_name, type = "json", contests))
+  return(clean_data_write(d, state, county_name, type = "json", contests))
 }
 
 process_xml <- function(dir, state = NA, county_name = NA, contests = NULL, contest_only = FALSE) {
@@ -399,7 +399,7 @@ process_xml <- function(dir, state = NA, county_name = NA, contests = NULL, cont
       pull() |>
       unname()
   } else {
-    out <- clean_data(xmls, state, county_name, "xml", contests)
+    out <- clean_data_write(xmls, state, county_name, "xml", contests)
   }
 
   return(out)
@@ -507,13 +507,13 @@ process_special <- function(path, s, c, contests) {
         candidate = Candidate
       ) |>
       mutate(candidate = str_squish(candidate)) |>
-      clean_data(s = s, c = c, type = "xml", contests = contests)
+      clean_data_write(s = s, c = c, type = "xml", contests = contests)
   } else if (s == "FLORIDA") {
     files <- list.files(str_c("data/raw/Florida/", str_to_title(c)), pattern = "xls", full.names = TRUE)
 
     out <- map(files, ~ read_excel(.x, .name_repair = "unique_quiet", col_types = "text")) |>
       list_rbind() |>
-      clean_data(s, c, type = "delim", contests = contests)
+      clean_data_write(s, c, type = "delim", contests = contests)
   } else if (s == "CALIFORNIA" & c == "ALAMEDA") {
     raw <- header_processor(path) |> mutate(cvr_id = 1:n())
 
