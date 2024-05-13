@@ -86,7 +86,7 @@ clean_data_write <- function(df, s, c, type, contests) {
           .default = coalesce(candidate.y, candidate.x)
         ),
       )
-  } 
+  }
   else if (type == "json") {
     d <- df |>
       mutate(
@@ -100,7 +100,7 @@ clean_data_write <- function(df, s, c, type, contests) {
         party_detailed = coalesce(party_detailed.x, party_detailed.y),
         candidate = coalesce(candidate.y, candidate.x)
       )
-  } 
+  }
   else if (type == "xml") {
     d <- df |>
       mutate(
@@ -200,9 +200,9 @@ clean_data_write <- function(df, s, c, type, contests) {
   return(path)
 }
 
-################################
-## Processing Functions
-################################
+# ============================
+# Processing Functions ------
+# ============================
 
 process_delim <- function(path, state = NA, county_name = NA, contests = NULL, n = Inf) {
   if (is_header(path)) {
@@ -325,7 +325,7 @@ process_json <- function(dir, state = NA, county_name = NA, contests = NULL, con
   files <- list.files(path = dir, pattern = "CvrExport|CVRExport", full.names = TRUE, recursive = TRUE)
 
   plan(multisession, workers = 8)
-  
+
   d <- future_map(files, possibly(clean_json, quiet = FALSE)) |>
     list_rbind() |>
     mutate(
@@ -343,7 +343,7 @@ process_json <- function(dir, state = NA, county_name = NA, contests = NULL, con
     ) |>
     mutate(magnitude = as.character(magnitude)) |>
     select(cvr_id, precinct, contest, candidate, party_detailed, magnitude)
-  
+
   plan(sequential)
 
   return(clean_data_write(d, state, county_name, type = "json", contests))
@@ -389,9 +389,9 @@ process_xml <- function(dir, state = NA, county_name = NA, contests = NULL, cont
   )
 
   plan(multisession, workers = 8)
-  
+
   xmls <- future_imap(files, xml_parser) |> list_rbind()
-  
+
   plan(sequential)
 
   if (contest_only) {
@@ -426,7 +426,7 @@ process_special <- function(path, s, c, contests) {
           1
         ),
         .by = c("cvr_id", "office", "district")
-      ) |> 
+      ) |>
       mutate(
         candidate.x = if_else(voted == 1, candidate.x, "undervote"),
         candidate = case_when(
@@ -497,7 +497,7 @@ process_special <- function(path, s, c, contests) {
       )
 
     out <- "data/pass1/state=TEXAS/county_name=DENTON"
-    
+
   } else if (s == "NEW JERSEY" & c == "CUMBERLAND") {
     out <- read_csv("data/raw/New Jersey/Cumberland/cvr.csv") |>
       filter(IsVote) |>
@@ -643,7 +643,7 @@ process_special <- function(path, s, c, contests) {
 }
 
 # ============================
-# Utility Functions
+# Utility Functions -----
 # ============================
 
 # helper to get the raw contest names for manual classification
