@@ -1,5 +1,5 @@
 #####################################################
-#        Clean all the CVR data for Maryland        #
+#        Clean all the CVR data for Virginia        #
 #       https://votedatabase.com/cvr/Virginia       #
 #####################################################
 
@@ -66,7 +66,7 @@ def get_party_detailed(name):
         'DEMOCRATIC PARTY\nElectors for\nJoseph R. Biden, President and\nKamala D. Harris, Vice President' : "DEMOCRAT",
         'Yes' : "",
         'Daniel M. Gade - R' : "REPUBLICAN",
-        'LIBERTARIAN PARTY\nElectors for\nJo Jorgensen, President and\nJeremy F. "Spike" Cohen, Vice President' : "LIBERTERIAN",
+        'LIBERTARIAN PARTY\nElectors for\nJo Jorgensen, President and\nJeremy F. "Spike" Cohen, Vice President' : "LIBERTARIAN",
         'REPUBLICAN PARTY\nElectors for\nDonald J. Trump, President and\nMichael R. Pence, Vice President' : "REPUBLICAN",
     }
 

@@ -1,6 +1,5 @@
 #####################################################
-#        Clean all the CVR data for Maryland        #
-#       https://votedatabase.com/cvr/Maryland       #
+#        Clean all the CVR data for Pennsylvania    #
 #####################################################
 
 import os
