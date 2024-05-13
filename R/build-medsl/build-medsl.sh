@@ -1,7 +1,7 @@
 #!/bin/bash
 source /etc/profile
 
-# load the required modules for supercloud
+# load the required modules
 module load anaconda/2023b
 source activate customR
 
@@ -266,8 +266,5 @@ rm 'data/raw/Texas/Ward/Nov 2020 CVRs/CVRArchive_6_6_0_488.zip'
 rm 'data/raw/Texas/Ward/Nov 2020 CVRs/CVRArchive_24_24_0_0932.zip'
 rm 'data/raw/Texas/Ward/Nov 2020 CVRs/CVRArchive_938_938_0_5952.zip'
 rm 'data/raw/Texas/Ward/Nov 2020 CVRs/CVRArchive_3150_3150_0_9612.zip'
-
-# Run the main cleaning scripts in R, using `targets`
-# add options(echo=TRUE) to the top of the _targets.R file
 
 Rscript -e "targets::tar_make()"
