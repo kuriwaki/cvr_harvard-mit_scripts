@@ -25,15 +25,6 @@ else:
 # remove [2] from the args.col column, this deals with Rhode Island
 data[args.col] = data[args.col].str.replace(r"\[.*\]", "")
 
-def is_split_row(current_row, next_row):
-    """
-    Check if the current row is part of a split row.
-    A row is considered split if it has NaN in some columns and the next row has corresponding non-NaN values.
-    """
-    # Check for NaN in current row and non-NaN in next row in the same columns
-    split_indicator = current_row.isna() & next_row.notna()
-    return split_indicator.any()
-
 def merge_rows(row1, row2):
     """
     Merge two rows, where the second row fills in the NaN values of the first row.
@@ -50,30 +41,30 @@ def merge_groups(group):
     return merged_row
 
 # Group the data by contiguous args.col
-grouped = data.groupby((data[args.col] != data[args.col].shift()).cumsum())
+# grouped = data.groupby((data[args.col] != data[args.col].shift()).cumsum())
 
 # List to accumulate merged rows
-accumulated_rows = []
+# accumulated_rows = []
 
-for _, group in grouped:
-    merged_row = merge_groups(group)
-    accumulated_rows.append(merged_row)
+# for _, group in grouped:
+#     merged_row = merge_groups(group)
+#     accumulated_rows.append(merged_row)
 
 # Concatenate all merged rows at once
-cleaned_data = pd.concat(accumulated_rows, axis=1).transpose()
-cleaned_data.reset_index(drop=True, inplace=True)
+# cleaned_data = pd.concat(accumulated_rows, axis=1).transpose()
+# cleaned_data.reset_index(drop=True, inplace=True)
 
 # Find the index of the args.col column
-ballot_type_index = cleaned_data.columns.get_loc(args.col)
+ballot_type_index = data.columns.get_loc(args.col)
 
 # Determine the column immediately to the right of args.col
-target_column = cleaned_data.columns[ballot_type_index + 1]
+target_column = data.columns[ballot_type_index + 1]
 
 # Set to keep track of used rows
 used_rows = set()
 
 # Iterate through the DataFrame
-for i, current_row in cleaned_data.iterrows():
+for i, current_row in data.iterrows():
     # Skip if the row has been used already
     if i in used_rows:
         continue
@@ -85,9 +76,9 @@ for i, current_row in cleaned_data.iterrows():
 
         # Search for the closest complementary row
         # Iterate only within the defined range
-        for j in range(max(0, i - 100), min(len(cleaned_data), i + 101)):
+        for j in range(max(0, i - 100), min(len(data), i + 101)):
             if i != j and j not in used_rows:
-                complementary_row = cleaned_data.iloc[j]
+                complementary_row = data.iloc[j]
 
                 # Check if the row meets the criteria
                 if current_row[args.col] == complementary_row[args.col] and not pd.isna(complementary_row[target_column]):
@@ -95,12 +86,14 @@ for i, current_row in cleaned_data.iterrows():
                     if distance < closest_distance:
                         closest_distance = distance
                         closest_match = j
+                    if distance == 1:
+                        break
 
         if closest_match is not None:
             # Merge the rows
-            merged_row = merge_rows(current_row, cleaned_data.iloc[closest_match])
-            cleaned_data.loc[i] = merged_row
+            merged_row = merge_rows(current_row, data.iloc[closest_match])
+            data.loc[i] = merged_row
             used_rows.add(closest_match)
 
 # Save the post-processed data to the output file
-cleaned_data.drop(used_rows).to_csv(args.input.replace(".csv", "_merged.csv"), index=False)
+data.drop(used_rows).to_csv(args.input.replace(".csv", "_merged.csv"), index=False)
