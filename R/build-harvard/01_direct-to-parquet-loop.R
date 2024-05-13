@@ -35,7 +35,10 @@ read_dta(path(PATH_projdir, "item_choice_info.dta")) |>
       level == "S" & (nonpartisan == 1 | nonpartisan == 2) & measure == 0 ~ "state nonpartisan",
       level == "L" & (nonpartisan == 1 | nonpartisan == 2) & measure == 0 ~ "local nonpartisan",
       level == "S" & measure == 1 ~ "state measure",
-      level == "L" & measure == 1 ~ "local measure"
+      level == "L" & measure == 1 ~ "local measure",
+      retention == 1 ~ "retention",
+      is.na(nonpartisan) & choice %in% c("NA", "") &
+        item %in% c("NA", "") ~ "unclassified"
     ),
     .after = item
   ) |>
