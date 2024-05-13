@@ -4,7 +4,7 @@ suppressPackageStartupMessages(library(tidyverse))
 
 source("code/cvrs/functions.R")
 
-raw_paths = read_csv("code/cvrs/util/paths.csv", col_select = -notes) |> 
+raw_paths = read_csv("metadata/paths.csv", col_select = -notes) |> 
   mutate(county_name = replace_na(county_name, ""))
 
 options(

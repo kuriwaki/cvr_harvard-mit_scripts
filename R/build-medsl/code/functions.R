@@ -751,7 +751,7 @@ header_processor <- function(path, n = Inf) {
 
 # helper function to return the contests dataset
 get_contests <- function(state, county) {
-  read_csv("code/cvrs/util/contests.csv",
+  read_csv("metadata/contests.csv",
     col_types = cols(.default = col_character()),
     na = c("", "NA", "#N/A")
   ) |>
