@@ -9,6 +9,8 @@ library(fs)
 username <- Sys.info()["user"]
 if (username %in% c("shirokuriwaki", "sk2983")) {
   PATH_parq <- "~/Dropbox/CVR_parquet"
+} else if (username %in% c("mason")) {
+  PATH_parq <- "~/Dropbox (MIT)/Research/CVR_parquet"
 }
 
 # Data ----
