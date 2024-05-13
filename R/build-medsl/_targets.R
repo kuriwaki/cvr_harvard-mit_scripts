@@ -15,7 +15,7 @@ tar_option_set(
   packages = c("tidyverse", "arrow", "janitor", "jsonlite", "furrr", "readxl", "xml2", "stringi", "fs"),
   memory = "transient",
   garbage_collection = TRUE,
-  controller = crew::crew_controller_local(workers = 8, tasks_max = 2, garbage_collection = TRUE)
+  controller = crew::crew_controller_local(workers = 6, garbage_collection = TRUE, seconds_timeout = 120)
 )
 
 tar_config_set(
@@ -25,21 +25,16 @@ tar_config_set(
 
 py_juris = tibble(
   state = c(
-    "DELAWARE", "DELAWARE", "DELAWARE", "DELAWARE",
-    "MINNESOTA",
     "PENNSYLVANIA",
     "RHODE ISLAND", "RHODE ISLAND", "RHODE ISLAND", "RHODE ISLAND", "RHODE ISLAND", "RHODE ISLAND",
     "VIRGINIA",
     "WEST VIRGINIA", "WEST VIRGINIA"
   ),
   county_name = c(
-    "", "KENT", "NEW CASTLE", "SUSSEX",
-    "FILLMORE",
     "ALLEGHENY",
     "", "BRISTOL", "KENT", "NEWPORT", "PROVIDENCE", "WASHINGTON",
     "",
-    "NICHOLAS",
-    "WOOD"
+    "NICHOLAS", "WOOD"
   )
 )
 
@@ -61,25 +56,25 @@ list(
   tar_map(
     filter(raw_paths, type == "xml"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass1, get_xml(path, state, county_name, contests), format = "file", error = "continue"),
+    tar_target(pass1, process_xml(path, state, county_name, contests), format = "file", error = "continue", deployment = "main"),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "special"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass1, get_special(path, state, county_name, contests), format = "file", error = "continue"),
+    tar_target(pass1, process_special(path, state, county_name, contests), format = "file", error = "continue"),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "delim"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass1, get_delim(path, state, county_name, contests), format = "file", error = "continue"),
+    tar_target(pass1, process_delim(path, state, county_name, contests), format = "file", error = "continue"),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "json"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass1, get_json(path, state, county_name, contests), format = "file", error = "continue"),
+    tar_target(pass1, process_json(path, state, county_name, contests), format = "file", error = "continue", deployment = "main"),
     names = c(state, county_name)
   )
 )
