@@ -1,3 +1,20 @@
+# In a green county, the Democratic, Republican, and Libertarian candidates' vote 
+# counts exactly match between the Harvard CVR data, MEDSL CVR data, and precinct 
+# data, for every contest that falls under any of the following six offices: 
+# US PRESIDENT, US SENATE, US HOUSE, GOVERNOR, STATE SENATE, and STATE HOUSE.
+# 
+# A county is considered yellow if all of the following conditions are satisfied, 
+#  for every candidate of those three parties and every contest in those six offices:
+# 	- Harvard's nonmissing CVR data are within 10% of the precinct totals
+# 	- MEDSL's nonmissing CVR data are within 10% of the precinct totals
+# 	- The number of rows in the precinct data that do not appear in Harvard's data 
+#      are less than 20% of the total number of rows
+# 	- The number of rows in the precinct data that do not appear in MEDSL's data 
+#      are less than 20% of the total number of rows
+# 
+# A red county is any county not satisfying the conditions for a green or yellow county.
+
+
 import pandas as pd
 import os
 
