@@ -5,6 +5,7 @@
 library(tidyverse)
 library(arrow)
 library(fs)
+source("R/combine/01c_classification-R.R")
 
 username <- Sys.info()["user"]
 if (username %in% c("shirokuriwaki", "sk2983")) {
@@ -96,7 +97,9 @@ count_v <- dsa_v |>
 
 # Classifications ---
 colours <- read_csv(path(PATH_parq, "validation/classifications.csv"), show_col_types = FALSE)
-
+precs <- readxl::read_excel(path(PATH_parq, "combined/precincts_match.xlsx")) |>
+  select(state, county, n_precincts_cvr, n_precincts_vest,
+         max_precinct_uspres_diff = max_vote_dist)
 
 # Together ------
 joinvars <- c("state", "county_name", "office", "district", "party_detailed", "cand_rank")
@@ -106,6 +109,8 @@ out_cand <- count_h |>
   select(-cand_rank) |>
   arrange(state, county_name, desc(office), district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein)
+
+cand_summ <- categorize_diff(out_cand)
 
 # one row per county
 out_county <- out_cand |>
@@ -129,8 +134,14 @@ out_county <- out_cand |>
   ) |>
   # need to run this twice
   left_join(colours, by = c("state", "county_name" = "county")) |>
-  relocate(state, county_name, colour,
-           matches("match_"), matches("uspres"), matches("ushou"), matches("ussen"))
+  left_join(precs, by = c("state", "county_name" = "county")) |>
+  left_join(cand_summ, by = c("state", "county_name")) |>
+  relocate(state, county_name,
+           color = colour,
+           color2_h,
+           matches("match_"),
+           matches("precinct"),
+           matches("uspres"), matches("ushou"), matches("ussen"))
 
 list(`by-county-district` = out_cand, `by-county` = out_county) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
@@ -151,6 +162,10 @@ out_county |>
                   caption = "Harvard exact match (rows) vs. MEDSL exact match (cols)") |>
   write_lines("status/by-county_correct-H-vs-M.txt")
 
+out_county |>
+  count(color2_h) |>
+  kableExtra::kbl(format = "pipe") |>
+  write_lines("status/colors2_h.txt")
 
 out2 <- out_cand |>
   filter(party_detailed %in% c("REPUBLICAN", "DEMOCRAT")) |>
