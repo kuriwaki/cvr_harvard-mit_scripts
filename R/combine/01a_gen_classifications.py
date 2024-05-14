@@ -24,7 +24,7 @@ import os
 ################################################################################
 # working directory is source directory
 BASE_DIR = '../../'
-DATA_DIR = '../../../../Dropbox/CVR_parquet/' # need to be flexible to other users
+DATA_DIR = '../../../../Dropbox/CVR_parquet/' # TODO: need to be flexible to other users
 OUT_DIR = BASE_DIR + 'status/'
 OUT_DIR2 = BASE_DIR + 'status/counties-classified/'
 
