@@ -61,7 +61,7 @@ count_m <- dsa_m |>
   count(state, county_name, office, district,
         candidate, party_detailed,
         name = "votes", wt = votes) |>
-  # https://github.com/kuriwaki/CVR_Harvard-MIT/issues/15
+  # For merging purposes, use undervote as a party
   mutate(party_detailed = case_when(
     candidate == "UNDERVOTE" ~ "UNDERVOTE",
     candidate == "WRITEIN" ~ "WRITEIN",
