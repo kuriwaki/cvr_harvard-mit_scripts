@@ -96,8 +96,9 @@ count_v <- dsa_v |>
   semi_join(all_counties, by = c("state", "county_name"))
 
 # Classifications ---
-colours <- read_csv(path(PATH_parq, "validation/classifications.csv"), show_col_types = FALSE)
-precs <- readxl::read_excel(path(PATH_parq, "combined/precincts_match.xlsx")) |>
+colours <- read_csv(path(PATH_parq, "combined/classifications.csv"), show_col_types = FALSE)
+precs_all <- readxl::read_excel(path(PATH_parq, "combined/precincts_match.xlsx"))
+precs <- precs_all |>
   select(state, county, n_precincts_cvr, n_precincts_vest,
          max_precinct_uspres_diff = max_vote_dist)
 
@@ -143,7 +144,7 @@ out_county <- out_cand |>
            matches("precinct"),
            matches("uspres"), matches("ushou"), matches("ussen"))
 
-list(`by-county-district` = out_cand, `by-county` = out_county) |>
+list(`by-county-district` = out_cand, `by-county` = out_county, `precint` = precs_all) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
 
 
