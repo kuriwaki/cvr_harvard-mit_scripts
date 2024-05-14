@@ -53,8 +53,7 @@ count_m <- dsa_m |>
         candidate, party_detailed, contest,
         name = "votes") |>
   collect() |>
-  filter(!(state == "ARIZONA" & office == "STATE HOUSE"),
-         party_detailed %in% parties_use) |>
+  filter(!(state == "ARIZONA" & office == "STATE HOUSE")) |>
   mutate(
     county_name = replace(county_name, state %in% c("ALASKA", "RHODE ISLAND"), "STATEWIDE")
     ) |>
@@ -68,6 +67,7 @@ count_m <- dsa_m |>
     candidate == "WRITEIN" ~ "WRITEIN",
     candidate == "OVERVOTE" ~ "OVERVOTE",
     .default = party_detailed)) |>
+  filter(party_detailed %in% parties_use) |>
   # top-two
   arrange(state, county_name, office, district, party_detailed, desc(votes)) |>
   mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name)) |>
@@ -82,7 +82,7 @@ all_counties <- full_join(
 ## Returns ------
 count_v <- dsa_v |>
   filter(!(state == "ARIZONA" & office == "STATE HOUSE"),
-         party_detailed %in% parties_use | is.na(party_detailed)) |>
+         party_detailed %in% parties_use | (is.na(party_detailed) & office != "US PRESIDENT")) |>
   count(state, county_name, office, district, candidate, party_detailed, writein,
         special,
         wt = votes,
