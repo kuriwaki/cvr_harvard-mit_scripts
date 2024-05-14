@@ -1,0 +1,8 @@
+|color2_h           |   n|
+|:------------------|---:|
+|0 difference       | 213|
+|any < 1% mismatch  |  85|
+|any < 5% mismatch  |  28|
+|any < 10% mismatch |   8|
+|red                |  59|
+|NA                 |  76|
