@@ -53,18 +53,12 @@ count_m <- dsa_m |>
         candidate, party_detailed, contest,
         name = "votes") |>
   collect() |>
-  # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/29
-  mutate(
-    party_detailed = replace(
-      party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "INDEPENDENT")
-  ) |>
   filter(!(state == "ARIZONA" & office == "STATE HOUSE"),
          party_detailed %in% parties_use) |>
   mutate(
-    county_name = replace(county_name, state %in% c("ALASKA", "RHODE ISLAND"), "STATEWIDE"),
-    # A few more https://github.com/kuriwaki/cvr_havard-mit_scripts/issues/23
-    district = str_pad(district, width = 3, pad = "0")) |>
-  # count across "context" after modifying GA
+    county_name = replace(county_name, state %in% c("ALASKA", "RHODE ISLAND"), "STATEWIDE")
+    ) |>
+  # count across "context"
   count(state, county_name, office, district,
         candidate, party_detailed,
         name = "votes", wt = votes) |>
@@ -77,8 +71,7 @@ count_m <- dsa_m |>
   # top-two
   arrange(state, county_name, office, district, party_detailed, desc(votes)) |>
   mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name)) |>
-  rename(candidate_m = candidate, votes_m = votes) |>
-  mutate(county_name = str_to_upper(county_name))
+  rename(candidate_m = candidate, votes_m = votes)
 
 # all counties that occur in one of H or M
 all_counties <- full_join(
