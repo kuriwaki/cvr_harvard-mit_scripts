@@ -100,7 +100,8 @@ colours <- read_csv(path(PATH_parq, "combined/classifications.csv"), show_col_ty
 precs_all <- readxl::read_excel(path(PATH_parq, "combined/precincts_match.xlsx"))
 precs <- precs_all |>
   select(state, county, n_precincts_cvr, n_precincts_vest,
-         max_precinct_uspres_diff = max_vote_dist)
+         max_precinct_uspres_diff = max_vote_dist) |>
+  filter(state != "ALASKA")
 
 # Together ------
 joinvars <- c("state", "county_name", "office", "district", "party_detailed", "cand_rank")
@@ -111,7 +112,8 @@ out_cand <- count_h |>
   arrange(state, county_name, desc(office), district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein)
 
-cand_summ <- categorize_diff(out_cand)
+cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h)
+cand_summ_m <- categorize_diff(out_cand, votes_m, color2_m)
 
 # one row per county
 out_county <- out_cand |>
@@ -136,16 +138,18 @@ out_county <- out_cand |>
   # need to run this twice
   left_join(colours, by = c("state", "county_name" = "county")) |>
   left_join(precs, by = c("state", "county_name" = "county")) |>
-  left_join(cand_summ, by = c("state", "county_name")) |>
+  left_join(cand_summ_h, by = c("state", "county_name")) |>
+  left_join(cand_summ_m, by = c("state", "county_name")) |>
   relocate(state, county_name,
            color = colour,
-           color2_h,
+           matches("color2"),
            matches("match_"),
            matches("precinct"),
            matches("uspres"), matches("ushou"), matches("ussen"))
 
 list(`by-county-district` = out_cand, `by-county` = out_county, `precint` = precs_all) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
+
 
 
 
@@ -162,6 +166,12 @@ out_county |>
   kableExtra::kbl(format = "pipe",
                   caption = "Harvard exact match (rows) vs. MEDSL exact match (cols)") |>
   write_lines("status/by-county_correct-H-vs-M.txt")
+
+xtabs(~ color2_h + color2_m, out_county, addNA = TRUE) |>
+  addmargins() |>
+  kableExtra::kbl(format = "pipe",
+                  caption = "Harvard match (rows) vs. MEDSL match (cols)") |>
+  write_lines("status/by-county_correct-H-vs-M-2.txt")
 
 out_county |>
   count(color2_h) |>
@@ -194,4 +204,3 @@ out2 |>
   count(agree_hm)|>
   kableExtra::kbl(format = "pipe") |>
   write_lines("status/by-county_H-M-agreement.txt")
-
