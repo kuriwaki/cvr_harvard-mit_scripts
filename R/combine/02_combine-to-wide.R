@@ -43,6 +43,14 @@ count_h <- dsa_h |>
   count(state, county_name, office, district, candidate, party_detailed,
         name = "votes") |>
   collect() |>
+  # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/26
+  mutate(county_name = case_match(
+    county_name,
+    "BLECKLY" ~ "BLECKLEY",
+    "GUADELUPE" ~ "GUADALUPE",
+    "ROCKFORD" ~ "WINNEBAGO",
+    "BLOOMINGTON" ~ "MCLEAN",
+    .default = county_name)) |>
   mutate(party_detailed = recode(party_detailed, "undervote" = "UNDERVOTE")) |>
   arrange(state, county_name, office, district, party_detailed, desc(votes)) |>
   mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name)) |>
@@ -149,7 +157,6 @@ out_county <- out_cand |>
 
 list(`by-county-district` = out_cand, `by-county` = out_county, `precint` = precs_all) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
-
 
 
 
