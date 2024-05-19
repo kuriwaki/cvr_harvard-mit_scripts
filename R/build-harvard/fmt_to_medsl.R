@@ -72,6 +72,7 @@ fmt_harv_to_medsl <- function(tbl) {
            office,
            district,
            candidate,
+           matches("column"),
            magnitude = num_votes,
            party,
            party_detailed)
