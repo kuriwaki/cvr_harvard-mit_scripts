@@ -65,10 +65,14 @@ fmt_harv_to_medsl <- function(tbl) {
     mutate(dist_state = replace(state, !office %in% c("GOVERNOR", "US SENATE"), NA),
            district = coalesce(dist_state, district),
            district = replace(district, item == "US_SEN (S)" & state == "GEORGIA", "GEORGIA-III")) |> # class III senate seat
-    select(state, county_name, cvr_id,
-           pid,
+    select(state,
+           county_name,
+           matches("cvr_id"),
+           matches("pid"),
            office,
-           district, candidate,
+           district,
+           candidate,
+           matches("column"),
            magnitude = num_votes,
            party,
            party_detailed)
