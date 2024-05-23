@@ -53,6 +53,8 @@ cvr_info_meta <- map_dfr(
           "batch_id",
         match_field_name(values, "[Bb]allot\\s*[Tt]ype") ~
           "ballot_type",
+        match_field_name(values, "[Cc]ounting\\s*[Gg]roup") ~
+          "counting_group",
         match_field_name(values, "[Tt]abulator[Nn]um") ~
           "tabulator_number",
         match_field_name(values, "[Ii]mprinted[Ii]d") ~
@@ -71,7 +73,7 @@ cvr_info_meta <- map_dfr(
 tictoc::toc()
 
 
-
+# about 11 min
 tictoc::tic()
 prec_info <- walk(
   .x = infonames,
@@ -106,12 +108,17 @@ prec_info <- walk(
                   names_from = new_name,
                   values_from = value) |>
       add_cols("cvr_id_merged") |>
-      mutate(cvr_id_merged = as.integer(coalesce(cvr_id_merged, cvr_id))) |>
+      add_cols("precinct") |>
+      add_cols("precinct_portion") |>
+      add_cols("ballot_type") |>
+      add_cols("counting_group") |>
+      mutate(cvr_id = as.double(coalesce(cvr_id_merged, cvr_id)),
+             cvr_id_merged = as.double(cvr_id_merged)) |>
       mutate(state = st, county = ct, .before = 1) |>
       # Write to parquet
       group_by(state, county) |>
       arrow::write_dataset(
-        path = PATH_long_2,
+        path = PATH_prec,
         format = "parquet",
         existing_data_behavior = "delete_matching")
   },

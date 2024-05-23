@@ -2,16 +2,7 @@ library(arrow)
 library(tidyverse)
 library(fs)
 
-
-# Output locations
-username <- Sys.info()["user"]
-
-# other users should make a different clause
-if (username %in% c("shirokuriwaki", "sk2983")) {
-  PATH_projdir <- "~/Dropbox/CVR_Data_Shared/data_main"
-  PATH_long <- "~/Downloads/stata_init/" # for arrow::open_dataset()
-  PATH_merged <- "~/Downloads/stata_long" # Change to Dropbox CVR_Data_Shared when final
-}
+source("R/build-harvard/R/parse.R")
 
 # Datasets -- metadata----
 meta <- open_dataset(
@@ -19,11 +10,12 @@ meta <- open_dataset(
 
 ds_orig <- open_dataset(PATH_long)
 
-
 # Main merge ----
 
 # Have to do this state by state since my R crashes otherwise
-states_vec <- distinct(ds_orig, state) |> pull(state, as_vector = TRUE)
+states_vec <- distinct(ds_orig, state) |>
+  pull(state, as_vector = TRUE) |>
+  sort()
 
 tictoc::tic()
 for (st in states_vec) {
@@ -39,6 +31,10 @@ for (st in states_vec) {
              incumbent, spending, measure, multi_county, num_votes),
       by = c("state", "county", "column", "item", "choice_id"),
       relationship = "many-to-one")
+
+  # Precinct
+  ds_prec <- open_dataset(PATH_prec) |>
+    filter(state == st)
 
   # Party ID ---
   # follows Snyder "MAKE PARTISANSHIP" in `analysis_all_politics_partisan.do`
@@ -69,6 +65,8 @@ for (st in states_vec) {
 
   # Write ----
   ds |>
+    # merge prec
+    left_join(ds_prec, by = c("state", "county", "cvr_id")) |>
     # merge national party
     left_join(
       ds_pid,
@@ -82,4 +80,4 @@ for (st in states_vec) {
       existing_data_behavior = "delete_matching")
 }
 tictoc::toc()
-# 10 min
+# 13 min
