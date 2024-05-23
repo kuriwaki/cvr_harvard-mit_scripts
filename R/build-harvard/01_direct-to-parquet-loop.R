@@ -5,23 +5,7 @@ library(arrow)
 library(glue)
 library(fs)
 
-
-
-#' changes CA_Orange_long.dta to c("CA", "Orange")
-parse_js_fname <- function(chr) {
-  st <- str_sub(chr, 1, 2)
-  ct <- str_extract(chr, "(?<=[A-Z][A-Z]_).*(?=_long.dta)")
-  c(state = st, county = ct)
-}
-
-# Output locations ------
-username <- Sys.info()["user"]
-
-# other users should make a different clause
-if (username %in% c("shirokuriwaki", "sk2983")) {
-  PATH_projdir <- "~/Dropbox/CVR_Data_Shared/data_main"
-  PATH_long <- "~/Downloads/stata_init"
-}
+source("R/build-harvard/R/parse.R")
 
 
 # Metadata file into parquet -----
@@ -43,9 +27,6 @@ read_dta(path(PATH_projdir, "item_choice_info.dta")) |>
     .after = item
   ) |>
   write_dataset(path(PATH_projdir, "to-parquet", "item_choice_info"), format = "parquet")
-
-read_dta(path(PATH_projdir, "../analysis_all_politics_partisan/tmp0.dta")) |>
-  write_dataset(path(PATH_projdir, "to-parquet", "item_info_tmp0"), format = "parquet")
 
 
 # All files -- setup -----
@@ -84,10 +65,12 @@ walk(
     # follows Snyder MERGE SOME SPLIT CVR RECORDS in `analysis_all_politics_partisan.do`
     if (x %in% paths_to_merge) {
       # update and redefine new cvr_id
-      dat <- glue("{dir}/STATA_cvr_info/{st}_{ct}_cvr_info.dta") |>
+      info <- glue("{dir}/STATA_cvr_info/{st}_{ct}_cvr_info.dta") |>
         read_dta() |>
         filter(!is.na(cvr_id)) |>
-        select(cvr_id, cvr_id_merged) |> # one row per cvr_id
+        select(cvr_id, cvr_id_merged)
+
+      dat <- info |> # one row per cvr_id
         left_join(dat, by = "cvr_id", relationship = "one-to-many") |>
         mutate(cvr_id = coalesce(cvr_id_merged, cvr_id)) |>
         filter(!is.na(item) & !is.na(choice))

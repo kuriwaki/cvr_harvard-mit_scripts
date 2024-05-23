@@ -6,7 +6,9 @@ library(arrow)
 library(duckplyr)
 
 
-username <- Sys.info()["user"]
+source("R/build-harvard/R/parse.R")
+source("R/build-harvard/fmt_to_medsl.R")
+
 
 # other users should make a different clause
 if (username %in% c("shirokuriwaki", "sk2983")) {
@@ -14,11 +16,10 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
   PATH_medsl_share = "~/Dropbox/CVR_parquet/harvard"
 }
 
-source("R/build-harvard/fmt_to_medsl.R")
 
 # Datasets
 ds <- duckplyr_df_from_parquet(PATH_merged2)
-states_vec = ds |> distinct(state) |> pull(state)
+states_vec = ds |> distinct(state) |> pull(state) |> sort()
 
 
 # done in about 10 min

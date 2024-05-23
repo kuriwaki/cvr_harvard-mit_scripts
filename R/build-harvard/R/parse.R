@@ -6,8 +6,9 @@ username <- Sys.info()["user"]
 if (username %in% c("shirokuriwaki", "sk2983")) {
   PATH_projdir <- "~/Dropbox/CVR_Data_Shared/data_main"
   PATH_jbldir <- "~/Dropbox/CVR_Data_Shared/data_main/to-parquet/JBL/"
-  PATH_long_1 <- "~/Downloads/stata_init"
-  PATH_long_2 <- "~/Downloads/cvr_prec"
+  PATH_long <- "~/Downloads/stata_init"
+  PATH_prec <- "~/Downloads/cvr_prec/"
+  PATH_merged <- "~/Downloads/stata_long"
 }
 
 #' changes CA_Orange_long.dta to c("CA", "Orange")
