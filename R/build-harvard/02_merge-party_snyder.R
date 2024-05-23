@@ -9,7 +9,7 @@ source("R/build-harvard/R/parse.R")
 meta    <- duckplyr_df_from_parquet(path(PATH_projdir, "to-parquet", "item_choice_info/*.parquet"))
 ds_orig <- duckplyr_df_from_parquet(PATH_long2) |>
   select(-line_number)
-ds_prec <- duckplyr_df_from_parquet(path(PATH_prec, "*/*/*.parquet"))
+ds_prec <- duckplyr_df_from_parquet(path(PATH_prec_js, "*/*/*.parquet"))
 
 # Main merge ----
 
@@ -19,7 +19,7 @@ states_vec <- distinct(ds_orig, state) |>
   sort()
 
 tictoc::tic()
-for (st in states_vec) {
+for (st in rev(states_vec)) {
 
   cli::cli_alert_info("{st}")
 

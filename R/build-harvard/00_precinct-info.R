@@ -13,10 +13,20 @@ infonames <- filenames |>
   str_replace("STATA_long", "STATA_cvr_info")
 infonames <- infonames[file_exists(path(PATH_projdir, "STATA_cvr_info", infonames))]
 
+# Jim's file
+ds_prec <- read_dta(path(PATH_projdir, "tmp_precincts_long.dta"))
+ds_prec |>
+  group_by(state) |>
+  arrow::write_dataset(
+    path = PATH_prec_js,
+    format = "parquet",
+    existing_data_behavior = "delete_matching")
+
+
+# Jeff approch ----
 custom_cvr_info_field_mappings <- read_csv(
   path(PATH_jbldir, "csv/custom_cvr_info_field_mappings.csv"),
   show_col_types = FALSE)
-
 
 tictoc::tic()
 cvr_info_meta <- map_dfr(
@@ -125,3 +135,6 @@ prec_info <- walk(
   .progress = "counties"
 )
 tictoc::toc()
+
+
+

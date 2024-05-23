@@ -9,6 +9,7 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
   PATH_long <- "~/Downloads/stata_init"
   PATH_long2 = "~/Downloads/stata_init/*/*/*.parquet"
   PATH_prec <- "~/Downloads/cvr_prec/"
+  PATH_prec_js <- "~/Downloads/cvr_prec_js/"
   PATH_merged <- "~/Downloads/stata_long"
 }
 
