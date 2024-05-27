@@ -3,6 +3,13 @@ library(duckplyr)
 library(tidyverse)
 library(fs)
 
+# unlimited memory
+# https://duckdb.org/docs/guides/performance/how_to_tune_workloads.html
+con <- duckplyr:::get_default_duckdb_connection()
+DBI::dbExecute(con, "SET preserve_insertion_order = false;")
+
+
+
 source("R/build-harvard/R/parse.R")
 
 # Datasets -- metadata----
@@ -20,7 +27,7 @@ states_vec <- distinct(ds_orig, state) |>
   rev()
 
 tictoc::tic()
-for (st in states_vec) {
+for (st in rev(c("CA", "CO", "FL"))) {
   gc()
   cli::cli_alert_info("{st}")
 
@@ -50,28 +57,19 @@ for (st in states_vec) {
     ) |>
     summarize(
       pres = case_when(
-        any(party == "DEM" & item == "US_PRES") ~ "D",
-        any(party == "REP" & item == "US_PRES") ~ "R",
+        any(D == 1 & item == "US_PRES") ~ "D",
+        any(R == 1 & item == "US_PRES") ~ "R",
         any(party == "LBT" & item == "US_PRES") ~ "LBT",
         .default = NA_character_
       ),
-      D = sum(D),
-      R = sum(R),
+      pid = case_when(
+        sum(D)  > 0 & sum(R) == 0 ~ "DEM",
+        sum(D)  > 0 & sum(R) > 0  ~ "SPL",
+        sum(D) == 0 & sum(R) > 0 ~ "REP",
+      ),
       .by = c(state, county, cvr_id)
     ) |>
-    mutate(
-      pid_num = case_when(
-        D > 0 & R == 0 ~ 1,
-        D > 0 & R > 0  ~ 0,
-        D == 0 & R > 0 ~ -1,
-      ),
-      pid = case_when(
-        pid_num == 1 ~ "DEM",
-        pid_num == 0 ~ "SPL",
-        pid_num == -1 ~ "REP"
-      )) |>
-    select(state, county, cvr_id, pres, pid, pid_num)
-
+    select(state, county, cvr_id, pid, pres)
 
   # Write ----
   ds |>
@@ -82,7 +80,7 @@ for (st in states_vec) {
       ds_pid,
       by = c("state", "county", "cvr_id"),
       relationship = "one-to-one") |>
-    relocate(pres, pid, pid_num, .after = cvr_id) |>
+    relocate(pres, pid, .after = cvr_id) |>
     group_by(state, county) |> # specifies partition
     write_dataset(
       path = PATH_merged,
