@@ -91,6 +91,7 @@ count_v <- dsa_v |>
   collect() |>
   arrange(state, county_name, office, district, party_detailed, desc(votes)) |>
   mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name)) |>
+  tidylog::filter(votes > 0) |>
   rename(candidate_v = candidate, votes_v = votes) |>
   # ALL COUNTIES ever mentioned in H or M
   semi_join(all_counties, by = c("state", "county_name"))
@@ -101,7 +102,8 @@ precs_all <- readxl::read_excel(path(PATH_parq, "combined/precincts_match.xlsx")
 precs <- precs_all |>
   select(state, county, n_precincts_cvr, n_precincts_vest,
          max_precinct_uspres_diff = max_vote_dist) |>
-  filter(state != "ALASKA")
+  filter(state != "ALASKA") |>
+  arrange(state)
 
 # Together ------
 joinvars <- c("state", "county_name", "office", "district", "party_detailed", "cand_rank")
