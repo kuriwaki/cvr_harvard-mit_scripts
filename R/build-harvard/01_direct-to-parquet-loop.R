@@ -37,7 +37,7 @@ paths_to_merge <-
 # Main -----
 tictoc::tic()
 walk(
-  .x = filenames[17:408],
+  .x = filenames,
   .f = function(x, dir = PATH_projdir) {
     gc()
     # read
