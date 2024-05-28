@@ -1,6 +1,5 @@
 # Format to MEDSL's variables,
 # limited to state legislature and up
-
 library(tidyverse)
 library(arrow)
 library(duckplyr)
@@ -22,7 +21,7 @@ ds <- duckplyr_df_from_parquet(PATH_merged2)
 states_vec = ds |> distinct(state) |> pull(state) |> sort()
 
 
-# done in about 10 min
+tictoc::tic()
 for (st in states_vec) {
   ds |>
     filter(state == st) |>
@@ -37,12 +36,12 @@ for (st in states_vec) {
         "BLOOMINGTON" ~ "MCLEAN",
         .default = county_name),
     ) |>
-    group_by(state, county_name) |>
-    # WRITE
     write_dataset(
       path = PATH_medsl_share,
+      partitioning = c("state", "county_name"),
       format = "parquet",
       existing_data_behavior = "delete_matching")
   cli::cli_alert_info("{st}")
 }
-
+tictoc::toc()
+# 12 min
