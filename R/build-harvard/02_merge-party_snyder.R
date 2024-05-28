@@ -9,7 +9,6 @@ library(fs)
 # DBI::dbExecute(con, "SET preserve_insertion_order = false;")
 
 Sys.setenv(DUCKPLYR_FORCE = TRUE)
-options(duckdb.materialize_message = FALSE)
 
 source("R/build-harvard/R/parse.R")
 
@@ -107,6 +106,5 @@ walk(
   .progress = "counties"
 )
 tictoc::toc()
-# 13 min
-# 4hr 36min all (+ one LA)
+# 1hr
 

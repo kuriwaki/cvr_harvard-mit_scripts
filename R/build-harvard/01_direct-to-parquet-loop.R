@@ -7,12 +7,10 @@ library(fs)
 
 source("R/build-harvard/R/parse.R")
 
-
 # All files -- setup -----
 filenames <- read_csv("R/build-harvard/input_files.txt",
                       name_repair = "unique_quiet",
-                      show_col_types = FALSE) |>
-  pull(file)
+                      show_col_types = FALSE)$file
 
 paths_to_merge <-
   c("CA_Alameda_long.dta",
@@ -32,7 +30,7 @@ paths_to_merge <-
     "MD_Baltimore_City_long.dta",
     "MD_Montgomery_long.dta")
 
-#TODO: check Bernadino and San Diego, and Marin (17) -- lot of removal of duplicates, 6-19%
+# TODO: check Bernadino and San Diego, and Marin (17) -- lot of removal of duplicates, 6-19%
 
 # Main -----
 tictoc::tic()
@@ -44,8 +42,8 @@ walk(
     dat <- read_dta(fs::path(dir, "STATA_long", x))
 
     # get state and county
-    st <- parse_js_fname(x)["state"]
-    ct <- parse_js_fname(x)["county"]
+    st <- as.character(parse_js_fname(x)["state"])
+    ct <- as.character(parse_js_fname(x)["county"])
 
     # follows Snyder MERGE SOME SPLIT CVR RECORDS in `analysis_all_politics_partisan.do`
     if (x %in% paths_to_merge) {
@@ -63,17 +61,19 @@ walk(
 
     # Append county info and write
     dat |>
+      duckplyr::as_duckplyr_df() |>
       # follows Snyder DROP SOME CASES OF DUPLICATED cvr_id in `analysis_all_politics_partisan.do`
       # (seems to remove 5% of rows in LA county for example -- maybe RCV?)
       # Stata code here is `egen x = count(cvr_id), by(cvr_id column)` followed by `drop if x > 1`. Not sure if this is the same
       tidylog::filter(n() == 1, .by = c(cvr_id, column)) |>
+      # this filter cannot be down with duckdb yet
       mutate(
         state = st,
         county = ct,
         .before = 1) |>
-      group_by(state, county) |>
       write_dataset(
         path = PATH_long,
+        partitioning = c("state", "county"),
         format = "parquet",
         existing_data_behavior = "delete_matching")
   },
