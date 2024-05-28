@@ -28,6 +28,15 @@ for (st in states_vec) {
     filter(state == st) |>
     filter(item %in% c("US_PRES", "US_REP", "US_SEN", "US_SEN (S)", "ST_SEN", "ST_REP", "ST_GOV")) |>
     fmt_harv_to_medsl() |>
+    mutate(
+      county_name = case_match(
+        county_name,
+        "BLECKLY" ~ "BLECKLEY",
+        "GUADELUPE" ~ "GUADALUPE",
+        "ROCKFORD" ~ "WINNEBAGO",
+        "BLOOMINGTON" ~ "MCLEAN",
+        .default = county_name),
+    ) |>
     group_by(state, county_name) |>
     # WRITE
     write_dataset(

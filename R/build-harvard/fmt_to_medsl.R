@@ -19,7 +19,7 @@ fmt_harv_to_medsl <- function(tbl) {
                           "ST_SEN" ~ "STATE SENATE",
                           "ST_REP" ~ "STATE HOUSE",
                           "ST_GOV" ~ "GOVERNOR",
-                          ),
+      ),
       candidate = str_to_upper(choice),
       state = case_match(state,
                          "AZ" ~ "ARIZONA",
