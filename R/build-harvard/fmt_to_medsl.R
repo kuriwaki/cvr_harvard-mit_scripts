@@ -26,6 +26,7 @@ fmt_harv_to_medsl <- function(tbl) {
                          "AK" ~ "ALASKA",
                          "CA" ~ "CALIFORNIA",
                          "CO" ~ "COLORADO",
+                         "DE" ~ "DELAWARE",
                          "FL" ~ "FLORIDA",
                          "GA" ~ "GEORGIA",
                          "IL" ~ "ILLINOIS",
