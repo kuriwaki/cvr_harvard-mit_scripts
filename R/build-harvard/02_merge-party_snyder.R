@@ -8,8 +8,8 @@ library(fs)
 # con <- duckplyr:::get_default_duckdb_connection()
 # DBI::dbExecute(con, "SET preserve_insertion_order = false;")
 
-# Sys.setenv(DUCKPLYR_FORCE = TRUE)
-duckplyr::methods_overwrite()
+Sys.setenv(DUCKPLYR_FORCE = TRUE)
+options(duckdb.materialize_message = FALSE)
 
 source("R/build-harvard/R/parse.R")
 
@@ -22,14 +22,13 @@ ds_prec <- duckplyr_df_from_parquet(path(PATH_prec_js, "*/*.parquet"))
 # filenames
 filenames <- read_csv("R/build-harvard/input_files.txt",
                       name_repair = "unique_quiet",
-                      show_col_types = FALSE) |>
-  pull(file)
+                      show_col_types = FALSE)$file
 
 # Main merge ----
 
 tictoc::tic()
 walk(
-  .x = filenames,
+  .x = rev(filenames),
   .f = function(x, dir = PATH_projdir) {
     # get state and county
     st <- as.character(parse_js_fname(x)["state"])
@@ -41,6 +40,7 @@ walk(
       inner_join(
         select(meta,
                state, county, column, item, choice_id,
+               dist,
                party, level,
                office_type,
                nonpartisan, unexp_term,
@@ -61,37 +61,47 @@ walk(
         R = as.integer(party == "REP"),
       ) |>
       summarize(
-        pres = case_when(
-          any(D == 1 & item == "US_PRES") ~ "D",
-          any(R == 1 & item == "US_PRES") ~ "R",
-          any(party == "LBT" & item == "US_PRES") ~ "LBT",
-          .default = NA_character_
+        pres = if_else(
+          any(D == 1 & item == "US_PRES"),  "D",
+          if_else(
+            any(R == 1 & item == "US_PRES"), "R",
+            if_else(
+              any(party == "LBT" & item == "US_PRES"), "LBT",
+              NA_character_
+            )
+          )
         ),
-        pid = case_when(
-          sum(D)  > 0 & sum(R) == 0 ~ "DEM",
-          sum(D)  > 0 & sum(R) > 0  ~ "SPL",
-          sum(D) == 0 & sum(R) > 0 ~ "REP",
+        pid = if_else(
+          sum(D)  > 0 & sum(R) == 0, "DEM",
+          if_else(
+            sum(D)  > 0 & sum(R) > 0, "SPL",
+            if_else(
+              sum(D) == 0 & sum(R) > 0, "REP",
+              NA_character_
+            )
+          )
         ),
         .by = c(state, county, cvr_id)
       ) |>
-      select(state, county, cvr_id, pid, pres)
+      select(state, county, cvr_id, pres, pid)
 
     # Write ----
     ds |>
       # merge prec
-      left_join(ds_prec_st,
-                by = c("state", "county", "cvr_id"),
-                relationship = "many-to-one") |>
+      left_join(
+        ds_prec_st,
+        by = c("state", "county", "cvr_id"),
+        relationship = "many-to-one") |>
       # merge national party
       left_join(
         ds_pid,
         by = c("state", "county", "cvr_id"),
         relationship = "one-to-one") |>
-      relocate(pres, pid, .after = cvr_id) |>
-      group_by(state, county) |> # specifies partition
+      relocate(precinct, pres, pid, .after = cvr_id) |>
       write_dataset(
         path = PATH_merged,
         format = "parquet",
+        partitioning = c("state", "county"),
         existing_data_behavior = "delete_matching")
   },
   .progress = "counties"
