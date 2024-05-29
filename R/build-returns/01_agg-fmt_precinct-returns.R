@@ -21,7 +21,7 @@ ret_all <- read_csv(
   col_types = "ccccciciccccciccllciiiDli")
 tictoc::toc()
 
-statewide = c("ALASKA", "RHODE ISLAND")
+statewide = c("ALASKA", "RHODE ISLAND", "DELAWARE")
 
 # only the top six offices -----
 ## most of data reformatting
