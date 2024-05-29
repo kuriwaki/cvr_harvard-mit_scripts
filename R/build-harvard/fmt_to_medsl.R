@@ -50,6 +50,7 @@ fmt_harv_to_medsl <- function(tbl) {
                                   "REP" ~ "REPUBLICAN",
                                   "REP?" ~ "REPUBLICAN",
                                   "LBT" ~ "LIBERTARIAN",
+                                  "LIB" ~ "LIBERTARIAN",
                                   "IND" ~ "INDEPENDENT",
                                   "GRN" ~ "GREEN",
                                   "GRE" ~ "GREEN",
