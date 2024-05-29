@@ -1,7 +1,7 @@
 |color2_h           |   n|
 |:------------------|---:|
-|0 difference       | 205|
+|0 difference       | 216|
 |any < 1% mismatch  |  82|
 |any < 5% mismatch  |  29|
-|any < 10% mismatch |   7|
-|red                | 141|
+|any < 10% mismatch |   8|
+|red                | 129|

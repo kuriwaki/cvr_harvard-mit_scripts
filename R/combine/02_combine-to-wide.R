@@ -111,7 +111,8 @@ out_cand <- count_h |>
   full_join(count_m, by = joinvars) |>
   full_join(count_v, by = joinvars) |>
   select(-cand_rank) |>
-  arrange(state, county_name, desc(office), district, party_detailed) |>
+  mutate(office = factor(office, levels = c("US PRESIDENT", "US SENATE", "US HOUSE", "STATE SENATE"))) |>
+  arrange(state, county_name, office, district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein)
 
 cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h)
