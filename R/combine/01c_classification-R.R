@@ -4,11 +4,13 @@ categorize_diff <- function(tbl, var, newvar) {
   tbl |>
     filter(party_detailed %in% c("DEMOCRAT", "REPUBLICAN", "LIBERTARIAN")) |>
     mutate(
+      var_missing = is.na({{var}}),
       {{var}} := replace_na({{var}}, 0), # is missing when others are present, change to 0
       diff  = votes_v - {{var}},
       diffm = votes_h - votes_m) |>
     summarize(
       across(matches("(diff|votes_)"), \(x) sum(x, na.rm = FALSE)), # NAs should not occur but flag when it does
+      office_missing = any(var_missing),
       .by = c(state, county_name, office, party_detailed)) |>
     summarize(
       {{newvar}} := case_when(
@@ -16,8 +18,8 @@ categorize_diff <- function(tbl, var, newvar) {
         all(abs(diff/votes_v) < 0.01) & all(abs(diff/votes_v) < 0.01) & any(diff != 0) ~ "any < 1% mismatch",
         all(diff/votes_v < 0.05) & all(diff/votes_v < 0.05) & any(abs(diff/votes_v) >= 0.01) ~ "any < 5% mismatch",
         all(diff/votes_v < 0.10) & all(diff/votes_v < 0.10) & any(abs(diff/votes_v) >= 0.05) ~ "any < 10% mismatch",
-        any(is.na({{var}})) & any(!is.na({{var}})) ~ "candidate missing",
-        all(is.na({{var}})) ~ "not collected",
+        any(office_missing) & any(!office_missing) ~ "candidate missing",
+        all(office_missing) ~ "not collected",
         .default = "red"
       ),
       .by = c(state, county_name)

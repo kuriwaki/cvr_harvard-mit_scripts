@@ -134,8 +134,7 @@ out_county <- out_cand |>
               values_from = matches("(votes|diff)_"),
               names_glue = "{office}_{.value}",
               names_vary = "slowest") |>
-  mutate(match_score = rowMeans(pick(matches("diff")) == 0, na.rm = TRUE),
-         match_score_h = rowMeans(pick(matches("diff_h")) == 0, na.rm = TRUE),
+  mutate(match_score_h = rowMeans(pick(matches("diff_h")) == 0, na.rm = TRUE),
          match_score_m = rowMeans(pick(matches("diff_m")) == 0, na.rm = TRUE)
   ) |>
   # need to run this twice
@@ -188,6 +187,11 @@ out_county |>
   count(color2_h) |>
   kableExtra::kbl(format = "pipe") |>
   write_lines("status/colors2_h.txt")
+
+out_county |>
+  count(color2_m) |>
+  kableExtra::kbl(format = "pipe") |>
+  write_lines("status/colors2_m.txt")
 
 out2 <- out_cand |>
   filter(party_detailed %in% c("REPUBLICAN", "DEMOCRAT")) |>
