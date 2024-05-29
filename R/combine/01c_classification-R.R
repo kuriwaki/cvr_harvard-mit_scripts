@@ -4,10 +4,11 @@ categorize_diff <- function(tbl, var, newvar) {
   tbl |>
     filter(party_detailed %in% c("DEMOCRAT", "REPUBLICAN", "LIBERTARIAN")) |>
     mutate(
+      {{var}} := replace_na({{var}}, 0), # is missing when others are present, change to 0
       diff  = votes_v - {{var}},
       diffm = votes_h - votes_m) |>
     summarize(
-      across(matches("(diff|votes_)"), sum),
+      across(matches("(diff|votes_)"), \(x) sum(x, na.rm = FALSE)), # NAs should not occur but flag when it does
       .by = c(state, county_name, office, party_detailed)) |>
     summarize(
       {{newvar}} := case_when(
