@@ -15,6 +15,8 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
   PATH_medsl_share = "~/Dropbox/CVR_parquet/harvard"
 }
 
+Sys.setenv(DUCKPLYR_FORCE = FALSE)
+
 
 # Datasets
 ds <- duckplyr_df_from_parquet(PATH_merged2)
