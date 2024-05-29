@@ -14,7 +14,7 @@ categorize_diff <- function(tbl, var, newvar) {
       .by = c(state, county_name, office, party_detailed)) |>
     summarize(
       {{newvar}} := case_when(
-        all(diff == 0) & all(diff == 0) ~ "0 difference",
+        all(diff == 0) ~ "0 difference",
         all(abs(diff/votes_v) < 0.01) & all(abs(diff/votes_v) < 0.01) & any(diff != 0) ~ "any < 1% mismatch",
         all(diff/votes_v < 0.05) & all(diff/votes_v < 0.05) & any(abs(diff/votes_v) >= 0.01) ~ "any < 5% mismatch",
         all(diff/votes_v < 0.10) & all(diff/votes_v < 0.10) & any(abs(diff/votes_v) >= 0.05) ~ "any < 10% mismatch",
