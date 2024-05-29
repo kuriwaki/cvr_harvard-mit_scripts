@@ -111,7 +111,7 @@ out_cand <- count_h |>
   full_join(count_m, by = joinvars) |>
   full_join(count_v, by = joinvars) |>
   select(-cand_rank) |>
-  mutate(office = factor(office, levels = c("US PRESIDENT", "US SENATE", "US HOUSE", "STATE SENATE"))) |>
+  mutate(office = factor(office, levels = c("US PRESIDENT", "US SENATE", "US HOUSE", "STATE SENATE", "STATE HOUSE", "GOVERNOR"))) |>
   arrange(state, county_name, office, district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein)
 
