@@ -83,7 +83,7 @@ all_counties <- full_join(
 ## Returns ------
 count_v <- dsa_v |>
   filter(!(state == "ARIZONA" & office == "STATE HOUSE"),
-         party_detailed %in% parties_use | (is.na(party_detailed) & office != "US PRESIDENT")) |>
+         party_detailed %in% parties_use) |>
   count(state, county_name, office, district, candidate, party_detailed, writein,
         special,
         wt = votes,
