@@ -113,3 +113,13 @@ walk(
 tictoc::toc()
 # 1hr
 
+
+# to Dropbox
+upload_to_db <- FALSE
+if (upload_to_db) {
+  fs::dir_copy(
+    PATH_merged,
+    "~/Dropbox/CVR_Data_Shared/data_main/parquet",
+    overwrite = TRUE
+  )
+}

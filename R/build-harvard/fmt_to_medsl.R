@@ -50,15 +50,13 @@ fmt_harv_to_medsl <- function(tbl) {
                                   "REP" ~ "REPUBLICAN",
                                   "REP?" ~ "REPUBLICAN",
                                   "LBT" ~ "LIBERTARIAN",
-                                  "LIB" ~ "LIBERTARIAN",
                                   "IND" ~ "INDEPENDENT",
                                   "GRN" ~ "GREEN",
                                   "GRE" ~ "GREEN",
                                   .default = party
       ),
-      party_detailed = replace(party_detailed,
-                               choice %in% c("UNDERVOTE", "UNDERVOTE?"),
-                               "undervote")
+      party_detailed = replace(party_detailed, choice %in% c("UNDERVOTE", "UNDERVOTE?"), "undervote"),
+      party_detailed = replace(party_detailed, choice != "NA" & party_detailed == "LIB", "LIBERTARIAN"),
     ) |>
     # district formatting for MEDSL
     mutate(district = str_pad(dist, width = 3, pad = "0"),
