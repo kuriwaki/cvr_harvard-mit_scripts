@@ -1,9 +1,9 @@
 |color2_h           |   n|
 |:------------------|---:|
 |0 difference       | 217|
-|any < 1% mismatch  |  81|
+|any < 1% mismatch  |  82|
 |any < 5% mismatch  |  29|
 |any < 10% mismatch |   8|
 |candidate missing  |  46|
 |not collected      |  55|
-|red                |  28|
+|red                |  27|
