@@ -54,6 +54,8 @@ count_m <- dsa_m |>
         candidate, party_detailed, contest,
         name = "votes") |>
   collect() |>
+  # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/41
+  filter(state != "VIRGINIA") |>
   filter(!(state == "ARIZONA" & office == "STATE HOUSE")) |>
   mutate(
     county_name = replace(county_name, state %in% c("ALASKA", "DELAWARE", "RHODE ISLAND"), "STATEWIDE")
