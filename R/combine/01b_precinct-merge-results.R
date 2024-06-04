@@ -11,10 +11,13 @@ library(fs)
 
 # Inputs ----
 dat <- read_csv(path(PATH_snyder, "to-parquet/JBL/precinct_merge_summary.csv"))
-colors <- read_csv(path(PATH_parq, "validation/classifications.csv"))
+dat2 <- read_csv(path(PATH_snyder, "to-parquet/JBL/precinct_merge_summary_additional.csv"))
+colors <- read_csv(path(PATH_parq, "combined/classifications.csv"))
+
 
 # Combine ----
 out <- dat |>
+  bind_rows(dat2) |>
   mutate(
     state = case_match(
       state,

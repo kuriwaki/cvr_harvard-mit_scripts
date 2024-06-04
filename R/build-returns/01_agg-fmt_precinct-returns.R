@@ -1,6 +1,7 @@
 # Clean validation dataset from MEDSL to our format
 library(tidyverse)
 library(arrow)
+library(dataverse)
 library(fs)
 
 
@@ -21,11 +22,24 @@ ret_all <- read_csv(
   col_types = "ccccciciccccciccllciiiDli")
 tictoc::toc()
 
-statewide = c("ALASKA", "RHODE ISLAND")
+statewide = c("ALASKA", "RHODE ISLAND", "DELAWARE")
+
+# Oregon substitute (must be V5 or above)
+ret_oregon <- get_dataframe_by_name(
+  "2020-or-precinct-general.tab",
+  dataset = "10.7910/DVN/NT66Z3",
+  server = "dataverse.harvard.edu",
+  original = TRUE,
+  .f = read_csv) |>
+  mutate(jurisdiction_fips = as.character(jurisdiction_fips))
+
 
 # only the top six offices -----
 ## most of data reformatting
 ret_sel <- ret_all |>
+  # add Oregon
+  filter(state != "OREGON") |>
+  bind_rows(ret_oregon) |>
   tidylog::filter(office %in% c("US PRESIDENT", "US HOUSE", "US SENATE",
                                 "STATE HOUSE", "STATE SENATE", "GOVERNOR")) |>
   mutate(jurisdiction_name = replace(jurisdiction_name, state %in% statewide, NA)) |>
