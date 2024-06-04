@@ -151,7 +151,7 @@ out_county <- out_cand |>
            matches("precinct"),
            matches("uspres"), matches("ushou"), matches("ussen"))
 
-list(`by-county-district` = out_cand, `by-county` = out_county, `precint` = precs_all) |>
+list(`by-county-candidate` = out_cand, `by-county` = out_county, `precinct` = precs_all) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
 
 
