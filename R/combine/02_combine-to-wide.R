@@ -38,8 +38,7 @@ office_simpl <- c("US PRESIDENT" = "uspres",
 ## Harvard
 count_h <- dsa_h |>
   # TODO: do this beforehand
-  filter(!(state == "ARIZONA" & office == "STATE HOUSE"),
-         party_detailed %in% parties_use) |>
+  filter(party_detailed %in% parties_use) |>
   count(state, county_name, office, district, candidate, party_detailed,
         name = "votes") |>
   collect() |>
@@ -56,7 +55,6 @@ count_m <- dsa_m |>
   collect() |>
   # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/41
   filter(state != "VIRGINIA") |>
-  filter(!(state == "ARIZONA" & office == "STATE HOUSE")) |>
   mutate(
     county_name = replace(county_name, state %in% c("ALASKA", "DELAWARE", "RHODE ISLAND"), "STATEWIDE")
     ) |>
@@ -84,8 +82,7 @@ all_counties <- full_join(
 
 ## Returns ------
 count_v <- dsa_v |>
-  filter(!(state == "ARIZONA" & office == "STATE HOUSE"),
-         party_detailed %in% parties_use) |>
+  filter(party_detailed %in% parties_use) |>
   count(state, county_name, office, district, candidate, party_detailed, writein,
         special,
         wt = votes,
