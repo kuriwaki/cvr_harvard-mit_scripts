@@ -117,8 +117,8 @@ out_cand <- count_h |>
   arrange(state, county_name, office, district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein)
 
-cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h)
-cand_summ_m <- categorize_diff(out_cand, votes_m, color2_m)
+cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h, candidate_h)
+cand_summ_m <- categorize_diff(out_cand, votes_m, color2_m, candidate_m)
 
 # one row per county
 out_county <- out_cand |>
