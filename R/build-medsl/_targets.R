@@ -12,6 +12,7 @@ if (Sys.info()["user"] == "mason") {
 source(path(BASE_PATH, "utils.R"))
 source(path(BASE_PATH, "function_contests.R"))
 source(path(BASE_PATH, "functions.R"))
+source(path(BASE_PATH, "functions_pass2.R"))
 
 options(
   readr.show_col_types = FALSE
@@ -75,18 +76,21 @@ list(
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
     tar_target(pass0, preprocess_xml(path), error = "continue", deployment = "main"),
     tar_target(pass1, process_xml(pass0, state, county_name, contests), format = "file", error = "continue"),
+    tar_target(pass2, merge_party(pass1, state, county_name, party_meta)),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "special"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
     tar_target(pass1, process_special(path, state, county_name, contests), format = "file", error = "continue"),
+    tar_target(pass2, merge_party(pass1, state, county_name, party_meta)),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "delim"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
     tar_target(pass1, process_delim(path, state, county_name, contests), format = "file", error = "continue"),
+    tar_target(pass2, merge_party(pass1, state, county_name, party_meta)),
     names = c(state, county_name)
   ),
   tar_map(
@@ -94,6 +98,8 @@ list(
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
     tar_target(pass0, preprocess_json(path), error = "continue", deployment = "main"),
     tar_target(pass1, process_json(pass0, state, county_name, contests), format = "file", error = "continue"),
+    tar_target(pass2, merge_party(pass1, state, county_name, party_meta)),
     names = c(state, county_name)
-  )
+  ),
+  tar_target(party_meta, get_party_meta("metadata/contest_parties.csv"))
 )
