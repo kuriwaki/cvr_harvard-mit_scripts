@@ -12,23 +12,25 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
   PATH_parq <- "~/Dropbox (MIT)/Research/CVR_parquet"
 }
 
-# modification functions ---
+# Modification functions ---
+## potentially add a simple DEM/REP designation
 
 
-
-# classifications ----
+# Classifications ----
 compare <- read_excel(path(PATH_parq, "combined/compare.xlsx"),
                       sheet = "by-county")
 
+## only use these counties + those enumerated in use_harvard
 use_counties <- compare |>
   filter(color2_m %in% c("any < 1% mismatch", "0 difference")) |>
   select(state, county_name)
 
+## explicitly remove the following counties
 rm_counties <- read_csv("R/release/metadata/counties_remove.csv", col_types = "cc") |>
   mutate(county_name = replace_na(county_name, ""))
 
 
-# add MEDSL data ----
+# Subset MEDSL data ----
 open_dataset(path(PATH_parq, "medsl/")) |>
   inner_join(use_counties, by = c("state", "county_name")) |>
   write_dataset(
