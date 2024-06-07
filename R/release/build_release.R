@@ -12,12 +12,17 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
   PATH_parq <- "~/Dropbox (MIT)/Research/CVR_parquet"
 }
 
+# modification functions ---
+
+
+
 # classifications ----
-compare <- read_excel(path(PATH_parq, "combined/county-classifications_finer.xlsx"))
+compare <- read_excel(path(PATH_parq, "combined/compare.xlsx"),
+                      sheet = "by-county")
 
 use_counties <- compare |>
-  filter(color2 %in% c("any < 1% mismatch", "0 difference")) |>
-  select(-color2)
+  filter(color2_m %in% c("any < 1% mismatch", "0 difference")) |>
+  select(state, county_name)
 
 rm_counties <- read_csv("R/release/metadata/counties_remove.csv", col_types = "cc") |>
   mutate(county_name = replace_na(county_name, ""))
@@ -28,6 +33,7 @@ open_dataset(path(PATH_parq, "medsl/")) |>
   inner_join(use_counties, by = c("state", "county_name")) |>
   write_dataset(
     path(PATH_parq, "release"),
+    existing_data_behavior = "overwrite",
     partitioning = c("state", "county_name"),
     format = "parquet")
 
@@ -35,7 +41,8 @@ open_dataset(path(PATH_parq, "medsl/")) |>
 # optionally, add Harvard data ----
 harvard_adds <- tribble(
   ~state, ~county_name,
-  "CALIFORNIA", "LOS ANGELES"
+  "CALIFORNIA", "LOS ANGELES",
+  "TEXAS", "LEE",
 )
 
 open_dataset(path(PATH_parq, "harvard/")) |>
