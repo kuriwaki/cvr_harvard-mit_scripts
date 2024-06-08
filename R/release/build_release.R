@@ -56,7 +56,7 @@ open_dataset(path(PATH_parq, "harvard/")) |>
     format = "parquet")
 
 
-# check ----
+# check that it runs together ----
 open_dataset(path(PATH_parq, "release")) |>
   distinct(state, county_name) |>
   count(state) |>

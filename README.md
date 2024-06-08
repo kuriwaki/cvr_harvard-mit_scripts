@@ -1,23 +1,24 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# CVR_Harvard-MIT
+# cvr_harvard-mit_scripts
 
 ##### Project leads: Shiro Kuriwaki and Mason Reece
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of CVR_Harvard-MIT is to coordinate the “Harvard” and “MIT”
-team’s CVR data.
+The goal of `cvr_harvard-mit_scripts` is to coordinate the “Harvard” and
+“MIT” team’s CVR data. We track/resolve issues in each county and state
+and write scripts to fix and merge our raw data.
 
 The github repo is kept for *issue tracking purposes* and *maintaining
 data construction scripts* only.
 
-- As of 2024-04-24, there should be no data or critical scripts stored
-  in this repo. Some scripts in `R` are useful as they describe how
-  certian cleaned datasets were made.
+There should be no data stored in this repo. Metadata required for
+scripts are in a `metadata` subfolder nested in the `R` directory. See
+the shared Dropbox `CVR_parquet` for subsets of cleaned in parquet
+format.
 
-- We may share a Dropbox to share cleaned data in the future.
-
-- See the Dropbox `CVR_parquet` for subsets of cleaned data.
+We will be releasing MIT’s version of the script in the Dataverse /
+paper.
