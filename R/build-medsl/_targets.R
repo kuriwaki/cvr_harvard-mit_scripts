@@ -18,7 +18,7 @@ options(
 )
 
 tar_option_set(
-  packages = c("tidyverse", "arrow", "janitor", "jsonlite", "furrr", "readxl", "xml2", "stringi", "fs"),
+  packages = c("tidyverse", "arrow", "janitor", "jsonlite", "furrr", "readxl", "xml2", "stringi", "fs", "data.table"),
   memory = "transient",
   format = "parquet",
   garbage_collection = TRUE,
@@ -37,26 +37,11 @@ tar_config_set(
 raw_paths = read_csv("metadata/paths.csv", col_select = -notes) |> 
   mutate(county_name = replace_na(county_name, ""))
 
-py_juris = tibble(
-  state = c(
-    "PENNSYLVANIA",
-    "RHODE ISLAND", "RHODE ISLAND", "RHODE ISLAND", "RHODE ISLAND", "RHODE ISLAND", "RHODE ISLAND",
-    "VIRGINIA",
-    "WEST VIRGINIA", "WEST VIRGINIA"
-  ),
-  county_name = c(
-    "ALLEGHENY",
-    "", "BRISTOL", "KENT", "NEWPORT", "PROVIDENCE", "WASHINGTON",
-    "",
-    "NICHOLAS", "WOOD"
-  )
-)
-
 ## Remove any directories that might be leftover from previous spellings, or wrong counties.
 stale_dirs = arrow::open_dataset("data/pass1/", format = "parquet", partitioning = c("state", "county_name")) |>
   distinct(state, county_name) |>
   collect() |>
-  anti_join(bind_rows(raw_paths, py_juris), join_by(state, county_name)) |>
+  anti_join(raw_paths, join_by(state, county_name)) |>
   mutate(
     path = str_c("data/pass1/state=", state, "/county_name=", county_name) |>
       str_replace_all(fixed(" "), fixed("%20")) |>

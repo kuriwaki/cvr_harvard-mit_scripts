@@ -379,7 +379,7 @@ preprocess_xml <- function(dir, contest_only = FALSE){
     full.names = TRUE
   )
   
-  plan(multisession, workers = 8)
+  plan(multisession, workers = 4)
   
   xmls <- future_imap(files, xml_parser) |> list_rbind()
   
@@ -492,7 +492,8 @@ process_special <- function(path, s, c, contests) {
 
     out <- "data/pass1/state=TEXAS/county_name=DENTON"
     
-  } else if (s == "NEW JERSEY" & c == "CUMBERLAND") {
+  } 
+  else if (s == "NEW JERSEY" & c == "CUMBERLAND") {
     out <- read_csv("data/raw/New Jersey/Cumberland/cvr.csv") |>
       filter(IsVote) |>
       select(
@@ -503,135 +504,112 @@ process_special <- function(path, s, c, contests) {
       mutate(candidate = str_squish(candidate)) |>
       clean_data(s = s, c = c, type = "xml", contests = contests) |> 
       write_data(s, c)
-  } else if (s == "FLORIDA") {
+  }
+  else if (s == "FLORIDA" & c == "WALTON"){
+    out = fread("data/raw/Florida/Walton/Walton FL CVR.csv", encoding = "UTF-8") |> 
+      as_tibble() |> 
+      clean_data(s = s, c = c, type = "delim", contests = contests) |> 
+      write_data(s, c)
+    
+  }
+  else if (s == "FLORIDA") {
     files <- list.files(str_c("data/raw/Florida/", str_to_title(c)), pattern = "xls", full.names = TRUE)
 
     out <- map(files, ~ read_excel(.x, .name_repair = "unique_quiet", col_types = "text")) |>
       list_rbind() |>
       clean_data(s, c, type = "delim", contests = contests) |> 
       write_data(s, c)
-  } else if (s == "CALIFORNIA" & c == "ALAMEDA") {
+  } 
+  else if (s == "CALIFORNIA" & c == "ALAMEDA") {
     raw <- header_processor(path) |> mutate(cvr_id = 1:n())
 
     raw1 <- slice_head(raw, prop = 0.5)
     raw2 <- anti_join(raw, raw1, join_by(cvr_id))
-
-    clean_alameda <- function(df, i) {
-      df |>
-        rename(any_of(RENAME_COLS)) |>
-        select(-any_of(DROP_COLS)) |>
-        mutate(
-          county_name = c,
-          state = s,
-          cvr_id = 1:n()
-        ) |>
-        pivot_longer(
-          cols = -any_of(c("state", "county_name", "cvr_id", "precinct")),
-          names_to = "contest",
-          values_to = "candidate",
-          values_drop_na = TRUE
-        ) |>
-        left_join(contests, join_by(state, county_name, contest)) |>
-        mutate(
-          voted = ifelse(
-            all(candidate.x == "0"),
-            0,
-            1
-          ),
-          .by = c("cvr_id", "office", "district")
-        ) |>
-        mutate(
-          candidate.x = if_else(voted == 1, candidate.x, "undervote"),
-          candidate = case_when(
-            candidate.x == "undervote" ~ "undervote",
-            candidate.x == "0" ~ NA_character_,
-            .default = coalesce(candidate.y, candidate.x)
-          ),
-        ) |>
-        drop_na(office, candidate) |>
-        distinct(cvr_id, office, district, candidate, .keep_all = TRUE) |>
-        mutate(
-          party_detailed = case_when(
-            !is.na(party_detailed) ~ str_to_upper(party_detailed),
-            str_detect(candidate, regex("^CPF ", ignore_case = TRUE)) ~ "CONSTITUTION",
-            str_detect(candidate, regex("^GRN ", ignore_case = TRUE)) ~ "GREEN",
-            str_detect(candidate, regex("^LBT |^LIB | LIB$| ^LPN| LPN$", ignore_case = TRUE)) ~ "LIBERTARIAN",
-            str_detect(candidate, regex("^DEM | DEM$|\\(DEM\\)$|^DFL | DFL$", ignore_case = TRUE)) ~ "DEMOCRAT",
-            str_detect(candidate, regex("^REP | REP$|\\(REP\\)$", ignore_case = TRUE)) ~ "REPUBLICAN",
-            str_detect(candidate, regex("^PGP ", ignore_case = TRUE)) ~ "SOCIALIST",
-            str_detect(candidate, regex("^NPA ", ignore_case = TRUE)) ~ "NONPARTISAN",
-            str_detect(candidate, regex("^PRO ", ignore_case = TRUE)) ~ "PROGRESSIVE",
-            str_detect(candidate, regex("^IND |^IAP ", ignore_case = TRUE)) ~ "INDEPENDENT",
-            str_detect(candidate, regex("^GLC ", ignore_case = TRUE)) ~ "GRASSROOTS-LEGALIZE CANNABIS",
-            str_detect(candidate, regex("Write", ignore_case = TRUE)) ~ "OTHER",
-            str_detect(candidate, "undervote|overvote|No image found") ~ NA_character_,
-            is.na(candidate) ~ NA_character_,
-            .default = party_detailed
-          ),
-          candidate = case_when(
-            office == "US PRESIDENT" & str_detect(candidate, regex("Biden", ignore_case = TRUE)) ~ "JOSEPH R BIDEN",
-            office == "US PRESIDENT" & str_detect(candidate, regex("Trump", ignore_case = TRUE)) ~ "DONALD J TRUMP",
-            office == "US PRESIDENT" & str_detect(candidate, regex("Jorgensen", ignore_case = TRUE)) ~ "JO JORGENSEN",
-            office == "US PRESIDENT" & str_detect(candidate, regex("Hawkins", ignore_case = TRUE)) ~ "HOWIE HAWKINS",
-            office == "US PRESIDENT" & str_detect(candidate, regex("Pierce", ignore_case = TRUE)) ~ "BROCK PIERCE",
-            office == "US PRESIDENT" & str_detect(candidate, regex("Blankenship", ignore_case = TRUE)) ~ "DON BLANKENSHIP",
-            office == "US PRESIDENT" & str_detect(candidate, regex("Janos", ignore_case = TRUE)) ~ "JAMES G JANOS",
-            office == "US PRESIDENT" & str_detect(candidate, regex("Fuente|Rocky", ignore_case = TRUE)) ~ "ROCQUE DE LA FUENTE",
-            office == "US PRESIDENT" & str_detect(candidate, regex("Kanye|West", ignore_case = TRUE)) ~ "KANYE WEST",
-            office == "US PRESIDENT" & str_detect(candidate, regex("Carroll", ignore_case = TRUE)) ~ "BRIAN T CARROLL",
-            office == "US PRESIDENT" & str_detect(candidate, regex("Gloria|Riva", ignore_case = TRUE)) ~ "GLORIA LA RIVA",
-            .default = str_remove_all(candidate, regex("^CPF |^GRN |^LBT |^DEM | DEM$|^REP | REP$|^PGP |^NPA |^PRO |^IND|^LIB | LIB$|\\(REP\\)$|\\(DEM\\)$|No image found|^DFL | DFL$|^GLC |^LPN | LPN$|^IAP ", ignore_case = TRUE))
-          ),
-          party_detailed = case_when(
-            office == "US PRESIDENT" & candidate == "JOSEPH R BIDEN" ~ "DEMOCRAT",
-            office == "US PRESIDENT" & candidate == "DONALD J TRUMP" ~ "REPUBLICAN",
-            office == "US PRESIDENT" & candidate == "JO JORGENSEN" ~ "LIBERTARIAN",
-            office == "US PRESIDENT" & candidate == "BROCK PIERCE" ~ "INDEPENDENT",
-            office == "US PRESIDENT" & candidate == "DON BLANKENSHIP" ~ "CONSTITUTION",
-            office == "US PRESIDENT" & candidate == "ROCQUE DE LA FUENTE" ~ "REFORM",
-            office == "US PRESIDENT" & candidate == "HOWIE HAWKINS" ~ "GREEN",
-            .default = party_detailed
-          ),
-          candidate = str_remove_all(candidate, "^$|^NA$|^N/A$|\\([^)]*\\)$|[\\p{Mn}]|[[:punct:]]"),
-          candidate = stri_trans_nfd(candidate),
-          candidate = str_to_upper(candidate),
-          candidate = str_squish(candidate),
-          jurisdiction_name = c,
-          state = "CALIFORNIA_DUMMY",
-          county_name = str_c("ALAMEDA_", i)
-        ) |>
-        select(
-          any_of(c(
-            "state", "county_name", "jurisdiction_name", "cvr_id", "precinct", "office", "district",
-            "candidate", "party_detailed", "magnitude", "contest"
-          ))
-        ) |>
-        write_dataset(
-          path = "data/pass1/",
-          format = "parquet",
-          partitioning = c("state", "county_name")
-        )
-    }
-
-    clean_alameda(raw1, 1)
-    clean_alameda(raw2, 2)
-
-    open_dataset("data/pass1/state=CALIFORNIA_DUMMY/", format = "parquet") |>
-      mutate(
-        state = "CALIFORNIA",
-        county_name = "ALAMEDA"
-      ) |>
+    
+    clean_data(raw1, s, c, "delim", contests) |> 
       write_dataset(
         path = "data/pass1/",
         format = "parquet",
+        basename_template = "part0-{i}.parquet",
+        partitioning = c("state", "county_name")
+      )
+    
+    clean_data(raw2, s, c, "delim", contests) |> 
+      write_dataset(
+        path = "data/pass1/",
+        format = "parquet",
+        basename_template = "part1-{i}.parquet",
         partitioning = c("state", "county_name")
       )
 
-    unlink("data/pass1/state=CALIFORNIA_DUMMY/", recursive = TRUE, force = TRUE)
-
     # return path
-    out <- sprintf("data/pass1/state=%s/county_name=%s/part-0.parquet", s, c)
-  } else {
+    out <- "data/pass1/state=CALIFORNIA/county_name=ALAMEDA/part-0.parquet"
+  } 
+  else if (s == "PENNSYLVANIA") {
+    files = list.files("data/raw/Pennsylvania/Allegheny", full.names = TRUE)
+    lapply(files, fread) |> 
+      rbindlist() |> 
+      select(cvr_id = cvrNumber, precinct, contest, candidate) |> 
+      as_tibble() |> 
+      mutate(
+        state = s,
+        county_name = c
+      ) |> 
+      left_join(select(contests, -candidate), join_by(state, county_name, contest)) |>
+      mutate(
+        # clean candidate up a bit at the beginning, so we can catch more party information
+        candidate = str_remove_all(candidate, "^$|^NA$|^N/A$|\\([^)]*\\)$|[\\p{Mn}]|[[:punct:]]"),
+        candidate = stri_trans_nfd(candidate),
+        candidate = str_to_upper(candidate),
+        party_detailed = case_when(
+          contest == "PROPOSITION" ~ "NONPARTISAN",
+          .default = NA_character_
+        ),
+        candidate = case_when(
+          office == "US PRESIDENT" & str_detect(candidate, regex("Biden", ignore_case = TRUE)) ~ "JOSEPH R BIDEN",
+          office == "US PRESIDENT" & str_detect(candidate, regex("Trump", ignore_case = TRUE)) ~ "DONALD J TRUMP",
+          office == "US PRESIDENT" & str_detect(candidate, regex("Jorgensen", ignore_case = TRUE)) ~ "JO JORGENSEN",
+          office == "US PRESIDENT" & str_detect(candidate, regex("Hawkins", ignore_case = TRUE)) ~ "HOWIE HAWKINS",
+          office == "US PRESIDENT" & str_detect(candidate, regex("Pierce", ignore_case = TRUE)) ~ "BROCK PIERCE",
+          office == "US PRESIDENT" & str_detect(candidate, regex("Blankenship", ignore_case = TRUE)) ~ "DON BLANKENSHIP",
+          office == "US PRESIDENT" & str_detect(candidate, regex("Janos", ignore_case = TRUE)) ~ "JAMES G JANOS",
+          office == "US PRESIDENT" & str_detect(candidate, regex("Fuente|Rocky", ignore_case = TRUE)) ~ "ROCQUE DE LA FUENTE",
+          office == "US PRESIDENT" & str_detect(candidate, regex("Kanye|West", ignore_case = TRUE)) ~ "KANYE WEST",
+          office == "US PRESIDENT" & str_detect(candidate, regex("Carroll", ignore_case = TRUE)) ~ "BRIAN T CARROLL",
+          office == "US PRESIDENT" & str_detect(candidate, regex("Gloria|Riva", ignore_case = TRUE)) ~ "GLORIA LA RIVA",
+          .default = candidate
+        ),
+        party_detailed = case_when(
+          office == "US PRESIDENT" & candidate == "JOSEPH R BIDEN" ~ "DEMOCRAT",
+          office == "US PRESIDENT" & candidate == "DONALD J TRUMP" ~ "REPUBLICAN",
+          office == "US PRESIDENT" & candidate == "JO JORGENSEN" ~ "LIBERTARIAN",
+          office == "US PRESIDENT" & candidate == "BROCK PIERCE" ~ "INDEPENDENT",
+          office == "US PRESIDENT" & candidate == "DON BLANKENSHIP" ~ "CONSTITUTION",
+          office == "US PRESIDENT" & candidate == "ROCQUE DE LA FUENTE" ~ "REFORM",
+          office == "US PRESIDENT" & candidate == "HOWIE HAWKINS" ~ "GREEN",
+          .default = party_detailed
+        ),
+        candidate = str_remove_all(candidate, "^$|^NA$|^N/A$|\\([^)]*\\)$|[\\p{Mn}]|[[:punct:]]"),
+        candidate = str_squish(candidate),
+        candidate = if_else(str_detect(candidate, "WRITE"), "WRITEIN", candidate),
+        jurisdiction_name = county_name
+      ) |>
+      select(
+        # generic function since some columns might be missing in some states
+        # for odd reasons. Most likely to be missing is `precinct`
+        any_of(c(
+          "state", "county_name", "jurisdiction_name", "cvr_id", "precinct", "office", "district",
+          "candidate", "party_detailed", "magnitude", "contest"
+        ))
+      ) |> 
+      write_data(s, c)
+    
+    # return path
+    out <- "data/pass1/state=PENNSYLVANIA/county_name=ALLEGHENY/part-0.parquet"
+      
+    
+  }
+  else {
     out <- NULL
   }
 
