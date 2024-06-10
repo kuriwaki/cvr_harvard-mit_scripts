@@ -102,7 +102,6 @@ count_v <- dsa_v |>
   semi_join(all_counties, by = c("state", "county_name"))
 
 # Classifications ---
-colours <- read_csv(path(PATH_parq, "combined/classifications.csv"), show_col_types = FALSE)
 precs_all <- readxl::read_excel(path(PATH_parq, "combined/precincts_match.xlsx"))
 precs <- precs_all |>
   select(state, county, n_precincts_cvr, n_precincts_vest,
@@ -146,8 +145,6 @@ out_county <- out_cand |>
   mutate(match_score_h = rowMeans(pick(matches("diff_h")) == 0, na.rm = TRUE),
          match_score_m = rowMeans(pick(matches("diff_m")) == 0, na.rm = TRUE)
   ) |>
-  # need to run this twice
-  left_join(colours, by = c("state", "county_name" = "county")) |>
   left_join(precs, by = c("state", "county_name" = "county")) |>
   left_join(cand_summ_h, by = c("state", "county_name")) |>
   left_join(cand_summ_m, by = c("state", "county_name")) |>
@@ -213,3 +210,10 @@ out_county |>
                   caption = "Harvard match (rows) vs. MEDSL match (cols)") |>
   write_lines("status/by-county_correct-H-vs-M-2.txt")
 
+
+# Overall classification (old "color") ----
+library(reticulate)
+virtualenv_create(packages = c("openpyxl", "pandas")) # set force = TRUE once
+use_virtualenv("~/.virtualenvs/r-reticulate")
+py_config()
+source_python("R/combine/01a_gen_classifications.py", envir = NULL)
