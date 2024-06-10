@@ -153,11 +153,23 @@ list(`by-county-candidate` = out_cand, `by-county` = out_county, `precinct` = pr
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
 
 
-# check ---
+# check ----
 
 # counties that don't appear in validation (all should!)
 anti_join(all_counties, count_v, by = c("state", "county_name"))
 
+## marginal error rate
+print_tab <- function(tbl, var, path) {
+  tbl |>
+    count({{var}}) |>
+    kableExtra::kbl(format = "pipe") |>
+    write_lines(path)
+}
+out_county |> print_tab(color2_h, "status/colors2_h.txt")
+out_county |> print_tab(color2_m, "status/colors2_m.txt")
+out_county |> print_tab(color2_r, "status/colors2_r.txt")
+
+## 2 by 2 comparisons
 out_county |>
   mutate(match_h = as.integer(match_score_h == 1),
          match_m = as.integer(match_score_m == 1)) |>
@@ -182,39 +194,3 @@ out_county |>
                   caption = "Harvard match (rows) vs. MEDSL match (cols)") |>
   write_lines("status/by-county_correct-H-vs-M-2.txt")
 
-out_county |>
-  count(color2_h) |>
-  kableExtra::kbl(format = "pipe") |>
-  write_lines("status/colors2_h.txt")
-
-out_county |>
-  count(color2_m) |>
-  kableExtra::kbl(format = "pipe") |>
-  write_lines("status/colors2_m.txt")
-
-out2 <- out_cand |>
-  filter(party_detailed %in% c("REPUBLICAN", "DEMOCRAT")) |>
-  summarize(
-    across(starts_with("votes_"), sum),
-    .by = c(state, county_name)) |>
-  mutate(
-    diff_h = votes_v - votes_h,
-    diff_m  = votes_v - votes_m,
-    diff_hm = votes_h - votes_m) |>
-  summarize(
-    agree_hm = all(diff_hm == 0, na.rm = TRUE),
-    correct_h = all(diff_h == 0, na.rm = TRUE),
-    correct_m = all(diff_m == 0, na.rm = TRUE),
-    diff_h = sum(abs(votes_h - votes_v)),
-    diff_m = sum(abs(votes_m - votes_v)),
-    votes_v = sum(votes_v),
-    n = n(),
-    .by = c(state, county_name))
-
-out2 |>
-  tidylog::semi_join(
-    filter(out_county, uspres_votes_m > 0, uspres_votes_h > 0),
-    by = c("state", "county_name")) |>
-  count(agree_hm)|>
-  kableExtra::kbl(format = "pipe") |>
-  write_lines("status/by-county_H-M-agreement.txt")
