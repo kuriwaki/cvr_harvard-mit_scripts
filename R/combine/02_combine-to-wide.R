@@ -80,13 +80,13 @@ count_m <- dsa_m |> summ_fmt() |> rename(candidate_m = candidate, votes_m = vote
 count_c <- dsa_c |> summ_fmt() |> rename(candidate_c = candidate, votes_c = votes)
 
 
+## Returns ------
 # all counties that occur in one of H or M
 all_counties <- full_join(
   count_m |> count(state, county_name, name = "count_m"),
   count_h |> count(state, county_name, name = "count_h")
 )
 
-## Returns ------
 count_v <- dsa_v |>
   filter(party_detailed %in% parties_use) |>
   count(state, county_name, office, district, candidate, party_detailed, writein,
