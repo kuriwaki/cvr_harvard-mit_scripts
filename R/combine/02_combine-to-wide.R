@@ -148,7 +148,9 @@ out_county <- out_cand |>
   left_join(precs, by = c("state", "county_name" = "county")) |>
   left_join(cand_summ_h, by = c("state", "county_name")) |>
   left_join(cand_summ_m, by = c("state", "county_name")) |>
+  # Declare release criterion ----
   left_join(cand_summ_c, by = c("state", "county_name")) |>
+  mutate(release = as.integer(color2_c %in% c("any < 1% mismatch", "0 difference"))) |>
   relocate(state, county_name,
            matches("color2"),
            matches("match_"),
