@@ -28,10 +28,10 @@ offices_use <- c("US PRESIDENT", "US HOUSE", "US SENATE",
                  "STATE HOUSE", "STATE SENATE", "GOVERNOR")
 
 office_simpl <- c("US PRESIDENT" = "uspres",
-                  "US HOUSE" = "ushou",
                   "US SENATE"= "ussen",
-                  "STATE HOUSE" = "sthou",
+                  "US HOUSE" = "ushou",
                   "STATE SENATE" = "stsen",
+                  "STATE HOUSE" = "sthou",
                   "GOVERNOR" = "stgov")
 
 # counts -----
@@ -116,7 +116,7 @@ out_cand <- count_h |>
   left_join(count_c, by = joinvars) |>
   full_join(count_v, by = joinvars) |>
   select(-cand_rank) |>
-  mutate(office = factor(office, levels = c("US PRESIDENT", "US SENATE", "US HOUSE", "STATE SENATE", "STATE HOUSE", "GOVERNOR"))) |>
+  mutate(office = factor(office, levels = names(office_simpl))) |>
   arrange(state, county_name, office, district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein)
 
@@ -150,7 +150,6 @@ out_county <- out_cand |>
   left_join(cand_summ_m, by = c("state", "county_name")) |>
   left_join(cand_summ_c, by = c("state", "county_name")) |>
   relocate(state, county_name,
-           color = colour,
            matches("color2"),
            matches("match_"),
            matches("precinct"),
@@ -213,6 +212,7 @@ out_county |>
 
 # Overall classification (old "color") ----
 library(reticulate)
+
 virtualenv_create(packages = c("openpyxl", "pandas")) # set force = TRUE once
 use_virtualenv("~/.virtualenvs/r-reticulate")
 py_config()
