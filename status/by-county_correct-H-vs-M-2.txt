@@ -2,11 +2,11 @@ Table: Harvard match (rows) vs. MEDSL match (cols)
 
 |                   | 0 difference| any < 1% mismatch| any 1-10% mismatch| candidate missing| not collected| red| Sum|
 |:------------------|------------:|-----------------:|------------------:|-----------------:|-------------:|---:|---:|
-|0 difference       |          179|                 1|                  2|                29|             4|   8| 223|
-|any < 1% mismatch  |            2|                50|                  5|                23|             2|   5|  87|
-|any 1-10% mismatch |            0|                 1|                 33|                 3|             2|   1|  40|
-|candidate missing  |            0|                 1|                  0|                14|             2|   2|  19|
-|not collected      |            3|                 5|                  1|                35|             1|  10|  55|
-|red                |            1|                 0|                  1|                 8|             0|  30|  40|
+|0 difference       |          179|                 1|                 20|                15|             1|   7| 223|
+|any < 1% mismatch  |            2|                60|                 14|                 3|             2|   6|  87|
+|any 1-10% mismatch |            0|                 1|                 35|                 1|             2|   1|  40|
+|candidate missing  |            1|                 1|                  1|                14|             1|   1|  19|
+|not collected      |            4|                 9|                  7|                23|             0|  12|  55|
+|red                |            1|                 0|                  1|                 4|             0|  34|  40|
 |NA                 |            0|                 0|                  0|                 0|             0|   1|   1|
-|Sum                |          185|                58|                 42|               112|            11|  57| 465|
+|Sum                |          187|                72|                 78|                60|             6|  62| 465|

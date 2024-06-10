@@ -1,4 +1,4 @@
 |agree_hm |   n|
 |:--------|---:|
-|FALSE    |  33|
-|TRUE     | 366|
+|FALSE    |  65|
+|TRUE     | 338|
