@@ -153,12 +153,17 @@ out_county <- out_cand |>
   mutate(release = as.integer(color2_c %in% c("any < 1% mismatch", "0 difference"))) |>
   relocate(state, county_name,
            matches("color2"),
+           release,
            matches("match_"),
            matches("precinct"),
            matches("uspres"), matches("ushou"), matches("ussen"))
 
+release_counties <-  out_county |>
+  distinct(state, county_name, release)
+
 out_coal <- out_cand |>
-  select(state:party_detailed, matches("_(c|v)$")) |>
+  left_join(release_counties, relationship = "many-to-one") |>
+  select(state:party_detailed, release, matches("_(c|v)$")) |>
   tidylog::filter(any(!is.na(votes_c)), .by = c(state, county_name))
 
 
