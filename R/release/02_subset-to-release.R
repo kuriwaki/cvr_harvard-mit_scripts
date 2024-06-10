@@ -26,11 +26,11 @@ ds <- open_dataset(PATH_interim)
 # Classifications ----
 use_counties <- read_excel(
   path(PATH_parq, "combined/compare.xlsx"),
-  sheet = "by-cnty") |>
-  filter(color2_m %in% c("any < 1% mismatch", "0 difference")) |>
+  sheet = "by-county") |>
+  filter(release == 1) |>
   select(state, county_name)
 
-
+# Subset and WRITE ----
 ds |>
   inner_join(use_counties, by = c("state", "county_name")) |>
   write_dataset(
