@@ -659,6 +659,7 @@ get_party_meta <- function(path){
   read_csv(path) |> 
     filter(is.na(issue) | (!is.na(`fixed error?`))) |> 
     drop_na(candidate_medsl) |> 
+    mutate(across(everything(), str_to_upper)) |> 
     select(state:district, candidate = candidate_medsl, party_detailed)
   
 }
