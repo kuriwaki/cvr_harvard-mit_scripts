@@ -17,7 +17,8 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 # Data ----
 dsa_h <- open_dataset(path(PATH_parq, "harvard"))
 dsa_m <- open_dataset(path(PATH_parq, "medsl"))
-dsa_v <- open_dataset(path(PATH_parq, "returns/by-county/"))
+dsa_c <- open_dataset(path(PATH_parq, "intermediate/coalesced"))
+dsa_v <- open_dataset(path(PATH_parq, "returns/by-county"))
 
 # Settings --
 parties_use <- c("DEMOCRAT", "REPUBLICAN", "LIBERTARIAN", "GREEN",
@@ -48,37 +49,42 @@ count_h <- dsa_h |>
   rename(candidate_h = candidate, votes_h = votes)
 
 ## MIT =-------
-count_m <- dsa_m |>
-  count(state, county_name, office, district,
-        candidate, party_detailed, contest,
-        name = "votes") |>
-  collect() |>
-  # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/41
-  filter(state != "VIRGINIA") |>
-  mutate(
-    county_name = replace(county_name, state %in% c("ALASKA", "DELAWARE", "RHODE ISLAND"), "STATEWIDE")
+summ_fmt <- function(tbl) {
+  tbl |>
+    count(state, county_name, office, district,
+          candidate, party_detailed, contest,
+          name = "votes") |>
+    collect() |>
+    # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/41
+    filter(state != "VIRGINIA") |>
+    mutate(
+      county_name = replace(county_name, state %in% c("ALASKA", "DELAWARE", "RHODE ISLAND"), "STATEWIDE")
     ) |>
-  # count across "context"
-  count(state, county_name, office, district,
-        candidate, party_detailed,
-        name = "votes", wt = votes) |>
-  # For merging purposes, use undervote as a party
-  mutate(party_detailed = case_when(
-    candidate == "UNDERVOTE" ~ "UNDERVOTE",
-    candidate == "WRITEIN" ~ "WRITEIN",
-    candidate == "OVERVOTE" ~ "OVERVOTE",
-    .default = party_detailed)) |>
-  filter(party_detailed %in% parties_use) |>
-  # top-two
-  arrange(state, county_name, office, district, party_detailed, desc(votes)) |>
-  mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name)) |>
-  rename(candidate_m = candidate, votes_m = votes)
+    # count across "context"
+    count(state, county_name, office, district,
+          candidate, party_detailed,
+          name = "votes", wt = votes) |>
+    # For merging purposes, use undervote as a party
+    mutate(party_detailed = case_when(
+      candidate == "UNDERVOTE" ~ "UNDERVOTE",
+      candidate == "WRITEIN" ~ "WRITEIN",
+      candidate == "OVERVOTE" ~ "OVERVOTE",
+      .default = party_detailed)) |>
+    filter(party_detailed %in% parties_use) |>
+    # top-two
+    arrange(state, county_name, office, district, party_detailed, desc(votes)) |>
+    mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name))
+}
+
+count_m <- dsa_m |> summ_fmt() |> rename(candidate_m = candidate, votes_m = votes)
+count_c <- dsa_c |> summ_fmt() |> rename(candidate_c = candidate, votes_c = votes)
+
 
 # all counties that occur in one of H or M
 all_counties <- full_join(
   count_m |> count(state, county_name, name = "count_m"),
   count_h |> count(state, county_name, name = "count_h")
-) |> mutate(across(everything(), ~ replace_na(.x, 0)))
+)
 
 ## Returns ------
 count_v <- dsa_v |>
@@ -108,6 +114,7 @@ precs <- precs_all |>
 joinvars <- c("state", "county_name", "office", "district", "party_detailed", "cand_rank")
 out_cand <- count_h |>
   full_join(count_m, by = joinvars) |>
+  left_join(count_c, by = joinvars) |>
   full_join(count_v, by = joinvars) |>
   select(-cand_rank) |>
   mutate(office = factor(office, levels = c("US PRESIDENT", "US SENATE", "US HOUSE", "STATE SENATE", "STATE HOUSE", "GOVERNOR"))) |>
@@ -116,17 +123,20 @@ out_cand <- count_h |>
 
 cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h, candidate_h)
 cand_summ_m <- categorize_diff(out_cand, votes_m, color2_m, candidate_m)
+cand_summ_c <- categorize_diff(out_cand, votes_c, color2_c, candidate_c)
 
 # one row per county
 out_county <- out_cand |>
   filter(party_detailed %in% c("REPUBLICAN", "DEMOCRAT", "LIBERTARIAN")) |>
   summarize(votes_h = sum(votes_h, na.rm = TRUE),
             votes_m = sum(votes_m, na.rm = TRUE),
+            votes_c = sum(votes_c, na.rm = TRUE),
             votes_v = sum(votes_v, na.rm = TRUE),
             .by = c(state, county_name, office)) |>
   mutate(
     diff_h = votes_v - votes_h,
     diff_m = votes_v - votes_m,
+    diff_c = votes_v - votes_c,
     office = recode(office, !!!office_simpl)) |>
   pivot_wider(id_cols = c(state, county_name),
               names_from = c(office),
@@ -141,6 +151,7 @@ out_county <- out_cand |>
   left_join(precs, by = c("state", "county_name" = "county")) |>
   left_join(cand_summ_h, by = c("state", "county_name")) |>
   left_join(cand_summ_m, by = c("state", "county_name")) |>
+  left_join(cand_summ_c, by = c("state", "county_name")) |>
   relocate(state, county_name,
            color = colour,
            matches("color2"),
@@ -148,8 +159,16 @@ out_county <- out_cand |>
            matches("precinct"),
            matches("uspres"), matches("ushou"), matches("ussen"))
 
+out_coal <- out_cand |>
+  select(state:party_detailed, matches("_(c|v)$")) |>
+  tidylog::filter(any(!is.na(votes_c)), .by = c(state, county_name))
+
+
 # Write to Dropbox -----
-list(`by-county-candidate` = out_cand, `by-county` = out_county, `precinct` = precs_all) |>
+list(`by-cand` = select(out_cand, !matches("_c$")),
+     `by-county` = out_county,
+     `by-cand-coalesced` = out_coal,
+     `precinct` = precs_all) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
 
 
@@ -167,7 +186,7 @@ print_tab <- function(tbl, var, path) {
 }
 out_county |> print_tab(color2_h, "status/colors2_h.txt")
 out_county |> print_tab(color2_m, "status/colors2_m.txt")
-out_county |> print_tab(color2_r, "status/colors2_r.txt")
+out_county |> print_tab(color2_c, "status/colors2_c.txt")
 
 ## 2 by 2 comparisons
 out_county |>
