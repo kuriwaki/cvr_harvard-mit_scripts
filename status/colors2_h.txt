@@ -2,9 +2,9 @@
 |:------------------|---:|
 |0 difference       | 223|
 |any < 1% mismatch  |  87|
-|any < 5% mismatch  |  31|
+|any < 5% mismatch  |  42|
 |any < 10% mismatch |   9|
 |candidate missing  |  19|
 |not collected      |  55|
-|red                |  40|
+|red                |  29|
 |NA                 |   1|
