@@ -615,3 +615,29 @@ process_special <- function(path, s, c, contests) {
 
   return(out)
 }
+
+merge_party <- function(party_meta, pass1, state, county_name){
+  
+  read_parquet(pass1) |> 
+    mutate(
+      state = state,
+      county_name = county_name
+    ) |> 
+    left_join(party_meta, by = join_by(state, office, district, candidate)) |> 
+    mutate(party_detailed = ifelse(is.na(party_detailed.y), party_detailed.x, party_detailed.y)) |> 
+    select(-party_detailed.x, -party_detailed.y) |>
+    write_dataset("data/pass2", format = "parquet", partitioning = c("state", "county_name"))
+  
+  str_replace(pass1, fixed("pass1"), fixed("pass2"))
+  
+}
+
+get_party_meta <- function(path){
+  
+  read_csv(path) |> 
+    filter(is.na(issue) | (!is.na(`fixed error?`))) |> 
+    drop_na(candidate_medsl) |> 
+    mutate(across(everything(), str_to_upper)) |> 
+    select(state:district, candidate = candidate_medsl, party_detailed)
+  
+}

@@ -19,6 +19,7 @@ _targets
 !contests_snyder.csv
 !paths.csv
 !ri_election_dictionary_manual.csv
+!contest_parties.csv
 *.sql
 
 *.html
