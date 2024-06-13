@@ -22,6 +22,8 @@ ds <- open_dataset(PATH_interim)
 # Modification functions ---
 ## potentially add a simple DEM/REP designation
 
+# update compare.xlsx
+source("R/combine/02_combine-to-wide.R")
 
 # Classifications ----
 use_counties <- read_excel(
