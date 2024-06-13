@@ -1,8 +1,9 @@
 #' finer grained classification
-categorize_diff <- function(tbl, var, newvar) {
+categorize_diff <- function(tbl, var, newvar, candvar) {
 
   tbl |>
     filter(party_detailed %in% c("DEMOCRAT", "REPUBLICAN", "LIBERTARIAN")) |>
+    filter(!is.na({{candvar}}) | !is.na(candidate_v)) |>
     mutate(
       var_missing = is.na({{var}}),
       {{var}} := replace_na({{var}}, 0), # is missing when others are present, change to 0

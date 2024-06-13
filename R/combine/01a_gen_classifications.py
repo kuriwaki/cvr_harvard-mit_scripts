@@ -23,10 +23,9 @@ import os
 # Global variables
 ################################################################################
 # working directory is source directory
-BASE_DIR = '../../'
-DATA_DIR = '../../../../Dropbox/CVR_parquet/' # TODO: need to be flexible to other users
-OUT_DIR = BASE_DIR + 'status/'
-OUT_DIR2 = BASE_DIR + 'status/counties-classified/'
+DATA_DIR = '../../Dropbox/CVR_parquet/' # TODO: need to be flexible to other users
+OUT_DIR = 'status/'
+OUT_DIR2 = 'status/counties-classified/'
 
 #Define the difference and missingness proportions allowed for a yellow county
 Y_DIFF_TAU = 0.1

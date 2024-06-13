@@ -30,6 +30,7 @@ ds_harv_sel <- ds_harv |> semi_join(hv_counties, by = c("state", "county_name"))
 
 ## remove from MEDSL
 ds_meds |>
+  anti_join(rm_counties, by = c("state", "county_name")) |>
   anti_join(hv_counties, by = c("state", "county_name")) |>
   write_dataset(
     path = PATH_interim,

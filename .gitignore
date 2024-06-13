@@ -20,9 +20,10 @@ _targets
 !paths.csv
 !ri_election_dictionary_manual.csv
 !contest_parties.csv
-*.sql
+!counties_harv.csv
+!counties_remove.csv
 
+*.sql
 *.html
 *._cache
-old/reports/viz_cache
-data/MEDSL/md5sums.txt
+.venv
