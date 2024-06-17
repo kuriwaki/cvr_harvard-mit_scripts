@@ -53,6 +53,7 @@ fmt_harv_to_medsl <- function(tbl) {
                                   "IND" ~ "INDEPENDENT",
                                   "GRN" ~ "GREEN",
                                   "GRE" ~ "GREEN",
+                                  "NPA" ~ "NO PARTY AFFILIATION",
                                   .default = party
       ),
       party_detailed = replace(party_detailed, choice %in% c("UNDERVOTE", "UNDERVOTE?"), "undervote"),
