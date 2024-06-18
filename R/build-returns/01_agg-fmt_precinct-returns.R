@@ -62,6 +62,27 @@ fl_sh096_agg <- tibble(
   votes = 66892
 )
 
+fl_npas <-
+  tibble::tribble(
+        ~office, ~district,                   ~candidate,
+     "STATE HOUSE",     "062",    "LAURIE RODRIGUEZ-PERSON",
+     "STATE HOUSE",     "088",             "RUBIN ANDERSON",
+    "STATE SENATE",     "009",           "JESTINE IANNOTTI",
+    "STATE SENATE",     "019",           "CHRISTINA PAYLAN",
+    "STATE SENATE",     "023",              "ROBERT KAPLAN",
+    "STATE SENATE",     "037",             "ALEX RODRIGUEZ",
+    "STATE SENATE",     "039",           "CELSO D ALFONSO",
+        "US HOUSE",     "001",                "ALBERT ORAM",
+        "US HOUSE",     "017","THEODORE \"PINK TIE\" MURRAY",
+        "US HOUSE",     "018",                "K W MILLER",
+        "US HOUSE",     "021",        "CHARLESTON MALKEMUS",
+        "US HOUSE",     "024", "CHRISTINE ALEXANDRIA OLIVO",
+  ) |>
+  mutate(state = "FLORIDA", .before = 1) |>
+  mutate(party_detailed = "NO PARTY AFFILIATION")
+
+
+
 # only the top six offices -----
 ## most of data reformatting
 ret_sel <- ret_all |>
@@ -110,7 +131,10 @@ ret_sel <- ret_all |>
     party_simplified = replace(
       party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "OTHER")) |>
   # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/33
-  mutate(across(matches("party_"), \(x) case_match(x, "DEMOCRATIC FARMER LABOR" ~ "DEMOCRAT", .default = x)))
+  mutate(across(matches("party_"), \(x) case_match(x, "DEMOCRATIC FARMER LABOR" ~ "DEMOCRAT", .default = x))) |>
+  tidylog::left_join(fl_npas, by = c("state", "office", "candidate", "district")) |>
+  mutate(party_detailed = coalesce(party_detailed.x, party_detailed.y),
+         party_detailed.x = NULL, party_detailed.y = NULL)
 
 
 # sum by county x mode ------

@@ -22,6 +22,7 @@ dsa_v <- open_dataset(path(PATH_parq, "returns/by-county"))
 
 # Settings --
 parties_use <- c("DEMOCRAT", "REPUBLICAN", "LIBERTARIAN", "GREEN",
+                 "NO PARTY AFFILIATION",
                  "UNDERVOTE", "UNDERVOTES", "undervote",
                  "WRITEIN", "WRITE-IN")
 offices_use <- c("US PRESIDENT", "US HOUSE", "US SENATE",
@@ -39,11 +40,12 @@ office_simpl <- c("US PRESIDENT" = "uspres",
 ## Harvard
 count_h <- dsa_h |>
   # TODO: do this beforehand
-  filter(party_detailed %in% parties_use) |>
+  filter(party_detailed %in% c(parties_use, "NPA")) |>
   count(state, county_name, office, district, candidate, party_detailed,
         name = "votes") |>
   collect() |>
-  mutate(party_detailed = recode(party_detailed, "undervote" = "UNDERVOTE")) |>
+  mutate(party_detailed = recode(party_detailed, "undervote" = "UNDERVOTE",
+                                 NPA = "NO PARTY AFFILIATION")) |>
   arrange(state, county_name, office, district, party_detailed, desc(votes)) |>
   mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name)) |>
   rename(candidate_h = candidate, votes_h = votes)
