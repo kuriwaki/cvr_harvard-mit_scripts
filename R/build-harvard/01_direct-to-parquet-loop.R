@@ -30,6 +30,8 @@ paths_to_merge <-
     "MD_Baltimore_City_long.dta",
     "MD_Montgomery_long.dta")
 
+Sys.setenv(DUCKPLYR_FALLBACK_AUTOUPLOAD = 1)
+Sys.setenv(DUCKPLYR_FORCE = TRUE)
 # TODO: check Bernadino and San Diego, and Marin (17) -- lot of removal of duplicates, 6-19%
 
 # Main -----
@@ -39,7 +41,9 @@ walk(
   .f = function(x, dir = PATH_projdir) {
     gc()
     # read
-    dat <- read_dta(fs::path(dir, "STATA_long", x))
+    dat <- read_dta(fs::path(dir, "STATA_long", x)) |>
+      zap_label() |> zap_formats() |>
+      duckplyr::as_duckplyr_df()
 
     # get state and county
     st <- as.character(parse_js_fname(x)["state"])
@@ -51,22 +55,24 @@ walk(
       info <- glue("{dir}/STATA_cvr_info/{st}_{ct}_cvr_info.dta") |>
         read_dta() |>
         filter(!is.na(cvr_id)) |>
-        select(cvr_id, cvr_id_merged)
+        distinct(cvr_id, cvr_id_merged) # throws error in S Bernardino
 
       dat <- info |> # one row per cvr_id
         left_join(dat, by = "cvr_id", relationship = "one-to-many") |>
         mutate(cvr_id = coalesce(cvr_id_merged, cvr_id)) |>
-        filter(!is.na(item) & !is.na(choice))
+        filter(!is.na(item) & !is.na(choice)) |>
+        zap_label() |> zap_formats() |>
+        duckplyr::as_duckplyr_df()
     }
 
     # Append county info and write
+    # follows Snyder DROP SOME CASES OF DUPLICATED cvr_id in `analysis_all_politics_partisan.do`
+    # (seems to remove 5% of rows in LA county for example -- maybe RCV?)
+    # Stata code here is `egen x = count(cvr_id), by(cvr_id column)` followed by `drop if x > 1`. Not sure if this is the same
+    singletons <- dat |> count(cvr_id, column) |> filter(n == 1)
+
     dat |>
-      duckplyr::as_duckplyr_df() |>
-      # follows Snyder DROP SOME CASES OF DUPLICATED cvr_id in `analysis_all_politics_partisan.do`
-      # (seems to remove 5% of rows in LA county for example -- maybe RCV?)
-      # Stata code here is `egen x = count(cvr_id), by(cvr_id column)` followed by `drop if x > 1`. Not sure if this is the same
-      tidylog::filter(n() == 1, .by = c(cvr_id, column)) |>
-      # this filter cannot be down with duckdb yet
+      duckplyr::semi_join(singletons) |>
       mutate(
         state = st,
         county = ct,
