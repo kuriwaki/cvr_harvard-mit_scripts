@@ -26,6 +26,7 @@ tictoc::toc()
 
 statewide = c("ALASKA", "RHODE ISLAND", "DELAWARE")
 
+# Custom adds ------
 # Oregon substitute (must be V5 or above)
 ret_oregon <- get_dataframe_by_name(
   "2020-or-precinct-general.tab",
@@ -43,6 +44,23 @@ ret_nm_adds <- read_csv(
     state = "NEW MEXICO",
     jurisdiction_name = county_name
   )
+
+fl_sh096_agg <- tibble(
+  state = "FLORIDA",
+  county_name = "BROWARD",
+  county_fips = 12011,
+  jurisdiction_name = "BROWARD",
+  jurisdiction_fips = "12011",
+  office = "STATE HOUSE",
+  district = "096",
+  magnitude = 1,
+  special = 0,
+  writein = 0,
+  party_detailed = c("DEMOCRAT"),
+  party_simpliefied = c("DEMOCRAT"),
+  candidate = c("CHRISTINE HUNSCHOFSKY"),
+  votes = 66892
+)
 
 # only the top six offices -----
 ## most of data reformatting
@@ -113,7 +131,8 @@ county_summ <- county_mode_summ |>
   summarize(
     votes = sum(votes, na.rm = TRUE),
     .by = all_of(setdiff(by_vars, "mode"))
-  )
+  ) |>
+  bind_rows(fl_sh096_agg)
 
 
 # write to parquet ---
