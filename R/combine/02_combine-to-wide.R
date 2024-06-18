@@ -120,7 +120,8 @@ out_cand <- count_h |>
   select(-cand_rank) |>
   mutate(office = factor(office, levels = names(office_simpl))) |>
   arrange(state, county_name, office, district, party_detailed) |>
-  relocate(state:district, party_detailed, special, writein)
+  relocate(state:district, party_detailed, special, writein) |>
+  anti_join(read_csv("R/release/metadata/counties_remove.csv", col_types = "cc"))
 
 cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h, candidate_h)
 cand_summ_m <- categorize_diff(out_cand, votes_m, color2_m, candidate_m)
@@ -171,7 +172,7 @@ out_coal <- out_cand |>
 
 # Write to Dropbox -----
 list(`by-cand` = select(out_cand, !matches("_c$")),
-     `by-county` = out_county,
+     `by-county` = select(out_county, !matches("(diff|votes)_c$")),
      `by-cand-coalesced` = out_coal,
      `precinct` = precs_all) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
