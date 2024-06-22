@@ -8,9 +8,14 @@ library(fs)
 source("R/build-harvard/R/parse.R")
 
 # All files -- setup -----
-filenames <- read_csv("R/build-harvard/input_files.txt",
+filenames <- read_csv("R/build-harvard/metadata/input_files.txt",
                       name_repair = "unique_quiet",
                       show_col_types = FALSE)$file
+
+# check if missing new counties
+db_files <- dir_ls("~/Dropbox/CVR_Data_Shared/data_main/STATA_long") |>
+  path_file()
+setdiff(db_files, filenames)
 
 paths_to_merge <-
   c("CA_Alameda_long.dta",

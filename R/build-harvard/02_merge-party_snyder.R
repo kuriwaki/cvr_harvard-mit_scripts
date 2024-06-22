@@ -19,7 +19,7 @@ ds_orig <- duckplyr_df_from_parquet(PATH_long2) |>
 ds_prec <- duckplyr_df_from_parquet(path(PATH_prec_js, "*/*.parquet"))
 
 # filenames
-filenames <- read_csv("R/build-harvard/input_files.txt",
+filenames <- read_csv("R/build-harvard/metadata/input_files.txt",
                       name_repair = "unique_quiet",
                       show_col_types = FALSE)$file
 
