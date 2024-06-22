@@ -2,8 +2,10 @@
 library(tidyverse)
 library(haven)
 library(arrow)
+library(duckplyr)
 library(glue)
 library(fs)
+library(DBI)
 
 source("R/build-harvard/R/parse.R")
 
@@ -39,16 +41,24 @@ Sys.setenv(DUCKPLYR_FALLBACK_AUTOUPLOAD = 1)
 Sys.setenv(DUCKPLYR_FORCE = TRUE)
 # TODO: check Bernadino and San Diego, and Marin (17) -- lot of removal of duplicates, 6-19%
 
+
 # Main -----
 tictoc::tic()
 walk(
   .x = filenames,
   .f = function(x, dir = PATH_projdir) {
+    con <- duckplyr:::get_default_duckdb_connection()
+    dbExecute(con, "SET preserve_insertion_order = false;")
+    dbExecute(con, "SET memory_limit ='20GB';")
+
     gc()
+
     # read
-    dat <- read_dta(fs::path(dir, "STATA_long", x)) |>
-      zap_label() |> zap_formats() |>
-      duckplyr::as_duckplyr_df()
+    x_csv <- str_replace(x, "\\.dta", ".csv")
+    dat <- df_from_file(
+      path("~/Downloads/stata_csv/", x_csv),
+      "read_csv",
+      options = list(col_types = "dccddddd"))
 
     # get state and county
     st <- as.character(parse_js_fname(x)["state"])
