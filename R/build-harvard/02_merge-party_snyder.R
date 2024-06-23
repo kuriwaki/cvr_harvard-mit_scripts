@@ -111,7 +111,7 @@ walk(
   .progress = "counties"
 )
 tictoc::toc()
-# 1hr
+# 80min
 
 
 # to Dropbox
