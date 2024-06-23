@@ -2,7 +2,7 @@
 |:------------------|---:|
 |0 difference       | 206|
 |any < 1% mismatch  |  88|
-|any < 5% mismatch  |  50|
+|any < 5% mismatch  |  51|
 |any < 10% mismatch |  12|
 |candidate missing  |  56|
 |red                |  52|
