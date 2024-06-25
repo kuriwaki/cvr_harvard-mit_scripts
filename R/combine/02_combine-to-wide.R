@@ -54,9 +54,11 @@ count_m <- dsa_m |>
         candidate, party_detailed, contest,
         name = "votes") |>
   collect() |>
+  # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/41
+  filter(state != "VIRGINIA") |>
   filter(!(state == "ARIZONA" & office == "STATE HOUSE")) |>
   mutate(
-    county_name = replace(county_name, state %in% c("ALASKA", "RHODE ISLAND"), "STATEWIDE")
+    county_name = replace(county_name, state %in% c("ALASKA", "DELAWARE", "RHODE ISLAND"), "STATEWIDE")
     ) |>
   # count across "context"
   count(state, county_name, office, district,
@@ -83,7 +85,7 @@ all_counties <- full_join(
 ## Returns ------
 count_v <- dsa_v |>
   filter(!(state == "ARIZONA" & office == "STATE HOUSE"),
-         party_detailed %in% parties_use | (is.na(party_detailed) & office != "US PRESIDENT")) |>
+         party_detailed %in% parties_use) |>
   count(state, county_name, office, district, candidate, party_detailed, writein,
         special,
         wt = votes,
@@ -91,15 +93,19 @@ count_v <- dsa_v |>
   collect() |>
   arrange(state, county_name, office, district, party_detailed, desc(votes)) |>
   mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name)) |>
+  tidylog::filter(votes > 0) |>
   rename(candidate_v = candidate, votes_v = votes) |>
   # ALL COUNTIES ever mentioned in H or M
   semi_join(all_counties, by = c("state", "county_name"))
 
 # Classifications ---
-colours <- read_csv(path(PATH_parq, "validation/classifications.csv"), show_col_types = FALSE)
-precs <- readxl::read_excel(path(PATH_parq, "combined/precincts_match.xlsx")) |>
+colours <- read_csv(path(PATH_parq, "combined/classifications.csv"), show_col_types = FALSE)
+precs_all <- readxl::read_excel(path(PATH_parq, "combined/precincts_match.xlsx"))
+precs <- precs_all |>
   select(state, county, n_precincts_cvr, n_precincts_vest,
-         max_precinct_uspres_diff = max_vote_dist)
+         max_precinct_uspres_diff = max_vote_dist) |>
+  filter(state != "ALASKA") |>
+  arrange(state)
 
 # Together ------
 joinvars <- c("state", "county_name", "office", "district", "party_detailed", "cand_rank")
@@ -107,10 +113,12 @@ out_cand <- count_h |>
   full_join(count_m, by = joinvars) |>
   full_join(count_v, by = joinvars) |>
   select(-cand_rank) |>
-  arrange(state, county_name, desc(office), district, party_detailed) |>
+  mutate(office = factor(office, levels = c("US PRESIDENT", "US SENATE", "US HOUSE", "STATE SENATE", "STATE HOUSE", "GOVERNOR"))) |>
+  arrange(state, county_name, office, district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein)
 
-cand_summ <- categorize_diff(out_cand)
+cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h)
+cand_summ_m <- categorize_diff(out_cand, votes_m, color2_m)
 
 # one row per county
 out_county <- out_cand |>
@@ -128,22 +136,22 @@ out_county <- out_cand |>
               values_from = matches("(votes|diff)_"),
               names_glue = "{office}_{.value}",
               names_vary = "slowest") |>
-  mutate(match_score = rowMeans(pick(matches("diff")) == 0, na.rm = TRUE),
-         match_score_h = rowMeans(pick(matches("diff_h")) == 0, na.rm = TRUE),
+  mutate(match_score_h = rowMeans(pick(matches("diff_h")) == 0, na.rm = TRUE),
          match_score_m = rowMeans(pick(matches("diff_m")) == 0, na.rm = TRUE)
   ) |>
   # need to run this twice
   left_join(colours, by = c("state", "county_name" = "county")) |>
   left_join(precs, by = c("state", "county_name" = "county")) |>
-  left_join(cand_summ, by = c("state", "county_name")) |>
+  left_join(cand_summ_h, by = c("state", "county_name")) |>
+  left_join(cand_summ_m, by = c("state", "county_name")) |>
   relocate(state, county_name,
            color = colour,
-           color2_h,
+           matches("color2"),
            matches("match_"),
            matches("precinct"),
            matches("uspres"), matches("ushou"), matches("ussen"))
 
-list(`by-county-district` = out_cand, `by-county` = out_county) |>
+list(`by-county-district` = out_cand, `by-county` = out_county, `precint` = precs_all) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
 
 
@@ -163,9 +171,29 @@ out_county |>
   write_lines("status/by-county_correct-H-vs-M.txt")
 
 out_county |>
+  mutate(across(
+    matches("color2_"),
+    \(x) {
+      fct_collapse(
+        x,
+        "any 1-10% mismatch" = c("any < 5% mismatch", "any < 10% mismatch")
+        )
+        })) |>
+  xtabs(~ color2_h + color2_m, data = _, addNA = TRUE) |>
+  addmargins() |>
+  kableExtra::kbl(format = "pipe",
+                  caption = "Harvard match (rows) vs. MEDSL match (cols)") |>
+  write_lines("status/by-county_correct-H-vs-M-2.txt")
+
+out_county |>
   count(color2_h) |>
   kableExtra::kbl(format = "pipe") |>
   write_lines("status/colors2_h.txt")
+
+out_county |>
+  count(color2_m) |>
+  kableExtra::kbl(format = "pipe") |>
+  write_lines("status/colors2_m.txt")
 
 out2 <- out_cand |>
   filter(party_detailed %in% c("REPUBLICAN", "DEMOCRAT")) |>
@@ -193,4 +221,3 @@ out2 |>
   count(agree_hm)|>
   kableExtra::kbl(format = "pipe") |>
   write_lines("status/by-county_H-M-agreement.txt")
-

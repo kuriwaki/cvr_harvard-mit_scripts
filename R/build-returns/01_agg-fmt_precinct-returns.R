@@ -1,15 +1,18 @@
 # Clean validation dataset from MEDSL to our format
 library(tidyverse)
 library(arrow)
+library(dataverse)
 library(fs)
-
 
 username <- Sys.info()["user"]
 
 # other users should make a different clause
 if (username %in% c("shirokuriwaki", "sk2983")) {
-  path_source <- "~/Dropbox/CVR_parquet/returns/raw/precincts_20240429.zip" # only works for shirokuriwaki
+  path_source <- "~/Dropbox/CVR_parquet/returns/raw/precincts_20240429.zip"
   path_outdir <- "~/Dropbox/CVR_parquet"
+} else if (username == "mason") {
+  path_source <- "~/Dropbox (MIT)/Research/CVR_parquet/returns/raw/precincts_20240429.zip"
+  path_outdir <- "~/Dropbox (MIT)/Research/CVR_parquet/"
 }
 
 
@@ -18,14 +21,36 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 tictoc::tic()
 ret_all <- read_csv(
   file = path_source,
-  col_types = "ccccciciccccciccllciiiDli")
+  col_types = "cccccnciccccciccllciiiDli")
 tictoc::toc()
 
-statewide = c("ALASKA", "RHODE ISLAND")
+statewide = c("ALASKA", "RHODE ISLAND", "DELAWARE")
+
+# Oregon substitute (must be V5 or above)
+ret_oregon <- get_dataframe_by_name(
+  "2020-or-precinct-general.tab",
+  dataset = "10.7910/DVN/NT66Z3",
+  server = "dataverse.harvard.edu",
+  original = TRUE,
+  .f = read_csv) |>
+  mutate(jurisdiction_fips = as.character(jurisdiction_fips))
+
+ret_nm_adds <- read_csv(
+  file = path(path_outdir, "returns", "raw", "nm20_adds.csv"),
+  col_types = "cciccccc"
+) |>
+  mutate(
+    state = "NEW MEXICO",
+    jurisdiction_name = county_name
+  )
 
 # only the top six offices -----
 ## most of data reformatting
 ret_sel <- ret_all |>
+  # add Oregon
+  filter(state != "OREGON") |>
+  bind_rows(ret_oregon) |>
+  bind_rows(ret_nm_adds) |>
   tidylog::filter(office %in% c("US PRESIDENT", "US HOUSE", "US SENATE",
                                 "STATE HOUSE", "STATE SENATE", "GOVERNOR")) |>
   mutate(jurisdiction_name = replace(jurisdiction_name, state %in% statewide, NA)) |>
@@ -80,14 +105,14 @@ by_vars <- c("state", "county_name", "county_fips", "jurisdiction_name",
 county_mode_summ <- ret_sel |>
   summarize(
     votes = sum(votes, na.rm = TRUE),
-    .by = by_vars
+    .by = all_of(by_vars)
   )
 
 # sum by county
 county_summ <- county_mode_summ |>
   summarize(
     votes = sum(votes, na.rm = TRUE),
-    .by = setdiff(by_vars, "mode")
+    .by = all_of(setdiff(by_vars, "mode"))
   )
 
 
