@@ -53,11 +53,11 @@ fmt_harv_to_medsl <- function(tbl) {
                                   "IND" ~ "INDEPENDENT",
                                   "GRN" ~ "GREEN",
                                   "GRE" ~ "GREEN",
+                                  "NPA" ~ "NO PARTY AFFILIATION",
                                   .default = party
       ),
-      party_detailed = replace(party_detailed,
-                               choice %in% c("UNDERVOTE", "UNDERVOTE?"),
-                               "undervote")
+      party_detailed = replace(party_detailed, choice %in% c("UNDERVOTE", "UNDERVOTE?"), "undervote"),
+      party_detailed = replace(party_detailed, choice != "NA" & party_detailed == "LIB", "LIBERTARIAN"),
     ) |>
     # district formatting for MEDSL
     mutate(district = str_pad(dist, width = 3, pad = "0"),
@@ -69,7 +69,8 @@ fmt_harv_to_medsl <- function(tbl) {
     select(state,
            county_name,
            matches("cvr_id"),
-           matches("pid"),
+           matches("precinct"),
+           matches("pres"),
            office,
            district,
            candidate,
