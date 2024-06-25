@@ -19,7 +19,7 @@ ds_orig <- duckplyr_df_from_parquet(PATH_long2) |>
 ds_prec <- duckplyr_df_from_parquet(path(PATH_prec_js, "*/*.parquet"))
 
 # filenames
-filenames <- read_csv("R/build-harvard/input_files.txt",
+filenames <- read_csv("R/build-harvard/metadata/input_files.txt",
                       name_repair = "unique_quiet",
                       show_col_types = FALSE)$file
 
@@ -38,12 +38,17 @@ walk(
       filter(state == st, county == ct) |>
       inner_join(
         select(meta,
-               state, county, column, item, choice_id,
-               dist,
-               party, level,
+               state, county,
                office_type,
-               nonpartisan, unexp_term,
-               incumbent, measure, num_votes),
+               column, item, choice_id,
+               dist,
+               party,
+               incumbent,
+               measure,
+               place,
+               topic,
+               unexp_term,
+               num_votes),
         by = c("state", "county", "column", "item", "choice_id"),
         relationship = "many-to-one")
 
@@ -54,7 +59,7 @@ walk(
     # Party ID ---
     # follows Snyder "MAKE PARTISANSHIP" in `analysis_all_politics_partisan.do`
     ds_pid <- ds |>
-      filter(level == "N") |>
+      filter(office_type == "federal") |>
       mutate(
         D = as.integer(party == "DEM"),
         R = as.integer(party == "REP"),
@@ -106,5 +111,15 @@ walk(
   .progress = "counties"
 )
 tictoc::toc()
-# 1hr
+# 80min
 
+
+# to Dropbox
+upload_to_db <- FALSE
+if (upload_to_db) {
+  fs::dir_copy(
+    PATH_merged,
+    "~/Dropbox/CVR_Data_Shared/data_main/parquet",
+    overwrite = TRUE
+  )
+}
