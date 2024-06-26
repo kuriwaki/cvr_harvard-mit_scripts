@@ -1,5 +1,3 @@
-# python parse_pagination.py -i cvr.csv
-
 import argparse
 import pandas as pd
 
@@ -23,7 +21,7 @@ else:
     data = pd.read_csv(args.input, dtype=str)
 
 # remove [2] from the args.col column, this deals with Rhode Island
-data[args.col] = data[args.col].str.replace(r"\[.*\]", "")
+data[args.col] = data[args.col].str.replace(r" \[.*\]", "", regex=True)
 
 def merge_rows(row1, row2):
     """
@@ -31,28 +29,6 @@ def merge_rows(row1, row2):
     """
     # Use 'combine_first' to merge while preserving non-NaN values in row1
     return row1.combine_first(row2)
-
-# Initialize a DataFrame for cleaned data
-cleaned_data = pd.DataFrame(columns=data.columns)
-
-def merge_groups(group):
-    # Merging all rows of the group into one
-    merged_row = group.ffill().iloc[-1]  # Forward fill to propagate non-NaN values
-    return merged_row
-
-# Group the data by contiguous args.col
-# grouped = data.groupby((data[args.col] != data[args.col].shift()).cumsum())
-
-# List to accumulate merged rows
-# accumulated_rows = []
-
-# for _, group in grouped:
-#     merged_row = merge_groups(group)
-#     accumulated_rows.append(merged_row)
-
-# Concatenate all merged rows at once
-# cleaned_data = pd.concat(accumulated_rows, axis=1).transpose()
-# cleaned_data.reset_index(drop=True, inplace=True)
 
 # Find the index of the args.col column
 ballot_type_index = data.columns.get_loc(args.col)
@@ -76,7 +52,7 @@ for i, current_row in data.iterrows():
 
         # Search for the closest complementary row
         # Iterate only within the defined range
-        for j in range(max(0, i - 100), min(len(data), i + 101)):
+        for j in range(max(0, i - 25), min(len(data), i + 25)):
             if i != j and j not in used_rows:
                 complementary_row = data.iloc[j]
 
