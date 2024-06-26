@@ -5,6 +5,6 @@
 |any < 5% mismatch  |  42|
 |any < 10% mismatch |   9|
 |candidate missing  |  15|
-|not collected      |  54|
-|red                |  31|
+|not collected      |  53|
+|red                |  29|
 |NA                 |   1|
