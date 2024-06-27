@@ -67,13 +67,6 @@ python code/parse_pagination.py --path data/raw/California/Alameda/cvr.csv --tar
 
 # Manually process some weird edge cases
 
-# run Kevin's python cleaning scripts
-python code/cvrs/mn-cleaner.py data/raw/Minnesota/Fillmore/cvr.csv
-python code/cvrs/pa-cleaner.py data/raw/Pennsylvania/Allegheny/
-python code/cvrs/ri-cleaner.py data/raw/Rhode\ Island/ri_merged.csv
-python code/cvrs/va-cleaner.py data/raw/Virginia/
-python code/cvrs/wv-cleaner.py data/raw/West\ Virginia/Nicholas/Nicholas\ WV.csv 'data/raw/West Virginia/Wood/Wood County 2020 CVR.csv'
-
 # Edge Case Processing
 ## DC
 echo "DC"
