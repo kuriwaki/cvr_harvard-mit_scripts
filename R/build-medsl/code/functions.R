@@ -354,17 +354,20 @@ preprocess_xml <- function(dir, contest_only = FALSE){
         .col = Contests,
         contest = list("Name", 1L),
         writein_name = list("Options", 1L, "WriteInData", "Text", 1L),
-        candidate_name = list("Options", 1L, "Name", 1L)
+        candidate_name = list("Options", 1L, "Name", 1L),
+        undervote = list("Undervotes", 1L)
       ) |>
       hoist(
         .col = PrecinctSplit,
         precinct = list("Name", 1L)
       ) |>
       mutate(
+        undervote = ifelse(undervote == 1, "undervote", NA_character_),
         writein_name = if_else(!is.na(writein_name), "WRITEIN", writein_name),
-        candidate = coalesce(writein_name, candidate_name, "undervote"),
+        candidate = coalesce(writein_name, candidate_name, undervote),
         cvr_id = i
       ) |>
+      mutate(contest = str_replace_all(contest, fixed("\n"), " ")) |> 
       select(cvr_id, contest, candidate, precinct)
     
     if (contest_only) {
@@ -381,7 +384,7 @@ preprocess_xml <- function(dir, contest_only = FALSE){
     full.names = TRUE
   )
   
-  plan(multisession, workers = 4)
+  plan(multisession, workers = 16)
   
   xmls <- future_imap(files, xml_parser) |> list_rbind()
   
