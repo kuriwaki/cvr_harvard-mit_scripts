@@ -88,6 +88,24 @@ clean_data <- function(df, st, cnty, type, contests) {
     # one last sanity check for distinctness
     distinct(cvr_id, office, district, candidate, .keep_all = TRUE) |>
     mutate(
+      party_detailed = case_when(
+        !is.na(party_detailed) ~ str_to_upper(party_detailed),
+        str_detect(candidate, regex("^CPF ", ignore_case = TRUE)) ~ "CONSTITUTION",
+        str_detect(candidate, regex("^GRN |\\(GRN\\)|^MTN ", ignore_case = TRUE)) ~ "GREEN",
+        str_detect(candidate, regex("^LBT |^LIB | LIB$|^LPN | LPN$|^NMD |\\(LIB\\)|^LBN ", ignore_case = TRUE)) ~ "LIBERTARIAN",
+        str_detect(candidate, regex("^DEM | DEM$|\\(DEM\\)|^DFL | DFL$", ignore_case = TRUE)) ~ "DEMOCRAT",
+        str_detect(candidate, regex("^REP | REP$|\\(REP\\)", ignore_case = TRUE)) ~ "REPUBLICAN",
+        str_detect(candidate, regex("^PGP ", ignore_case = TRUE)) ~ "SOCIALIST",
+        str_detect(candidate, regex("^NPA ", ignore_case = TRUE)) ~ "NO PARTY AFFILIATION",
+        str_detect(candidate, regex("^PRO ", ignore_case = TRUE)) ~ "PROGRESSIVE",
+        str_detect(candidate, regex("^IND |^IAP ", ignore_case = TRUE)) ~ "INDEPENDENT",
+        str_detect(candidate, regex("^GLC ", ignore_case = TRUE)) ~ "GRASSROOTS-LEGALIZE CANNABIS",
+        str_detect(candidate, regex("^NME ", ignore_case = TRUE)) ~ "END THE CORRUPTION",
+        str_detect(candidate, regex("Write", ignore_case = TRUE)) ~ "OTHER",
+        str_detect(candidate, regex("undervote|overvote|No image found", ignore_case=TRUE)) ~ NA_character_,
+        is.na(candidate) ~ NA_character_,
+        .default = party_detailed
+      ),
       # clean candidate up a bit at the beginning, so we can catch more party information
       candidate = str_remove_all(candidate, "^$|^NA$|^N/A$|\\([^)]*\\)$|[\\p{Mn}]|[[:punct:]]"),
       candidate = stri_trans_nfd(candidate),
@@ -96,10 +114,10 @@ clean_data <- function(df, st, cnty, type, contests) {
       party_detailed = case_when(
         !is.na(party_detailed) ~ str_to_upper(party_detailed),
         str_detect(candidate, regex("^CPF ", ignore_case = TRUE)) ~ "CONSTITUTION",
-        str_detect(candidate, regex("^GRN ", ignore_case = TRUE)) ~ "GREEN",
-        str_detect(candidate, regex("^LBT |^LIB | LIB$|^LPN | LPN$|^NMD ", ignore_case = TRUE)) ~ "LIBERTARIAN",
-        str_detect(candidate, regex("^DEM | DEM$|\\(DEM\\)$|^DFL | DFL$", ignore_case = TRUE)) ~ "DEMOCRAT",
-        str_detect(candidate, regex("^REP | REP$|\\(REP\\)$", ignore_case = TRUE)) ~ "REPUBLICAN",
+        str_detect(candidate, regex("^GRN |\\(GRN\\)|^MTN ", ignore_case = TRUE)) ~ "GREEN",
+        str_detect(candidate, regex("^LBT |^LIB | LIB$|^LPN | LPN$|^NMD |\\(LIB\\)|^LBN ", ignore_case = TRUE)) ~ "LIBERTARIAN",
+        str_detect(candidate, regex("^DEM | DEM$|\\(DEM\\)|^DFL | DFL$", ignore_case = TRUE)) ~ "DEMOCRAT",
+        str_detect(candidate, regex("^REP | REP$|\\(REP\\)", ignore_case = TRUE)) ~ "REPUBLICAN",
         str_detect(candidate, regex("^PGP ", ignore_case = TRUE)) ~ "SOCIALIST",
         str_detect(candidate, regex("^NPA ", ignore_case = TRUE)) ~ "NO PARTY AFFILIATION",
         str_detect(candidate, regex("^PRO ", ignore_case = TRUE)) ~ "PROGRESSIVE",
@@ -123,7 +141,7 @@ clean_data <- function(df, st, cnty, type, contests) {
         office == "US PRESIDENT" & str_detect(candidate, regex("Kanye|West", ignore_case = TRUE)) ~ "KANYE WEST",
         office == "US PRESIDENT" & str_detect(candidate, regex("Carroll", ignore_case = TRUE)) ~ "BRIAN T CARROLL",
         office == "US PRESIDENT" & str_detect(candidate, regex("Gloria|Riva", ignore_case = TRUE)) ~ "GLORIA LA RIVA",
-        .default = str_remove_all(candidate, regex("^CPF |^GRN |^LBT |^DEM | DEM$|^REP | REP$|^PGP |^NPA |^PRO |^IND|^LIB | LIB$|\\(REP\\)$|\\(DEM\\)$|No image found|^DFL | DFL$|^GLC |^LPN | LPN$|^IAP |^NMD |^NME ", ignore_case = TRUE))
+        .default = str_remove_all(candidate, regex("^CPF |^GRN |^LBT |^DEM | DEM$|^REP | REP$|^PGP |^NPA |^PRO |^IND|^LIB | LIB$|\\(REP\\)|\\(DEM\\)|\\(LIB\\)|\\(GRN\\)|No image found|^DFL | DFL$|^GLC |^LPN | LPN$|^IAP |^NMD |^NME |^MTN |^LBN ", ignore_case = TRUE))
       ),
       party_detailed = case_when(
         office == "US PRESIDENT" & candidate == "JOSEPH R BIDEN" ~ "DEMOCRAT",
