@@ -18,19 +18,24 @@
 import pandas as pd
 import os
 
-
 ################################################################################
 # Global variables
 ################################################################################
 # working directory is source directory
-DATA_DIR = '../../Dropbox/CVR_parquet/' # TODO: need to be flexible to other users
+
+user = os.getlogin()
+
+if user in ['shirokuriwaki', 'sk2983', 'sbaltz']:
+    DATA_DIR = "~/Dropbox/CVR_parquet/"
+elif user in ['mason']:
+    DATA_DIR = "../CVR_parquet/"
+
 OUT_DIR = 'status/'
 OUT_DIR2 = 'status/counties-classified/'
 
 #Define the difference and missingness proportions allowed for a yellow county
 Y_DIFF_TAU = 0.1
 Y_MISS_TAU = 0.2
-
 
 ################################################################################
 # Compare
