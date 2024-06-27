@@ -264,6 +264,7 @@ preprocess_json <- function(dir, contest_only = FALSE){
     select(-Version, -List)
   
   clean_json <- function(path) {
+  
     read_json(path) |>
       as_tibble() |>
       unnest_wider(col = Sessions) |>
@@ -276,8 +277,8 @@ preprocess_json <- function(dir, contest_only = FALSE){
           Original = list(),
           Modified = list()
         )
-      ) |>
-      mutate(Original = coalesce(Original, Modified)) |>
+      ) |> 
+      mutate(Original = coalesce(Modified, Original)) |>
       hoist(
         .col = Original,
         precinctportion_id = "PrecinctPortionId",
@@ -289,7 +290,8 @@ preprocess_json <- function(dir, contest_only = FALSE){
       hoist(
         .col = Contests,
         contest_id = "Id",
-        marks = "Marks"
+        marks = "Marks",
+        overvotes = "Overvotes"
       ) |>
       unnest_longer(marks) |>
       hoist(
@@ -297,15 +299,16 @@ preprocess_json <- function(dir, contest_only = FALSE){
         candidate_id = "CandidateId",
         party_id = "PartyId",
         magnitude = "Rank",
-        is_vote = "IsVote"
+        is_vote = "IsVote",
+        is_ambiguous = "IsAmbiguous"
       ) |>
-      filter(is_vote) |>
+      filter(is_vote, !is_ambiguous) |>
       select(TabulatorId, BatchId, RecordId, precinctportion_id:magnitude)
   }
   
   files <- list.files(path = dir, pattern = "CvrExport|CVRExport", full.names = TRUE, recursive = TRUE)
   
-  plan(multisession, workers = 8)
+  plan(multisession, workers = 16)
   
   d <- future_map(files, possibly(clean_json, quiet = FALSE)) |>
     list_rbind() |>
