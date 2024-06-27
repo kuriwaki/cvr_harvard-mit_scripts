@@ -72,16 +72,6 @@ python code/parse_pagination.py --path data/raw/California/Alameda/cvr.csv --tar
 echo "DC"
 find data/raw/District\ of\ Columbia -type f -name '*.xlsx' -delete
 
-## Florida/Broward
-echo "Florida/Broward"
-
-if diff <(head -n 1 data/raw/Florida/Broward/cvr.csv) <(head -n 1 data/raw/Florida/Broward/cvr2.csv) >/dev/null; then
-    tail -n+2 data/raw/Florida/Broward/cvr2.csv >> data/raw/Florida/Broward/cvr.csv
-    rm data/raw/Florida/Broward/cvr2.csv
-else
-    echo "The first rows are different."
-fi
-
 ## Florida/Okaloosa
 echo "Florida/Okaloosa"
 if diff <(head -n 1 'data/raw/Florida/Okaloosa/Okaloosa FL part 1.csv') <(head -n 1 'data/raw/Florida/Okaloosa/Okaloosa FL part 2.csv') >/dev/null; then
@@ -252,5 +242,32 @@ rm 'data/raw/Texas/Ward/Nov 2020 CVRs/CVRArchive_6_6_0_488.zip'
 rm 'data/raw/Texas/Ward/Nov 2020 CVRs/CVRArchive_24_24_0_0932.zip'
 rm 'data/raw/Texas/Ward/Nov 2020 CVRs/CVRArchive_938_938_0_5952.zip'
 rm 'data/raw/Texas/Ward/Nov 2020 CVRs/CVRArchive_3150_3150_0_9612.zip'
+
+## New Jersey/Gloucester
+sed 's/TOWNSHIP OF EAST GREENWICH DISTRICTS 1-5, 7/TOWNSHIP OF EAST GREENWICH DISTRICTS 1-5 7/g' 'data/raw/New Jersey/Gloucester/2020CVR.csv' > 'data/raw/New Jersey/Gloucester/cvr_modified.csv'
+sed -i '' 's/, SR.,/ SR.,/g' 'data/raw/New Jersey/Gloucester/cvr_modified.csv'
+sed -i '' 's/, JR.,/ JR.,/g' 'data/raw/New Jersey/Gloucester/cvr_modified.csv'
+sed -i '' 's/, II,/ II,/g' 'data/raw/New Jersey/Gloucester/cvr_modified.csv'
+
+## Arizona/Santa Cruz
+sed 's/ JR.,/ JR./g' 'data/raw/Arizona/Santa Cruz/cvr.csv' > 'data/raw/Arizona/Santa Cruz/cvr_modified.csv'
+sed -i '' 's/,",",/,,,/g' 'data/raw/Arizona/Santa Cruz/cvr_modified.csv'
+
+## Minnesota/Fillmore
+head -n 1 data/raw/Minnesota/Fillmore/cvr.csv > data/raw/Minnesota/Fillmore/cvr_combined.csv && tail -n+2 -q 'data/raw/Minnesota/Fillmore/2020 Fillmore County General Election Cast Vote Record #2.csv' >> data/raw/Minnesota/Fillmore/cvr_combined.csv && tail -n+2 -q 'data/raw/Minnesota/Fillmore/cvr.csv' >> data/raw/Minnesota/Fillmore/cvr_combined.csv
+
+sed 's/write-in, if any/write-in/g' data/raw/Minnesota/Fillmore/cvr_combined.csv > data/raw/Minnesota/Fillmore/cvr_modified.csv
+
+## Illinois/Monroe
+sed -i 's/(JOSEPH R. BIDEN/JOSEPH R. BIDEN/g' data/raw/Illinois/Monroe/GE2020CVR.csv
+sed -i 's/REP (DONALD J. TRUMP/REP DONALD J. TRUMP/g' data/raw/Illinois/Monroe/GE2020CVR.csv
+
+## Illinois/Clinton
+sed -i 's/(JOSEPH R. BIDEN/JOSEPH R. BIDEN/g' data/raw/Illinois/Clinton/03Nov2020_IL_General_Clinton_CVR-7-7-2022.csv
+sed -i 's/REP (DONALD J. TRUMP/REP DONALD J. TRUMP/g' data/raw/Illinois/Clinton/03Nov2020_IL_General_Clinton_CVR-7-7-2022.csv
+
+## Colorado/Dolores
+# has a totals row at the end of the file that needs deleting
+sed '$ d' data/raw/Colorado/Dolores/cvr.csv > data/raw/Colorado/Dolores/cvr2.csv
 
 Rscript -e "targets::tar_make()"
