@@ -33,7 +33,7 @@ clean_data <- function(df, st, cnty, type, contests) {
       # this step keeps the data in an extra long format
       mutate(
         voted = ifelse(
-          all(candidate.x == "0" | str_detect(candidate.x, regex("undervote", ignore_case=TRUE))),
+          all(candidate.x %in% c("0", "X") | str_detect(candidate.x, regex("undervote", ignore_case=TRUE))),
           0,
           1
         ),
@@ -45,11 +45,9 @@ clean_data <- function(df, st, cnty, type, contests) {
       #
       # this also deals with CVRs that have contests as columns and cands as cells
       mutate(
-        candidate.x = if_else(voted == 1, candidate.x, "undervote"),
-        # this sets us up
-        # candidate.x = na_if(candidate.x, "0"),
         candidate = case_when(
-          candidate.x == "undervote" ~ "undervote",
+          voted == 0 & candidate.x == "X" ~ NA_character_,
+          voted == 0 ~ "undervote",
           candidate.x == "0" ~ NA_character_,
           .default = coalesce(candidate.y, candidate.x)
         ),
