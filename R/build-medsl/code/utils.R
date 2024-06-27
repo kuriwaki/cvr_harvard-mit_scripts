@@ -28,7 +28,6 @@ RENAME_COLS <- c(
   precinct = "Precinct Portion Id",
   precinct = "PrecinctBySplit",
   precinct = "PrecinctPortionId",
-  precinct = "Precinct Style Name",
   precinct = "Precinct ID",
   precinct = "precinct_number",
   precinct = "PRECINCT CODE",
