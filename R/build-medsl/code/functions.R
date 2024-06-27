@@ -167,13 +167,14 @@ clean_data <- function(df, st, cnty, type, contests) {
 #' @return The path to each cleaned file, for targets to track
 write_data <- function(df, state, county_name){
   
-  county_name = ifelse(county_name == "NA" | is.na(county_name), "", county_name)
   county_name = str_replace_all(county_name, fixed(" "), fixed("%20"))
   county_name = str_replace_all(county_name, fixed("'"), fixed("%27"))
   state = str_replace_all(state, fixed(" "), fixed("%20"))
   state = str_replace_all(state, fixed("'"), fixed("%27"))
   
-  write_dataset(df, CLEAN_DIR, format = "parquet", partitioning = c("state", "county_name"))
+  dir_create(sprintf("%s/state=%s/county_name=%s", CLEAN_DIR, state, county_name))
+  
+  write_parquet(df, sprintf("%s/state=%s/county_name=%s/part-0.parquet", CLEAN_DIR, state, county_name))
   
   sprintf("%s/state=%s/county_name=%s/part-0.parquet", CLEAN_DIR, state, county_name)
   
