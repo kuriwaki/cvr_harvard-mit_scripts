@@ -643,6 +643,13 @@ get_party_meta <- function(path){
     filter(is.na(issue) | (!is.na(`fixed error?`))) |> 
     drop_na(candidate_medsl) |> 
     mutate(across(everything(), str_to_upper)) |> 
-    select(state:district, candidate = candidate_medsl, party_detailed)
+    distinct(state, office, district, candidate_medsl, party_detailed) |> 
+    mutate(
+      district = ifelse(office %in% c("STATE HOUSE", "STATE SENATE", "US HOUSE"),
+        str_pad(district, width = 3, side = "left", pad = "0"),
+        district
+      )
+    ) |> 
+    rename(candidate = candidate_medsl)
   
 }
