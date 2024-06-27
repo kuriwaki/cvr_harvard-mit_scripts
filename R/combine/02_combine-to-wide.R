@@ -22,6 +22,7 @@ dsa_v <- open_dataset(path(PATH_parq, "returns/by-county"))
 
 # Settings --
 parties_use <- c("DEMOCRAT", "REPUBLICAN", "LIBERTARIAN", "GREEN",
+                 "NO PARTY AFFILIATION",
                  "UNDERVOTE", "UNDERVOTES", "undervote",
                  "WRITEIN", "WRITE-IN")
 offices_use <- c("US PRESIDENT", "US HOUSE", "US SENATE",
@@ -39,11 +40,12 @@ office_simpl <- c("US PRESIDENT" = "uspres",
 ## Harvard
 count_h <- dsa_h |>
   # TODO: do this beforehand
-  filter(party_detailed %in% parties_use) |>
+  filter(party_detailed %in% c(parties_use, "NPA")) |>
   count(state, county_name, office, district, candidate, party_detailed,
         name = "votes") |>
   collect() |>
-  mutate(party_detailed = recode(party_detailed, "undervote" = "UNDERVOTE")) |>
+  mutate(party_detailed = recode(party_detailed, "undervote" = "UNDERVOTE",
+                                 NPA = "NO PARTY AFFILIATION")) |>
   arrange(state, county_name, office, district, party_detailed, desc(votes)) |>
   mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name)) |>
   rename(candidate_h = candidate, votes_h = votes)
@@ -118,7 +120,8 @@ out_cand <- count_h |>
   select(-cand_rank) |>
   mutate(office = factor(office, levels = names(office_simpl))) |>
   arrange(state, county_name, office, district, party_detailed) |>
-  relocate(state:district, party_detailed, special, writein)
+  relocate(state:district, party_detailed, special, writein) |>
+  anti_join(read_csv("R/release/metadata/counties_remove.csv", col_types = "cc"))
 
 cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h, candidate_h)
 cand_summ_m <- categorize_diff(out_cand, votes_m, color2_m, candidate_m)
@@ -169,7 +172,7 @@ out_coal <- out_cand |>
 
 # Write to Dropbox -----
 list(`by-cand` = select(out_cand, !matches("_c$")),
-     `by-county` = out_county,
+     `by-county` = select(out_county, !matches("(diff|votes)_c$")),
      `by-cand-coalesced` = out_coal,
      `precinct` = precs_all) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))

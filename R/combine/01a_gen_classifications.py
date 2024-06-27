@@ -35,17 +35,15 @@ Y_MISS_TAU = 0.2
 ################################################################################
 # Compare
 ################################################################################
-both = pd.read_excel(DATA_DIR + 'combined/compare.xlsx')
+both = pd.read_excel(DATA_DIR + 'combined/compare.xlsx', sheet_name = "by-cand-coalesced")
 
 #Filter by party and create difference variables
 both = both.loc[(both.party_detailed == 'DEMOCRAT') |
                 (both.party_detailed == 'REPUBLICAN') |
                 (both.party_detailed == 'LIBERTARIAN')]
 both.reset_index(inplace=True)
-both['diff_h'] = abs(both.votes_v - both.votes_h)
-both['diff_m'] = abs(both.votes_v - both.votes_m)
-both['diff_h_prop'] = both.diff_h/both.votes_v
-both['diff_m_prop'] = both.diff_m/both.votes_v
+both['diff_c'] = abs(both.votes_v - both.votes_c)
+both['diff_c_prop'] = both.diff_c / both.votes_c
 
 county_cols = {}
 gSum = 0
@@ -56,23 +54,17 @@ for state in both.state.unique():
     counties = both.loc[both.state == state, 'county_name'].unique()
     for county in counties:
         #Construct a series of all relevant differences
-        hDiffs = both.loc[(both.state == state) &
+        cDiffs = both.loc[(both.state == state) &
                                (both.county_name == county),
-                               'diff_h_prop']
-        mDiffs = both.loc[(both.state == state) &
-                               (both.county_name == county),
-                               'diff_m_prop']
-        hDiffs = hDiffs.fillna(1)
-        mDiffs = mDiffs.fillna(1)
+                               'diff_c_prop']
+        cDiffs = cDiffs.fillna(1)
         #Green counties require exact matches in the whole series
-        if all([all(hDiffs == 0), all(mDiffs == 0)]):
+        if all([all(cDiffs == 0)]):
             county_cols[state][county] = 'green'
             gSum += 1
         #Apply the definition for a yellow county
-        elif all([all(hDiffs.loc[hDiffs != 1] < Y_DIFF_TAU),
-                  all(mDiffs.loc[mDiffs != 1] < Y_DIFF_TAU),
-                  sum(hDiffs == 1) < Y_MISS_TAU*len(hDiffs),
-                  sum(mDiffs == 1) < Y_MISS_TAU*len(mDiffs)
+        elif all([all(cDiffs.loc[cDiffs != 1] < Y_DIFF_TAU),
+                  sum(cDiffs == 1) < Y_MISS_TAU*len(cDiffs)
                   ]):
             county_cols[state][county] = 'yellow'
             ySum += 1
