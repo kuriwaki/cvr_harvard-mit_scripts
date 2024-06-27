@@ -546,6 +546,10 @@ process_special <- function(path, s, c, contests) {
         basename_template = "part1-{i}.parquet",
         partitioning = c("state", "county_name")
       )
+    
+    open_dataset("data/pass1") |> 
+      filter(state == "CALIFORNIA", county_name == "ALAMEDA") |> 
+      write_dataset("data/pass1", format = "parquet", partitioning = c("state", "county_name"))
 
     # return path
     out <- "data/pass1/state=CALIFORNIA/county_name=ALAMEDA/part-0.parquet"
