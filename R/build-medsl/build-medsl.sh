@@ -27,50 +27,43 @@ tree data/raw/ --filelimit=92 -H data/raw/ > raw_tree.html
 ## MUST MANUALLY ADD ONE ROW TO THE TOP OF Colorado/Eagle because they deleted it for some reason
 
 # parse headers first
-
-Rscript code/process_headers.R "data/raw/California/Contra Costa/cvr.csv"
-Rscript code/process_headers.R "data/raw/California/King/cvr.csv"
-Rscript code/process_headers.R "data/raw/California/San Mateo/cvr.csv"
-Rscript code/process_headers.R "data/raw/California/Santa Clara/cvr.csv"
-Rscript code/process_headers.R "data/raw/California/Sonoma/cvr.csv"
-Rscript code/process_headers.R "data/raw/California/Yuba/cvr.csv"
-Rscript code/process_headers.R "data/raw/Colorado/Denver/cvr.csv"
-Rscript code/process_headers.R "data/raw/Colorado/Eagle/cvr.csv"
-Rscript code/process_headers.R "data/raw/Colorado/Routt/cvr.csv"
-Rscript code/process_headers.R "data/raw/Georgia/Gwinnett/Nov_General_CVR_Export_20210104103413.csv"
-Rscript code/process_headers.R "data/raw/Ohio/Butler/cvr.csv"
-Rscript code/process_headers.R "data/raw/Ohio/Greene/cvr.csv"
+parallel -j 4 Rscript code/process_headers.R ::: \
+    "data/raw/California/Contra Costa/cvr.csv" \
+    "data/raw/California/King/cvr.csv" \
+    "data/raw/California/San Mateo/cvr.csv" \
+    "data/raw/California/Santa Clara/cvr.csv" \
+    "data/raw/California/Sonoma/cvr.csv" \
+    "data/raw/California/Yuba/cvr.csv" \
+    "data/raw/Colorado/Denver/cvr.csv" \
+    "data/raw/Colorado/Eagle/cvr.csv" \
+    "data/raw/Colorado/Routt/cvr.csv" \
+    "data/raw/Georgia/Gwinnett/Nov_General_CVR_Export_20210104103413.csv" \
+    "data/raw/Ohio/Butler/cvr.csv" \
+    "data/raw/Ohio/Greene/cvr.csv"
 
 # then convert them to their unpaginated form
-
-python code/parse_pagination.py --input data/raw/California/Contra\ Costa/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/California/King/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/California/Merced/cvr.csv --col "Ballot Style"
-python code/parse_pagination.py --input data/raw/California/San\ Mateo/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/California/Santa\ Clara/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/California/Sonoma/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/California/Yuba/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/Colorado/Denver/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/Colorado/Eagle/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/Colorado/Routt/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/Georgia/Gwinnett/Nov_General_CVR_Export_20210104103413_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/Maryland/Baltimore/cvr.csv --col "Ballot Style"
-python code/parse_pagination.py --input data/raw/Maryland/Baltimore\ City/cvr.csv --col "Ballot Style"
-python code/parse_pagination.py --input data/raw/Maryland/Montgomery/cvr.csv --col "Ballot Style"
-python code/parse_pagination.py --input data/raw/Maryland/Prince\ George\'s/cvr.csv --col "Ballot Style"
-python code/parse_pagination.py --input data/raw/Ohio/Butler/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/Ohio/Champaign/cvr.csv --col "BallotStyleID"
-python code/parse_pagination.py --input data/raw/Ohio/Cuyahoga/cvr.csv --col "Ballot Style"
-python code/parse_pagination.py --input data/raw/Ohio/Greene/cvr_headers.csv --col "Ballot Type"
-python code/parse_pagination.py --input data/raw/Ohio/Warren/cvr.csv --col "BallotStyleID"
-python code/parse_pagination.py --input data/raw/Rhode\ Island/ri.csv --col "Ballot Style"
-
-# delete all temporary files, so that now each directory contains only one file, which is the unpaginated CVR file
-find . -type f -name "*_merged.csv" -print0 | while IFS= read -r -d '' dir; do
-    dir=$(dirname "$dir")
-    # Delete all files in the directory that do not end in _merged.csv
-    find "$dir" -type f ! -name "*_merged.csv" -exec rm -f {} \;
-done
+# run this locally, it is many magnitudes faster than on Supercloud
+python code/parse_pagination.py --path data/raw/California/Contra\ Costa/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden Dem" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/California/King/cvr_headers.csv --targetcol "President of the United States Vote for 1 Joseph r Biden and Kamala d Harris Dem" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/California/Merced/cvr.csv --targetcol "PRESIDENT AND VICE PRESIDENT Countywide (1731)" --groupcol "Ballot Style"
+python code/parse_pagination.py --path data/raw/California/San\ Mateo/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden Kamala d Harris Dem" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/California/Santa\ Clara/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden Kamala d Harris Dem" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/California/Sonoma/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph p Biden Dem" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/California/Yuba/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden and Kamala d Harris Dem" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/Colorado/Denver/cvr_headers.csv --targetcol "Presidential Electors Vote for1 Joseph r Biden Kamala d Harris Dem" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/Colorado/Eagle/cvr_headers.csv --targetcol "Presidential Electors Vote for 1 Joseph r Biden Kamala d Harris" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/Colorado/Routt/cvr_headers.csv --targetcol "Presidential Electors Vote for 1 Joseph r Biden Kamala d Harris" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/Georgia/Gwinnett/Nov_General_CVR_Export_20210104103413_headers.csv --targetcol "President of the United States Presidentede Los Estados Unidos Vote for1 Donald j Trump i Rep" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/Maryland/Baltimore/cvr.csv --targetcol "President - Vice Pres (1)" --groupcol "Ballot Style"
+python code/parse_pagination.py --path data/raw/Maryland/Baltimore\ City/cvr.csv --targetcol "President - Vice Pres (1)" --groupcol "Ballot Style"
+python code/parse_pagination.py --path data/raw/Maryland/Montgomery/cvr.csv --targetcol "President - Vice Pres (1)" --groupcol "Ballot Style"
+python code/parse_pagination.py --path data/raw/Maryland/Prince\ Georges/cvr.csv --targetcol "President - Vice Pres (1)" --groupcol "Ballot Style"
+python code/parse_pagination.py --path data/raw/Ohio/Butler/cvr_headers.csv --targetcol "President United States Vote for 1 Joseph r Biden Jr" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/Ohio/Champaign/cvr.csv --targetcol "Choice_1_2:President:Vote For 1:Biden / Harris:Democratic" --groupcol "BallotStyleID"
+python code/parse_pagination.py --path data/raw/Ohio/Cuyahoga/cvr.csv --targetcol "PRESIDENT AND VICE PRESIDENT" --groupcol "Ballot Style"
+python code/parse_pagination.py --path data/raw/Ohio/Greene/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden Dem" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/Rhode\ Island/ri.csv --targetcol "Presidential Electors For: (29562)" --groupcol "Ballot Style"
+python code/parse_pagination.py --path data/raw/California/Alameda/cvr.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden and Kamala d Harris" --groupcol "Ballot Type"
 
 # Manually process some weird edge cases
 
