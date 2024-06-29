@@ -2,6 +2,8 @@ library(tidyverse)
 library(arrow)
 library(fs)
 
+source("R/prepare/custom-reallocate-precinct.R")
+
 gc()
 
 username <- Sys.info()["user"]
@@ -32,18 +34,7 @@ ds_harv_sel <- ds_harv |> semi_join(hv_counties, by = c("state", "county_name"))
 ds_meds |>
   anti_join(rm_counties, by = c("state", "county_name")) |>
   anti_join(hv_counties, by = c("state", "county_name")) |>
-  # Patch for misallocated precincts
-  mutate(
-    county_name = ifelse(county_name == "BROWN" & precinct == "Village of Pulaski W4, 7", "PULASKI", county_name),
-    county_name = ifelse(county_name == "BROWN" & precinct == "Village of Wrightstown W4", "OUTAGAMIE", county_name),
-    county_name = ifelse(county_name == "DANE" & precinct %in% c("V Brooklyn Wd 2", "V Belleville Wd 3"), "GREEN", county_name),
-    county_name = ifelse(county_name == "DANE" & precinct == "V Cambridge Wd 1", "JEFFERSON", county_name),
-    county_name = ifelse(county_name == "PIERCE" & precinct %in% c(
-      "Village of Spring Valley, Ward 3",
-      "City of River Falls, Wards 1-4,15"
-    ), "ST CROIX", county_name),
-    jurisdiction_name = ifelse(state == "WISCONSIN", county_name, jurisdiction_name)
-  ) |>
+  reallocate_wi_prec() |>
   write_dataset(
     path = PATH_interim,
     existing_data_behavior = "overwrite",
