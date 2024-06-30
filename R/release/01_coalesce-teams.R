@@ -2,6 +2,8 @@ library(tidyverse)
 library(arrow)
 library(fs)
 
+source("R/prepare/custom-reallocate-precinct.R")
+
 gc()
 
 username <- Sys.info()["user"]
@@ -32,6 +34,7 @@ ds_harv_sel <- ds_harv |> semi_join(hv_counties, by = c("state", "county_name"))
 ds_meds |>
   anti_join(rm_counties, by = c("state", "county_name")) |>
   anti_join(hv_counties, by = c("state", "county_name")) |>
+  reallocate_wi_prec() |>
   write_dataset(
     path = PATH_interim,
     existing_data_behavior = "overwrite",
@@ -45,4 +48,3 @@ ds_harv_sel |>
     existing_data_behavior = "delete_matching",
     partitioning = c("state", "county_name"),
     format = "parquet")
-
