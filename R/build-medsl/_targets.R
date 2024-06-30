@@ -46,7 +46,7 @@ walk(stale_dirs$path, dir_delete)
 
 # get the counties that are perfect already, no need to touch them
 green_counties = readxl::read_excel("metadata/compare.xlsx", sheet = "by-county") |> 
-  filter(match_score_m == 1) |> 
+  filter(match_score_m == 1) |>
   select(state, county_name)
 
 # remove the counties that have persistent issues or are perfect, it's a waste of time to rerun them
