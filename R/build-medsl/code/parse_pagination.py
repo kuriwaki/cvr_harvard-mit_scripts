@@ -73,7 +73,7 @@ for i, current_row in tqdm(data.iterrows(), total=num_rows, desc=args.path, unit
         # Iterate in an expanding manner
         for j in iterate_spiral(i):
             # add a failsafe in case we find nothing
-            if j - i > 1000 or j >= num_rows:
+            if j - i > 100000 or j >= num_rows:
                 break
 
             if j not in used_rows and current_row[args.groupcol] == data.loc[j, args.groupcol] and not pd.isna(data.loc[j, args.targetcol]):
