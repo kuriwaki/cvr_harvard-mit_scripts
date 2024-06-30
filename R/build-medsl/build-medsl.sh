@@ -28,6 +28,7 @@ tree data/raw/ --filelimit=92 -H data/raw/ > raw_tree.html
 
 # parse headers first
 parallel -j 4 Rscript code/process_headers.R ::: \
+    "data/raw/California/Alameda/cvr.csv" \
     "data/raw/California/Contra Costa/cvr.csv" \
     "data/raw/California/King/cvr.csv" \
     "data/raw/California/San Mateo/cvr.csv" \
@@ -63,7 +64,7 @@ python code/parse_pagination.py --path data/raw/Ohio/Champaign/cvr.csv --targetc
 python code/parse_pagination.py --path data/raw/Ohio/Cuyahoga/cvr.csv --targetcol "PRESIDENT AND VICE PRESIDENT" --groupcol "Ballot Style"
 python code/parse_pagination.py --path data/raw/Ohio/Greene/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden Dem" --groupcol "Ballot Type"
 python code/parse_pagination.py --path data/raw/Rhode\ Island/ri.csv --targetcol "Presidential Electors For: (29562)" --groupcol "Ballot Style"
-python code/parse_pagination.py --path data/raw/California/Alameda/cvr.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden and Kamala d Harris" --groupcol "Ballot Type"
+python code/parse_pagination.py --path data/raw/California/Alameda/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden and Kamala d Harris" --groupcol "Ballot Type"
 
 # Manually process some weird edge cases
 
@@ -269,5 +270,8 @@ sed -i 's/REP (DONALD J. TRUMP/REP DONALD J. TRUMP/g' data/raw/Illinois/Clinton/
 ## Colorado/Dolores
 # has a totals row at the end of the file that needs deleting
 sed '$ d' data/raw/Colorado/Dolores/cvr.csv > data/raw/Colorado/Dolores/cvr2.csv
+
+## California/Alameda
+sed -i -E 's/1 \([0-9]+%\)/1/g; s/0 \([0-9]+%\)/0/g' data/raw/California/Alameda/cvr_headers_merged.csv
 
 Rscript -e "targets::tar_make()"
