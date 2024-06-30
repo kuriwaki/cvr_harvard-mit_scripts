@@ -17,8 +17,8 @@ tar_option_set(
   format = "parquet",
   garbage_collection = TRUE,
   controller = crew::crew_controller_local(
-    workers = 6, garbage_collection = TRUE,
-    seconds_timeout = 120, launch_max = 10,
+    workers = 5, garbage_collection = TRUE,
+    seconds_timeout = 120, launch_max = 20,
     seconds_launch = 60
     )
 )
@@ -60,31 +60,31 @@ list(
   tar_map(
     filter(raw_paths, type == "xml"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass0, preprocess_xml(path), error = "continue", deployment = "main"),
-    tar_target(pass1, process_xml(pass0, state, county_name, contests), format = "file", error = "continue"),
-    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "continue", cue = tar_cue(mode = "always")),
+    tar_target(pass0, preprocess_xml(path), error = "null", deployment = "main"),
+    tar_target(pass1, process_xml(pass0, state, county_name, contests), format = "file", error = "null"),
+    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "null", cue = tar_cue(mode = "always")),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "special"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass1, process_special(path, state, county_name, contests), format = "file", error = "continue"),
-    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "continue", cue = tar_cue(mode = "always")),
+    tar_target(pass1, process_special(path, state, county_name, contests), format = "file", error = "null"),
+    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "null", cue = tar_cue(mode = "always")),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "delim"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass1, process_delim(path, state, county_name, contests), format = "file", error = "continue"),
-    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "continue", cue = tar_cue(mode = "always")),
+    tar_target(pass1, process_delim(path, state, county_name, contests), format = "file", error = "null"),
+    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "null", cue = tar_cue(mode = "always")),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "json"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass0, preprocess_json(path), error = "continue", deployment = "main"),
-    tar_target(pass1, process_json(pass0, state, county_name, contests), format = "file", error = "continue"),
-    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "continue", cue = tar_cue(mode = "always")),
+    tar_target(pass0, preprocess_json(path), error = "null", deployment = "main"),
+    tar_target(pass1, process_json(pass0, state, county_name, contests), format = "file", error = "null"),
+    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "null", cue = tar_cue(mode = "always")),
     names = c(state, county_name)
   )
 )
