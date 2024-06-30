@@ -3,15 +3,9 @@ library(tarchetypes)
 suppressPackageStartupMessages(library(tidyverse))
 library(fs)
 
-if (Sys.info()["user"] == "mason") {
-  BASE_PATH = "code/"
-} else {
-  BASE_PATH = "code/cvrs"
-}
-
-source(path(BASE_PATH, "utils.R"))
-source(path(BASE_PATH, "function_contests.R"))
-source(path(BASE_PATH, "functions.R"))
+source("code/utils.R")
+source("code/functions.R")
+source("code/function_contests.R")
 
 options(
   readr.show_col_types = FALSE
@@ -23,8 +17,8 @@ tar_option_set(
   format = "parquet",
   garbage_collection = TRUE,
   controller = crew::crew_controller_local(
-    workers = 6, garbage_collection = TRUE,
-    seconds_timeout = 120, launch_max = 10,
+    workers = 5, garbage_collection = TRUE,
+    seconds_timeout = 120, launch_max = 20,
     seconds_launch = 60
     )
 )
@@ -35,7 +29,7 @@ tar_config_set(
 )
 
 raw_paths = read_csv("metadata/paths.csv", col_select = -notes) |> 
-  mutate(county_name = replace_na(county_name, ""))
+  mutate(county_name = replace_na(county_name, "STATEWIDE"))
 
 ## Remove any directories that might be leftover from previous spellings, or wrong counties.
 stale_dirs = arrow::open_dataset("data/pass1/", format = "parquet", partitioning = c("state", "county_name")) |>
@@ -50,8 +44,15 @@ stale_dirs = arrow::open_dataset("data/pass1/", format = "parquet", partitioning
 
 walk(stale_dirs$path, dir_delete)
 
-# remove the counties that have persistent issues, it's a waste of time to fix them
-raw_paths = filter(raw_paths, is.na(build)) |> select(-build)
+# get the counties that are perfect already, no need to touch them
+green_counties = readxl::read_excel("metadata/compare.xlsx", sheet = "by-county") |> 
+  filter(match_score_m == 1) |>
+  select(state, county_name)
+
+# remove the counties that have persistent issues or are perfect, it's a waste of time to rerun them
+raw_paths = filter(raw_paths, is.na(build)) |> 
+  anti_join(green_counties, by = c("state", "county_name")) |> 
+  select(-build)
 
 ## Begin `targets` pipeline
 list(
@@ -59,31 +60,31 @@ list(
   tar_map(
     filter(raw_paths, type == "xml"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass0, preprocess_xml(path), error = "continue", deployment = "main"),
-    tar_target(pass1, process_xml(pass0, state, county_name, contests), format = "file", error = "continue"),
-    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "continue", cue = tar_cue(mode = "always")),
+    tar_target(pass0, preprocess_xml(path), error = "null", deployment = "main"),
+    tar_target(pass1, process_xml(pass0, state, county_name, contests), format = "file", error = "null"),
+    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "null", cue = tar_cue(mode = "always")),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "special"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass1, process_special(path, state, county_name, contests), format = "file", error = "continue"),
-    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "continue", cue = tar_cue(mode = "always")),
+    tar_target(pass1, process_special(path, state, county_name, contests), format = "file", error = "null"),
+    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "null", cue = tar_cue(mode = "always")),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "delim"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass1, process_delim(path, state, county_name, contests), format = "file", error = "continue"),
-    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "continue", cue = tar_cue(mode = "always")),
+    tar_target(pass1, process_delim(path, state, county_name, contests), format = "file", error = "null"),
+    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "null", cue = tar_cue(mode = "always")),
     names = c(state, county_name)
   ),
   tar_map(
     filter(raw_paths, type == "json"),
     tar_target(contests, get_contests(state, county_name), cue = tar_cue(mode = "always")),
-    tar_target(pass0, preprocess_json(path), error = "continue", deployment = "main"),
-    tar_target(pass1, process_json(pass0, state, county_name, contests), format = "file", error = "continue"),
-    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "continue", cue = tar_cue(mode = "always")),
+    tar_target(pass0, preprocess_json(path), error = "null", deployment = "main"),
+    tar_target(pass1, process_json(pass0, state, county_name, contests), format = "file", error = "null"),
+    tar_target(pass2, merge_party(party_meta, pass1, state, county_name), format = "file", error = "null", cue = tar_cue(mode = "always")),
     names = c(state, county_name)
   )
 )

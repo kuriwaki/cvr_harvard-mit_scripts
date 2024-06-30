@@ -16,9 +16,9 @@ generate_contests <- function(paths) {
         contests = process_delim(path, n = 10) |> colnames()
       }
     } else if (type == "json") {
-      contests = process_json(path, contest_only = TRUE)
+      contests = preprocess_json(path, contest_only = TRUE)
     } else if (type == "xml") {
-      contests = process_xml(path, contest_only = TRUE)
+      contests = preprocess_xml(path, contest_only = TRUE)
     } else if (type == "special") {
       contests = get_special_contests(st, cnty)
     } else {
@@ -31,7 +31,7 @@ generate_contests <- function(paths) {
   out <- paths |>
     filter(type != "xml") |>
     mutate(contest = future_pmap(
-      list(path, type, cnty, st),
+      list(path, type, county_name, state),
       possibly(process_files, quiet = FALSE)
     )) |>
     unnest(cols = contest) |>
@@ -43,7 +43,7 @@ generate_contests <- function(paths) {
   out2 <- paths |>
     filter(type == "xml") |>
     mutate(contest = pmap(
-      list(path, type, cnty, st),
+      list(path, type, county_name, state),
       possibly(process_files, quiet = FALSE)
     )) |>
     unnest(cols = contest) |>

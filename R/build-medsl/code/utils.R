@@ -17,6 +17,8 @@ DROP_COLS <- c(
   "Box Id", "Box Position", "Ballot Id", "Ballot Style Id", "Scan Computer Name"
 )
 
+REDACT_NAMES = c("X", "redacted for voter privacy", "REDACTED", "Redacted", "*")
+
 # various permutations of the precinct column name
 RENAME_COLS <- c(
   precinct = "Precinct Portion",
@@ -28,7 +30,6 @@ RENAME_COLS <- c(
   precinct = "Precinct Portion Id",
   precinct = "PrecinctBySplit",
   precinct = "PrecinctPortionId",
-  precinct = "Precinct Style Name",
   precinct = "Precinct ID",
   precinct = "precinct_number",
   precinct = "PRECINCT CODE",
@@ -70,7 +71,9 @@ is_header <- function(path) {
 #' but they always include the contest, the name of the candidate, and their party.
 #' In addition, the first m columns are metadata columns related to the CVR. This
 #' function processes these files into a more regular delimited format, with a singular
-#' row for the header
+#' row for the header. There is also an edge case in some counties (e.g., San Diego, CA)
+#' wherein the header is inexplicably repeated partway through the file. The chunk that
+#' generates `bad_rows` removes this extra information.
 #'
 #' @param path The path to the file
 #' @param n The number of rows to read. This is used to generate the raw contests
@@ -78,30 +81,24 @@ is_header <- function(path) {
 #'
 #' @return A tibble formatted with conventional headers
 header_processor <- function(path, n = Inf) {
-  # read in file, skipping the first row (this contains the file label only)
-  df <- read_csv(path,
+  df <- read_csv(
+    path,
     col_types = cols(.default = "c"),
     skip = 1,
     n_max = n,
-    name_repair = "unique_quiet",
     show_col_types = FALSE
   )
   
-  # force rows 2-4 to be the new column names
-  colnames(df) <- paste(colnames(df), df[1, ], df[2, ], sep = "_")
-  df <- df[-1:-2, ]
+  bad_rows = which(df[20] == colnames(df)[20] |> str_remove("\\.\\.\\.\\d+")) |> 
+    map(~ (.x - 1):(.x + 2)) |> 
+    unlist()
   
-  # then, clean up the column names to something more sensible
-  # and return the df
-  d <- rename_with(df, ~ make_clean_names(str_remove_all(
-    str_remove(
-      .x,
-      "\\.\\.\\.\\d+"
-    ),
-    "_NA"
-  ), case = "title"))
+  colnames(df) = paste(colnames(df), df[1, ], df[2, ], sep = "_") |> 
+    str_remove("\\.\\.\\.\\d+") |> 
+    str_remove_all("_NA") |> 
+    make_clean_names(case = "title") |> 
+    iconv(to = "UTF-8", sub = "")
   
-  colnames(d) <- iconv(colnames(d), to = "UTF-8", sub = "")
+  df[-c(bad_rows, 1, 2), ]
   
-  d
 }
