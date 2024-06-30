@@ -33,7 +33,7 @@ clean_data <- function(df, st, cnty, type, contests) {
       # this step keeps the data in an extra long format
       mutate(
         voted = ifelse(
-          all(candidate.x %in% c("0", "X") | str_detect(candidate.x, regex("undervote", ignore_case=TRUE))),
+          all(candidate.x %in% c("0", REDACT_NAMES) | str_detect(candidate.x, regex("undervote", ignore_case=TRUE))),
           0,
           1
         ),
@@ -46,7 +46,7 @@ clean_data <- function(df, st, cnty, type, contests) {
       # this also deals with CVRs that have contests as columns and cands as cells
       mutate(
         candidate = case_when(
-          voted == 0 & candidate.x == "X" ~ NA_character_,
+          voted == 0 & candidate.x %in% REDACT_NAMES ~ NA_character_,
           voted == 0 ~ "undervote",
           candidate.x == "0" ~ NA_character_,
           .default = coalesce(candidate.y, candidate.x)
@@ -383,9 +383,11 @@ preprocess_xml <- function(dir, contest_only = FALSE){
         undervote = ifelse(undervote == 1, "undervote", NA_character_),
         writein_name = if_else(!is.na(writein_name), "WRITEIN", writein_name),
         candidate = coalesce(writein_name, candidate_name, undervote),
-        cvr_id = i
+        cvr_id = i,
+        contest = str_replace_all(contest, fixed("\n"), " "),
+        candidate = str_replace_all(candidate, fixed("\n"), " ")
       ) |>
-      mutate(contest = str_replace_all(contest, fixed("\n"), " ")) |> 
+      mutate() |> 
       select(cvr_id, contest, candidate, precinct)
     
     if (contest_only) {
@@ -402,7 +404,7 @@ preprocess_xml <- function(dir, contest_only = FALSE){
     full.names = TRUE
   )
   
-  plan(multisession, workers = 16)
+  plan(multisession, workers = 4)
   
   xmls <- future_imap(files, xml_parser) |> list_rbind()
   
@@ -543,35 +545,6 @@ process_special <- function(path, s, c, contests) {
       clean_data(s, c, type = "delim", contests = contests) |> 
       write_data(s, c)
   } 
-  else if (s == "CALIFORNIA" & c == "ALAMEDA") {
-    raw <- header_processor(path) |> mutate(cvr_id = 1:n())
-
-    raw1 <- slice_head(raw, prop = 0.5)
-    raw2 <- anti_join(raw, raw1, join_by(cvr_id))
-    
-    clean_data(raw1, s, c, "delim", contests) |> 
-      write_dataset(
-        path = "data/pass1/",
-        format = "parquet",
-        basename_template = "part0-{i}.parquet",
-        partitioning = c("state", "county_name")
-      )
-    
-    clean_data(raw2, s, c, "delim", contests) |> 
-      write_dataset(
-        path = "data/pass1/",
-        format = "parquet",
-        basename_template = "part1-{i}.parquet",
-        partitioning = c("state", "county_name")
-      )
-    
-    open_dataset("data/pass1") |> 
-      filter(state == "CALIFORNIA", county_name == "ALAMEDA") |> 
-      write_dataset("data/pass1", format = "parquet", partitioning = c("state", "county_name"))
-
-    # return path
-    out <- "data/pass1/state=CALIFORNIA/county_name=ALAMEDA/part-0.parquet"
-  } 
   else if (s == "PENNSYLVANIA") {
     files = list.files("data/raw/Pennsylvania/Allegheny", full.names = TRUE)
     lapply(files, fread) |> 
@@ -665,13 +638,13 @@ get_party_meta <- function(path){
     filter(is.na(issue) | (!is.na(`fixed error?`))) |> 
     drop_na(candidate_medsl) |> 
     mutate(across(everything(), str_to_upper)) |> 
-    distinct(state, office, district, candidate_medsl, party_detailed) |> 
     mutate(
       district = ifelse(office %in% c("STATE HOUSE", "STATE SENATE", "US HOUSE"),
         str_pad(district, width = 3, side = "left", pad = "0"),
         district
       )
     ) |> 
+    distinct(state, office, district, candidate_medsl, party_detailed) |> 
     rename(candidate = candidate_medsl)
   
 }
