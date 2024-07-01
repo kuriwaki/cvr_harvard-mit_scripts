@@ -19,9 +19,11 @@ _targets
 !contests_snyder.csv
 !paths.csv
 !ri_election_dictionary_manual.csv
-*.sql
+!contest_parties.csv
+!counties_harv.csv
+!counties_remove.csv
 
+*.sql
 *.html
 *._cache
-old/reports/viz_cache
-data/MEDSL/md5sums.txt
+.venv

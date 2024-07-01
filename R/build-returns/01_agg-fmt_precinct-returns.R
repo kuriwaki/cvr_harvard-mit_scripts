@@ -1,15 +1,18 @@
 # Clean validation dataset from MEDSL to our format
 library(tidyverse)
 library(arrow)
+library(dataverse)
 library(fs)
-
 
 username <- Sys.info()["user"]
 
 # other users should make a different clause
 if (username %in% c("shirokuriwaki", "sk2983")) {
-  path_source <- "~/Dropbox/CVR_parquet/returns/raw/precincts_20240429.zip" # only works for shirokuriwaki
+  path_source <- "~/Dropbox/CVR_parquet/returns/raw/precincts_20240429.zip"
   path_outdir <- "~/Dropbox/CVR_parquet"
+} else if (username == "mason") {
+  path_source <- "~/Dropbox (MIT)/Research/CVR_parquet/returns/raw/precincts_20240429.zip"
+  path_outdir <- "~/Dropbox (MIT)/Research/CVR_parquet/"
 }
 
 
@@ -18,14 +21,75 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 tictoc::tic()
 ret_all <- read_csv(
   file = path_source,
-  col_types = "ccccciciccccciccllciiiDli")
+  col_types = "cccccnciccccciccllciiiDli")
 tictoc::toc()
 
-statewide = c("ALASKA", "RHODE ISLAND")
+statewide = c("ALASKA", "RHODE ISLAND", "DELAWARE")
+
+# Custom adds ------
+# Oregon substitute (must be V5 or above)
+ret_oregon <- get_dataframe_by_name(
+  "2020-or-precinct-general.tab",
+  dataset = "10.7910/DVN/NT66Z3",
+  server = "dataverse.harvard.edu",
+  original = TRUE,
+  .f = read_csv) |>
+  mutate(jurisdiction_fips = as.character(jurisdiction_fips))
+
+ret_nm_adds <- read_csv(
+  file = path(path_outdir, "returns", "raw", "nm20_adds.csv"),
+  col_types = "cciccccc"
+) |>
+  mutate(
+    state = "NEW MEXICO",
+    jurisdiction_name = county_name
+  )
+
+fl_sh096_agg <- tibble(
+  state = "FLORIDA",
+  county_name = "BROWARD",
+  county_fips = 12011,
+  jurisdiction_name = "BROWARD",
+  jurisdiction_fips = "12011",
+  office = "STATE HOUSE",
+  district = "096",
+  magnitude = 1,
+  special = 0,
+  writein = 0,
+  party_detailed = c("DEMOCRAT"),
+  party_simpliefied = c("DEMOCRAT"),
+  candidate = c("CHRISTINE HUNSCHOFSKY"),
+  votes = 66892
+)
+
+fl_npas <-
+  tibble::tribble(
+        ~office, ~district,                   ~candidate,
+     "STATE HOUSE",     "062",    "LAURIE RODRIGUEZ-PERSON",
+     "STATE HOUSE",     "088",             "RUBIN ANDERSON",
+    "STATE SENATE",     "009",           "JESTINE IANNOTTI",
+    "STATE SENATE",     "019",           "CHRISTINA PAYLAN",
+    "STATE SENATE",     "023",              "ROBERT KAPLAN",
+    "STATE SENATE",     "037",             "ALEX RODRIGUEZ",
+    "STATE SENATE",     "039",           "CELSO D ALFONSO",
+        "US HOUSE",     "001",                "ALBERT ORAM",
+        "US HOUSE",     "017","THEODORE \"PINK TIE\" MURRAY",
+        "US HOUSE",     "018",                "K W MILLER",
+        "US HOUSE",     "021",        "CHARLESTON MALKEMUS",
+        "US HOUSE",     "024", "CHRISTINE ALEXANDRIA OLIVO",
+  ) |>
+  mutate(state = "FLORIDA", .before = 1) |>
+  mutate(party_detailed = "NO PARTY AFFILIATION")
+
+
 
 # only the top six offices -----
 ## most of data reformatting
 ret_sel <- ret_all |>
+  # add Oregon
+  filter(state != "OREGON") |>
+  bind_rows(ret_oregon) |>
+  bind_rows(ret_nm_adds) |>
   tidylog::filter(office %in% c("US PRESIDENT", "US HOUSE", "US SENATE",
                                 "STATE HOUSE", "STATE SENATE", "GOVERNOR")) |>
   mutate(jurisdiction_name = replace(jurisdiction_name, state %in% statewide, NA)) |>
@@ -67,7 +131,10 @@ ret_sel <- ret_all |>
     party_simplified = replace(
       party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "OTHER")) |>
   # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/33
-  mutate(across(matches("party_"), \(x) case_match(x, "DEMOCRATIC FARMER LABOR" ~ "DEMOCRAT", .default = x)))
+  mutate(across(matches("party_"), \(x) case_match(x, "DEMOCRATIC FARMER LABOR" ~ "DEMOCRAT", .default = x))) |>
+  tidylog::left_join(fl_npas, by = c("state", "office", "candidate", "district")) |>
+  mutate(party_detailed = coalesce(party_detailed.x, party_detailed.y),
+         party_detailed.x = NULL, party_detailed.y = NULL)
 
 
 # sum by county x mode ------
@@ -80,15 +147,16 @@ by_vars <- c("state", "county_name", "county_fips", "jurisdiction_name",
 county_mode_summ <- ret_sel |>
   summarize(
     votes = sum(votes, na.rm = TRUE),
-    .by = by_vars
+    .by = all_of(by_vars)
   )
 
 # sum by county
 county_summ <- county_mode_summ |>
   summarize(
     votes = sum(votes, na.rm = TRUE),
-    .by = setdiff(by_vars, "mode")
-  )
+    .by = all_of(setdiff(by_vars, "mode"))
+  ) |>
+  bind_rows(fl_sh096_agg)
 
 
 # write to parquet ---

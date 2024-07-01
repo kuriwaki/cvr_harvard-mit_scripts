@@ -1,29 +1,32 @@
-# python parse_pagination.py -i cvr.csv
-
 import argparse
 import pandas as pd
+from tqdm import tqdm
 
 # Define the argument parser
 parser = argparse.ArgumentParser(description="Merge and clean CSV data.")
-parser.add_argument("-i", "--input", required=True, help="Input CSV file")
-parser.add_argument("-c", "--col", required=True, help="Column Name")
+parser.add_argument("-p", "--path", required=True, help="Path to CSV file", type=str)
+parser.add_argument("-t", "--targetcol", required=True, help="Column to Compare On", type=str)
+parser.add_argument("-c", "--groupcol", required=False, help="Group Column Name", type=str)
 
 # Parse arguments
 args = parser.parse_args()
 
-# print out the arguments
-print(args.input)
+# print out the path
+print(args.path)
 
-# Read data from the input file
-
+# Read data and do some initial cleanup
 # if Rhode Island, set encoding to 'ISO-8859-1', otherwise utf-8
-if 'ri' in args.input:
-    data = pd.read_csv(args.input, dtype=str, encoding='ISO-8859-1')
+if 'ri' in args.path:
+    data = pd.read_csv(args.path, dtype=str, encoding='ISO-8859-1')
 else:
-    data = pd.read_csv(args.input, dtype=str)
+    data = pd.read_csv(args.path, dtype=str)
 
-# remove [2] from the args.col column, this deals with Rhode Island
-data[args.col] = data[args.col].str.replace(r"\[.*\]", "")
+# remove [2] from the args.groupcol column, this deals with some counties that have noted the pagination explicitly
+data[args.groupcol] = data[args.groupcol].str.replace(r" \[.*\]", "", regex=True)
+
+##### 
+# Function definition
+#####
 
 def merge_rows(row1, row2):
     """
@@ -32,68 +35,55 @@ def merge_rows(row1, row2):
     # Use 'combine_first' to merge while preserving non-NaN values in row1
     return row1.combine_first(row2)
 
-# Initialize a DataFrame for cleaned data
-cleaned_data = pd.DataFrame(columns=data.columns)
+def iterate_spiral(j):
+    increase = True
+    k=j
 
-def merge_groups(group):
-    # Merging all rows of the group into one
-    merged_row = group.ffill().iloc[-1]  # Forward fill to propagate non-NaN values
-    return merged_row
+    while True:
+        if k == 0:
+            j += 1
+            yield j
+        elif increase:
+            j += 1
+            yield j
+            increase = False
+        else:
+            k -= 1
+            yield k
+            increase = True
 
-# Group the data by contiguous args.col
-# grouped = data.groupby((data[args.col] != data[args.col].shift()).cumsum())
-
-# List to accumulate merged rows
-# accumulated_rows = []
-
-# for _, group in grouped:
-#     merged_row = merge_groups(group)
-#     accumulated_rows.append(merged_row)
-
-# Concatenate all merged rows at once
-# cleaned_data = pd.concat(accumulated_rows, axis=1).transpose()
-# cleaned_data.reset_index(drop=True, inplace=True)
-
-# Find the index of the args.col column
-ballot_type_index = data.columns.get_loc(args.col)
-
-# Determine the column immediately to the right of args.col
-target_column = data.columns[ballot_type_index + 1]
+## For all data, we then proceed through an iterative process of finding a good nearby match
+## - this works by identifying each row that is missing values in the first column and grouping it with a nearby column that is not missing data there
 
 # Set to keep track of used rows
 used_rows = set()
+num_rows = len(data)
 
-# Iterate through the DataFrame
-for i, current_row in data.iterrows():
+for i, current_row in tqdm(data.iterrows(), total=num_rows, desc=args.path, unit='row', ncols=80, mininterval=1, dynamic_ncols=True):
     # Skip if the row has been used already
     if i in used_rows:
         continue
 
     # Check if the current row is missing values in the target column
-    if pd.isna(current_row[target_column]):
+    if pd.isna(current_row[args.targetcol]):
         closest_match = None
-        closest_distance = float('inf')
+        # closest_distance = float('inf')
 
         # Search for the closest complementary row
-        # Iterate only within the defined range
-        for j in range(max(0, i - 100), min(len(data), i + 101)):
-            if i != j and j not in used_rows:
-                complementary_row = data.iloc[j]
+        # Iterate in an expanding manner
+        for j in iterate_spiral(i):
+            # add a failsafe in case we find nothing
+            if j - i > 100000 or j >= num_rows:
+                break
 
-                # Check if the row meets the criteria
-                if current_row[args.col] == complementary_row[args.col] and not pd.isna(complementary_row[target_column]):
-                    distance = abs(i - j)
-                    if distance < closest_distance:
-                        closest_distance = distance
-                        closest_match = j
-                    if distance == 1:
-                        break
+            if j not in used_rows and current_row[args.groupcol] == data.loc[j, args.groupcol] and not pd.isna(data.loc[j, args.targetcol]):
+                # merge the rows
+                merged_row = merge_rows(current_row, data.iloc[j])
+                data.loc[i] = merged_row
+                used_rows.add(j)
 
-        if closest_match is not None:
-            # Merge the rows
-            merged_row = merge_rows(current_row, data.iloc[closest_match])
-            data.loc[i] = merged_row
-            used_rows.add(closest_match)
+                break
+            
 
 # Save the post-processed data to the output file
-data.drop(used_rows).to_csv(args.input.replace(".csv", "_merged.csv"), index=False)
+data.drop(used_rows).to_csv(args.path.replace(".csv", "_merged.csv"), index=False)
