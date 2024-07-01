@@ -30,6 +30,7 @@ fmt_harv_to_medsl <- function(tbl) {
                          "FL" ~ "FLORIDA",
                          "GA" ~ "GEORGIA",
                          "IL" ~ "ILLINOIS",
+                         "LA" ~ "LOUISIANA",
                          "MD" ~ "MARYLAND",
                          "MI" ~ "MICHIGAN",
                          "NJ" ~ "NEW JERSEY",
