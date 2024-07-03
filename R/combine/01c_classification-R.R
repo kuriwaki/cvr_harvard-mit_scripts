@@ -28,6 +28,7 @@ categorize_diff <- function(tbl, var, newvar, candvar) {
       ),
       .by = c(state, county_name)
     ) |>
+    mutate({{newvar}} := ifelse(state == "COLORADO" & county_name == "ARAPAHOE", "unclassified", {{newvar}})) |>
     mutate({{newvar}} := factor({{newvar}}, levels = c("0 difference",
                                                        "any < 1% mismatch",
                                                        "any < 5% mismatch",
