@@ -30,6 +30,8 @@ if user in ['root']:
     DATA_DIR = os.path.expanduser("~/Dropbox/CVR_parquet/")
 elif user in ['mason']:
     DATA_DIR = "../CVR_parquet/"
+elif user in ['josephloffredo']:
+    DATA_DIR = os.path.expanduser("~/Dropbox (MIT)/CVR_parquet/")
 
 OUT_DIR = 'status/'
 OUT_DIR2 = 'status/counties-classified/'
