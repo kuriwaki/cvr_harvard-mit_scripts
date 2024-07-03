@@ -1,9 +1,9 @@
 |color2_c           |   n|
 |:------------------|---:|
 |0 difference       | 236|
-|any < 1% mismatch  |  88|
+|any < 1% mismatch  |  90|
 |any < 5% mismatch  |  27|
-|any < 10% mismatch |  10|
+|any < 10% mismatch |   9|
 |candidate missing  |  39|
 |no entry in Baltz  |  14|
-|red                |  48|
+|red                |  47|

@@ -1,3 +1,3 @@
 Green: 236
-Yellow: 150
-Red: 76
+Yellow: 151
+Red: 75
