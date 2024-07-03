@@ -19,9 +19,11 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 # Read whole data -----
 ## from @sbaltzmit
 tictoc::tic()
-ret_all <- read_csv(
-  file = path_source,
-  col_types = "cccccnciccccciccllciiiDli")
+if (isFALSE(exists("ret_all")))  {
+  ret_all <- read_csv(
+    file = path_source,
+    col_types = "cccccnciccccciccllciiiDli")
+}
 tictoc::toc()
 
 statewide = c("ALASKA", "RHODE ISLAND", "DELAWARE")
@@ -37,13 +39,19 @@ ret_oregon <- get_dataframe_by_name(
   mutate(jurisdiction_fips = as.character(jurisdiction_fips))
 
 ret_nm_adds <- read_csv(
-  file = path(path_outdir, "returns", "raw", "nm20_adds.csv"),
+  path(path_outdir, "returns", "raw", "nm20_adds.csv"),
   col_types = "cciccccc"
 ) |>
   mutate(
     state = "NEW MEXICO",
     jurisdiction_name = county_name
   )
+
+ret_nv_totals <- read_csv(path(path_outdir, "returns", "raw", "nv_res_complete.csv")) |>
+  select(state,
+         county_name, county_fips,
+         office, district, candidate,
+         candidatevotes)
 
 fl_sh096_agg <- tibble(
   state = "FLORIDA",
@@ -162,7 +170,13 @@ county_summ <- county_mode_summ |>
     votes = sum(votes, na.rm = TRUE),
     .by = all_of(setdiff(by_vars, "mode"))
   ) |>
-  bind_rows(fl_sh096_agg)
+  bind_rows(fl_sh096_agg) |>
+  left_join(ret_nv_totals,
+            by = c("state", "county_name", "county_fips", "office", "district", "candidate"),
+            relationship = "one-to-one") |>
+  # update with unredacted counts
+  mutate(votes = coalesce(candidatevotes, votes),
+         candidatevotes = NULL)
 
 
 # write to parquet ---
