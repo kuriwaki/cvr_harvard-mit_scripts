@@ -2,7 +2,7 @@ Table: Harvard match (rows) vs. MEDSL match (cols)
 
 |                   | 0 difference| any < 1% mismatch| any 1-10% mismatch| candidate missing| not collected| red| unclassified| Sum|
 |:------------------|------------:|-----------------:|------------------:|-----------------:|-------------:|---:|------------:|---:|
-|0 difference       |          217|                 1|                  0|                 5|             1|   1|            2| 227|
+|0 difference       |          218|                 1|                  0|                 5|             1|   1|            1| 227|
 |any < 1% mismatch  |            6|                66|                  0|                 1|             2|   0|            3|  78|
 |any 1-10% mismatch |            0|                 2|                 31|                 0|             2|   1|            0|  36|
 |candidate missing  |            1|                 3|                  1|                18|             1|   1|            0|  25|
@@ -10,4 +10,4 @@ Table: Harvard match (rows) vs. MEDSL match (cols)
 |red                |            1|                 0|                  0|                 1|             1|  34|            2|  39|
 |unclassified       |            0|                 0|                  0|                 0|             0|   0|            3|   3|
 |NA                 |            0|                 0|                  0|                 0|             0|   0|            1|   1|
-|Sum                |          232|                86|                 35|                41|             7|  46|           15| 462|
+|Sum                |          233|                86|                 35|                41|             7|  46|           14| 462|
