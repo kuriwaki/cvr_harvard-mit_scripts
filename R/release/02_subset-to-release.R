@@ -13,6 +13,7 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 }
 
 PATH_interim <- path(PATH_parq, "intermediate/coalesced")
+PATH_precincts <- path(PATH_parq, "intermediate/precinct_std/cvr_mdsl_precinct_crosswalk")
 PATH_release <- path(PATH_parq, "release")
 
 # Data ---
@@ -32,9 +33,15 @@ use_counties <- read_excel(
   filter(release == 1) |>
   select(state, county_name)
 
+# Precincts ----
+prec_names <- open_dataset(PATH_precincts) |>
+  filter(discrepancy == 0) |>
+  select(-discrepancy)
+
 # Subset and WRITE ----
 ds |>
   inner_join(use_counties, by = c("state", "county_name")) |>
+  left_join(prec_names, by = c("state", "county_name", "precinct")) |>
   write_dataset(
     path = PATH_release,
     existing_data_behavior = "delete_matching",
