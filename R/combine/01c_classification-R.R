@@ -23,6 +23,7 @@ categorize_diff <- function(tbl, var, newvar, candvar) {
         all(!office_miss) & any(adiff > 0.10) ~ "red",
         any(office_miss) & any(!office_miss) ~ "candidate missing",
         all(office_miss) ~ "not collected",
+        any(!office_miss & is.na(votes_v)) ~ "no entry in Baltz",
         .default = "unclassified"
       ),
       .by = c(state, county_name)
@@ -33,6 +34,7 @@ categorize_diff <- function(tbl, var, newvar, candvar) {
                                                        "any < 10% mismatch",
                                                        "candidate missing",
                                                        "not collected",
+                                                       "no entry in Baltz",
                                                        "red",
                                                        "unclassified")))
 }
