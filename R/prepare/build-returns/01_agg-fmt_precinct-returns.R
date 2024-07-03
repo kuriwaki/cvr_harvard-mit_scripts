@@ -57,7 +57,7 @@ fl_sh096_agg <- tibble(
   special = 0,
   writein = 0,
   party_detailed = c("DEMOCRAT"),
-  party_simpliefied = c("DEMOCRAT"),
+  party_simplified = c("DEMOCRAT"),
   candidate = c("CHRISTINE HUNSCHOFSKY"),
   votes = 66892
 )
@@ -130,6 +130,12 @@ ret_sel <- ret_all |>
       party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "INDEPENDENT"),
     party_simplified = replace(
       party_detailed, candidate == "ALLEN BUCKLEY" & state == "GEORGIA", "OTHER")) |>
+  # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/181
+  mutate(
+    party_detailed = replace(
+      party_detailed, candidate == "HOWIE HAWKINS" & state == "WEST VIRGINIA", "GREEN"),
+    party_simplified = replace(
+      party_detailed, candidate == "HOWIE HAWKINS" & state == "WEST VIRGINIA", "GREEN"))|>
   # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/33
   mutate(across(matches("party_"), \(x) case_match(x, "DEMOCRATIC FARMER LABOR" ~ "DEMOCRAT", .default = x))) |>
   tidylog::left_join(fl_npas, by = c("state", "office", "candidate", "district")) |>
