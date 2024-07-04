@@ -35,13 +35,14 @@ use_counties <- read_excel(
 
 # Precincts ----
 prec_names <- open_dataset(PATH_precincts) |>
-  filter(discrepancy == 0) |>
+  # filter(discrepancy == 0) |>
   select(-discrepancy)
 
 # Subset and WRITE ----
 ds |>
-  inner_join(use_counties, by = c("state", "county_name")) |>
-  left_join(prec_names, by = c("state", "county_name", "precinct")) |>
+  inner_join(use_counties, by = c("state", "county_name"), relationship = "many-to-one") |>
+  left_join(prec_names, by = c("state", "county_name", "precinct"), relationship = "many-to-one") |>
+  select(-matches("contest")) |>
   relocate(precinct_medsl, .after = precinct) |>
   write_dataset(
     path = PATH_release,
@@ -59,5 +60,3 @@ open_dataset(PATH_release) |>
 open_dataset(PATH_release) |>
   count(party) |>
   collect()
-
-
