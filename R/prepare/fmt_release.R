@@ -5,7 +5,9 @@ fmt_for_release <- function(tbl) {
       # harvard sometimes uses W-I for their writein candidate's party; change this to WRITEIN
       party_detailed = replace(party_detailed, candidate == "WRITE-IN" | party_detailed == "W-I", "WRITEIN"),
       # standardize harvard candidate field to match medsl
-      candidate = replace(candidate, candidate == "WRITE-IN", "WRITEIN")
+      candidate = replace(candidate, candidate == "WRITE-IN", "WRITEIN"),
+      # standardized MEDSL's writein's parties to simply WRITEIN as well
+      party_detailed = replace(party_detailed, candidate == "WRITEIN", "WRITEIN")
       ) |>
     mutate(
       party = NA_character_,
