@@ -183,7 +183,9 @@ release_counties <-  out_county |>
 out_coal <- out_cand |>
   left_join(release_counties, relationship = "many-to-one") |>
   select(state:party_detailed, release, matches("_(c|v)$")) |>
-  tidylog::filter(any(!is.na(votes_c)), .by = c(state, county_name))
+  tidylog::filter(any(!is.na(votes_c)), .by = c(state, county_name)) |>
+  mutate(diff_pct = scales::comma(((votes_v - votes_c) / votes_v), accuracy = 0.001),
+         diff_pct = replace(diff_pct, !party_detailed %in% c("REPUBLICAN", "DEMOCRAT", "LIBERTARIAN", "GREEN"), NA))
 
 
 # Write to Dropbox -----
