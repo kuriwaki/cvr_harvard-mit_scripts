@@ -132,6 +132,16 @@ ret_sel <- ret_all |>
          district = str_pad(district, width = 3, pad = "0")) |> # ALASKA ST SEN needs padding
   # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/24
   mutate(district = replace(district, state == "GEORGIA" & special, "GEORGIA-III")) |>
+  # sometimes a precinct is formatted differently by office; unify
+  mutate(
+    precinct = if_else(state == "TEXAS" & county_name %in% c("BOSQUE", "COLLIN"),
+                       str_pad(precinct, width = 7, pad = "0"),
+                       precinct)
+  ) |>
+  # in Utah and two counties in NY, there is a "total" as well as a non-total entry, double counting votes.
+  # If there is a non-total AND total in the set, then drop all the non-total votes (in UT, they seem to be 0 votes)
+  tidylog::filter(!(any(mode == "TOTAL") & mode != "TOTAL"),
+                  .by = c(state, county_name,  precinct, party_detailed, writein, special)) |>
   # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/29
   mutate(
     party_detailed = replace(

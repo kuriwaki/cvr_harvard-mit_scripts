@@ -13,6 +13,7 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 }
 
 PATH_interim <- path(PATH_parq, "intermediate/coalesced")
+PATH_precincts <- path(PATH_parq, "intermediate/precinct_std/cvr_mdsl_precinct_crosswalk")
 PATH_release <- path(PATH_parq, "release")
 
 # Data ---
@@ -32,9 +33,17 @@ use_counties <- read_excel(
   filter(release == 1) |>
   select(state, county_name)
 
+# Precincts ----
+prec_names <- open_dataset(PATH_precincts) |>
+  # filter(discrepancy == 0) |>
+  select(-discrepancy)
+
 # Subset and WRITE ----
 ds |>
-  inner_join(use_counties, by = c("state", "county_name")) |>
+  inner_join(use_counties, by = c("state", "county_name"), relationship = "many-to-one") |>
+  left_join(prec_names, by = c("state", "county_name", "precinct"), relationship = "many-to-one") |>
+  select(-matches("contest")) |>
+  relocate(precinct_medsl, .after = precinct) |>
   write_dataset(
     path = PATH_release,
     existing_data_behavior = "delete_matching",
@@ -42,8 +51,4 @@ ds |>
     format = "parquet"
   )
 
-# check that it runs together ----
-open_dataset(PATH_release) |>
-  distinct(state, county_name) |>
-  count(state) |>
-  collect()
+

@@ -2,13 +2,13 @@ Table: Harvard match (rows) vs. MEDSL match (cols)
 
 |                   | 0 difference| any < 1% mismatch| any 1-10% mismatch| candidate missing| not collected| no entry in Baltz| red| unclassified| Sum|
 |:------------------|------------:|-----------------:|------------------:|-----------------:|-------------:|-----------------:|---:|------------:|---:|
-|0 difference       |          220|                 1|                  0|                 5|             1|                 1|   1|            0| 229|
-|any < 1% mismatch  |            6|                68|                  0|                 1|             2|                 3|   0|            0|  80|
-|any 1-10% mismatch |            0|                 2|                 30|                 0|             2|                 0|   1|            0|  35|
-|candidate missing  |            1|                 3|                  1|                16|             1|                 0|   1|            0|  23|
+|0 difference       |          221|                 0|                  0|                 5|             1|                 1|   1|            0| 229|
+|any < 1% mismatch  |            6|                67|                  0|                 1|             2|                 3|   0|            0|  79|
+|any 1-10% mismatch |            0|                 2|                 30|                 0|             2|                 0|   0|            0|  34|
+|candidate missing  |            1|                 2|                  1|                17|             1|                 0|   1|            0|  23|
 |not collected      |            7|                14|                  3|                16|             0|                 4|   9|            0|  53|
-|no entry in Baltz  |            0|                 0|                  0|                 0|             0|                 3|   0|            0|   3|
-|red                |            1|                 0|                  0|                 1|             1|                 2|  33|            0|  38|
-|unclassified       |            0|                 0|                  0|                 0|             0|                 0|   0|            0|   0|
+|no entry in Baltz  |            0|                 0|                  0|                 0|             0|                 4|   0|            0|   4|
+|red                |            1|                 1|                  0|                 1|             1|                 1|  33|            0|  38|
+|unclassified       |            0|                 0|                  0|                 0|             0|                 0|   0|            1|   1|
 |NA                 |            0|                 0|                  0|                 0|             0|                 1|   0|            0|   1|
-|Sum                |          235|                88|                 34|                39|             7|                14|  45|            0| 462|
+|Sum                |          236|                86|                 34|                40|             7|                14|  44|            1| 462|

@@ -66,8 +66,12 @@ for state in both.state.unique():
                                (both.county_name == county),
                                'diff_c_prop']
         cDiffs = cDiffs.fillna(1)
+        #Arapahoe exception
+        if state =="COLORADO" and county == "ARAPAHOE":
+            county_cols[state][county] = 'red'
+            gSum += 1
         #Green counties require exact matches in the whole series
-        if all([all(cDiffs == 0)]):
+        elif all([all(cDiffs == 0)]):
             county_cols[state][county] = 'green'
             gSum += 1
         #Apply the definition for a yellow county

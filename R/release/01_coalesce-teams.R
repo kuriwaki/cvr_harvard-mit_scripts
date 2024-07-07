@@ -3,6 +3,7 @@ library(arrow)
 library(fs)
 
 source("R/prepare/custom-reallocate-precinct.R")
+source("R/prepare/fmt_release.R")
 
 gc()
 
@@ -35,6 +36,7 @@ ds_meds |>
   anti_join(rm_counties, by = c("state", "county_name")) |>
   anti_join(hv_counties, by = c("state", "county_name")) |>
   reallocate_wi_prec() |>
+  fmt_for_release() |>
   write_dataset(
     path = PATH_interim,
     existing_data_behavior = "overwrite",
@@ -43,6 +45,7 @@ ds_meds |>
 
 ## add Harvard
 ds_harv_sel |>
+  fmt_for_release() |>
   write_dataset(
     path = PATH_interim,
     existing_data_behavior = "delete_matching",
