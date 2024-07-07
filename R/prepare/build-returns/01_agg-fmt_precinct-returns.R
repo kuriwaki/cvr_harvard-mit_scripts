@@ -44,10 +44,12 @@ ret_nm_adds <- read_csv(
 ) |>
   mutate(
     state = "NEW MEXICO",
+    mode = "TOTAL",
     jurisdiction_name = county_name
   )
 
-ret_nv_totals <- read_csv(path(path_outdir, "returns", "raw", "nv_res_complete.csv")) |>
+ret_nv_totals <- read_csv(
+  path(path_outdir, "returns", "raw", "nv_res_complete.csv")) |>
   select(state,
          county_name, county_fips,
          office, district, candidate,

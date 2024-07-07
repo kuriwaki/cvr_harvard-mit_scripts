@@ -19,6 +19,7 @@
 |CALIFORNIA    |MENDOCINO       |
 |CALIFORNIA    |MERCED          |
 |CALIFORNIA    |NEVADA          |
+|CALIFORNIA    |ORANGE          |
 |CALIFORNIA    |PLACER          |
 |CALIFORNIA    |RIVERSIDE       |
 |CALIFORNIA    |SAN BENITO      |
@@ -35,6 +36,7 @@
 |CALIFORNIA    |TUOLUMNE        |
 |CALIFORNIA    |VENTURA         |
 |CALIFORNIA    |YUBA            |
+|COLORADO      |ADAMS           |
 |COLORADO      |ALAMOSA         |
 |COLORADO      |ARCHULETA       |
 |COLORADO      |BENT            |
@@ -60,6 +62,7 @@
 |COLORADO      |GUNNISON        |
 |COLORADO      |HINSDALE        |
 |COLORADO      |HUERFANO        |
+|COLORADO      |JEFFERSON       |
 |COLORADO      |KIOWA           |
 |COLORADO      |KIT CARSON      |
 |COLORADO      |LA PLATA        |
@@ -211,13 +214,18 @@
 |IOWA          |DICKINSON       |
 |MARYLAND      |ALLEGANY        |
 |MARYLAND      |ANNE ARUNDEL    |
+|MARYLAND      |BALTIMORE       |
+|MARYLAND      |BALTIMORE CITY  |
 |MARYLAND      |CALVERT         |
 |MARYLAND      |CAROLINE        |
+|MARYLAND      |CARROLL         |
 |MARYLAND      |CECIL           |
 |MARYLAND      |CHARLES         |
 |MARYLAND      |DORCHESTER      |
+|MARYLAND      |FREDERICK       |
 |MARYLAND      |GARRETT         |
 |MARYLAND      |HARFORD         |
+|MARYLAND      |HOWARD          |
 |MARYLAND      |KENT            |
 |MARYLAND      |PRINCE GEORGE'S |
 |MARYLAND      |QUEEN ANNE'S    |
@@ -229,9 +237,12 @@
 |MICHIGAN      |ALGER           |
 |MICHIGAN      |CHARLEVOIX      |
 |MICHIGAN      |CLINTON         |
+|MICHIGAN      |EATON           |
 |MICHIGAN      |GLADWIN         |
 |MICHIGAN      |IRON            |
+|MICHIGAN      |MASON           |
 |MICHIGAN      |MISSAUKEE       |
+|MICHIGAN      |WASHTENAW       |
 |NEVADA        |CARSON CITY     |
 |NEVADA        |CHURCHILL       |
 |NEVADA        |DOUGLAS         |
@@ -252,6 +263,7 @@
 |OHIO          |ASHTABULA       |
 |OHIO          |AUGLAIZE        |
 |OHIO          |BELMONT         |
+|OHIO          |BUTLER          |
 |OHIO          |CHAMPAIGN       |
 |OHIO          |CLARK           |
 |OHIO          |CLINTON         |
@@ -297,6 +309,7 @@
 |TEXAS         |ANDREWS         |
 |TEXAS         |BOSQUE          |
 |TEXAS         |COLLIN          |
+|TEXAS         |COMAL           |
 |TEXAS         |COOKE           |
 |TEXAS         |COTTLE          |
 |TEXAS         |CRANE           |
