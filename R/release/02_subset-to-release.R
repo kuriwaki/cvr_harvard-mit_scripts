@@ -51,12 +51,4 @@ ds |>
     format = "parquet"
   )
 
-# check that it runs together ----
-open_dataset(PATH_release) |>
-  distinct(state, county_name) |>
-  count(state) |>
-  collect()
 
-open_dataset(PATH_release) |>
-  count(party) |>
-  collect()
