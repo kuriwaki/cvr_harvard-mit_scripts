@@ -43,10 +43,11 @@ ds |>
   inner_join(use_counties, by = c("state", "county_name"), relationship = "many-to-one") |>
   left_join(prec_names, by = c("state", "county_name", "precinct"), relationship = "many-to-one") |>
   select(-matches("contest")) |>
-  relocate(precinct_medsl, .after = precinct) |>
+  relocate(precinct_medsl, precinct_cvr, .after = precinct) |>
+  select(-precinct) |>
   write_dataset(
     path = PATH_release,
-    existing_data_behavior = "delete_matching",
+    existing_data_behavior = "overwrite",
     partitioning = c("state", "county_name"),
     format = "parquet"
   )
