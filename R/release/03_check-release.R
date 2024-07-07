@@ -14,8 +14,16 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 PATH_release <- path(PATH_parq, "release")
 
 # check that it runs together ----
-open_dataset(PATH_release) |>
+c_release <- open_dataset(PATH_release) |>
   distinct(state, county_name) |>
+  collect()
+
+c_release |>
+  arrange(state, county_name) |>
+  kableExtra::kbl(format = "pipe") |>
+  write_lines("status/counties-in-release.txt")
+
+c_release |>
   count(state) |>
   collect()
 

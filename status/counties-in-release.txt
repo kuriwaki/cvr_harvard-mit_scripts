@@ -1,0 +1,329 @@
+|state         |county_name     |
+|:-------------|:---------------|
+|ARIZONA       |MARICOPA        |
+|ARIZONA       |PIMA            |
+|ARIZONA       |SANTA CRUZ      |
+|ARIZONA       |YUMA            |
+|CALIFORNIA    |ALAMEDA         |
+|CALIFORNIA    |AMADOR          |
+|CALIFORNIA    |CONTRA COSTA    |
+|CALIFORNIA    |DEL NORTE       |
+|CALIFORNIA    |EL DORADO       |
+|CALIFORNIA    |FRESNO          |
+|CALIFORNIA    |GLENN           |
+|CALIFORNIA    |HUMBOLDT        |
+|CALIFORNIA    |KERN            |
+|CALIFORNIA    |KINGS           |
+|CALIFORNIA    |LOS ANGELES     |
+|CALIFORNIA    |MARIN           |
+|CALIFORNIA    |MENDOCINO       |
+|CALIFORNIA    |MERCED          |
+|CALIFORNIA    |NEVADA          |
+|CALIFORNIA    |PLACER          |
+|CALIFORNIA    |RIVERSIDE       |
+|CALIFORNIA    |SAN BENITO      |
+|CALIFORNIA    |SAN BERNARDINO  |
+|CALIFORNIA    |SAN DIEGO       |
+|CALIFORNIA    |SAN FRANCISCO   |
+|CALIFORNIA    |SAN LUIS OBISPO |
+|CALIFORNIA    |SAN MATEO       |
+|CALIFORNIA    |SANTA BARBARA   |
+|CALIFORNIA    |SANTA CRUZ      |
+|CALIFORNIA    |SONOMA          |
+|CALIFORNIA    |SUTTER          |
+|CALIFORNIA    |TEHAMA          |
+|CALIFORNIA    |TUOLUMNE        |
+|CALIFORNIA    |VENTURA         |
+|CALIFORNIA    |YUBA            |
+|COLORADO      |ALAMOSA         |
+|COLORADO      |ARCHULETA       |
+|COLORADO      |BENT            |
+|COLORADO      |BROOMFIELD      |
+|COLORADO      |CHAFFEE         |
+|COLORADO      |CHEYENNE        |
+|COLORADO      |CLEAR CREEK     |
+|COLORADO      |CONEJOS         |
+|COLORADO      |COSTILLA        |
+|COLORADO      |CROWLEY         |
+|COLORADO      |CUSTER          |
+|COLORADO      |DELTA           |
+|COLORADO      |DENVER          |
+|COLORADO      |DOLORES         |
+|COLORADO      |DOUGLAS         |
+|COLORADO      |EAGLE           |
+|COLORADO      |EL PASO         |
+|COLORADO      |ELBERT          |
+|COLORADO      |FREMONT         |
+|COLORADO      |GARFIELD        |
+|COLORADO      |GILPIN          |
+|COLORADO      |GRAND           |
+|COLORADO      |GUNNISON        |
+|COLORADO      |HINSDALE        |
+|COLORADO      |HUERFANO        |
+|COLORADO      |KIOWA           |
+|COLORADO      |KIT CARSON      |
+|COLORADO      |LA PLATA        |
+|COLORADO      |LAKE            |
+|COLORADO      |LARIMER         |
+|COLORADO      |LINCOLN         |
+|COLORADO      |LOGAN           |
+|COLORADO      |MESA            |
+|COLORADO      |MINERAL         |
+|COLORADO      |MOFFAT          |
+|COLORADO      |MONTEZUMA       |
+|COLORADO      |MONTROSE        |
+|COLORADO      |MORGAN          |
+|COLORADO      |OTERO           |
+|COLORADO      |OURAY           |
+|COLORADO      |PARK            |
+|COLORADO      |PHILLIPS        |
+|COLORADO      |PITKIN          |
+|COLORADO      |PROWERS         |
+|COLORADO      |PUEBLO          |
+|COLORADO      |RIO BLANCO      |
+|COLORADO      |RIO GRANDE      |
+|COLORADO      |ROUTT           |
+|COLORADO      |SAGUACHE        |
+|COLORADO      |SAN MIGUEL      |
+|COLORADO      |SEDGWICK        |
+|COLORADO      |TELLER          |
+|COLORADO      |WASHINGTON      |
+|COLORADO      |WELD            |
+|COLORADO      |YUMA            |
+|DELAWARE      |STATEWIDE       |
+|FLORIDA       |BRADFORD        |
+|FLORIDA       |BROWARD         |
+|FLORIDA       |CALHOUN         |
+|FLORIDA       |CITRUS          |
+|FLORIDA       |COLLIER         |
+|FLORIDA       |ESCAMBIA        |
+|FLORIDA       |FLAGLER         |
+|FLORIDA       |GULF            |
+|FLORIDA       |HAMILTON        |
+|FLORIDA       |HILLSBOROUGH    |
+|FLORIDA       |HOLMES          |
+|FLORIDA       |LAFAYETTE       |
+|FLORIDA       |LAKE            |
+|FLORIDA       |MANATEE         |
+|FLORIDA       |MARION          |
+|FLORIDA       |MARTIN          |
+|FLORIDA       |NASSAU          |
+|FLORIDA       |OKALOOSA        |
+|FLORIDA       |ORANGE          |
+|FLORIDA       |PALM BEACH      |
+|FLORIDA       |PASCO           |
+|FLORIDA       |ST JOHNS        |
+|FLORIDA       |SUMTER          |
+|FLORIDA       |WAKULLA         |
+|FLORIDA       |WALTON          |
+|GEORGIA       |BACON           |
+|GEORGIA       |BARROW          |
+|GEORGIA       |BEN HILL        |
+|GEORGIA       |BERRIEN         |
+|GEORGIA       |BIBB            |
+|GEORGIA       |BLECKLEY        |
+|GEORGIA       |BRANTLEY        |
+|GEORGIA       |BRYAN           |
+|GEORGIA       |BURKE           |
+|GEORGIA       |CAMDEN          |
+|GEORGIA       |CARROLL         |
+|GEORGIA       |CATOOSA         |
+|GEORGIA       |CHARLTON        |
+|GEORGIA       |CHATHAM         |
+|GEORGIA       |CHATTOOGA       |
+|GEORGIA       |CHEROKEE        |
+|GEORGIA       |CLARKE          |
+|GEORGIA       |COBB            |
+|GEORGIA       |COLQUITT        |
+|GEORGIA       |COLUMBIA        |
+|GEORGIA       |COOK            |
+|GEORGIA       |CRISP           |
+|GEORGIA       |DADE            |
+|GEORGIA       |DAWSON          |
+|GEORGIA       |DEKALB          |
+|GEORGIA       |EARLY           |
+|GEORGIA       |ECHOLS          |
+|GEORGIA       |ELBERT          |
+|GEORGIA       |EMANUEL         |
+|GEORGIA       |FAYETTE         |
+|GEORGIA       |FORSYTH         |
+|GEORGIA       |FRANKLIN        |
+|GEORGIA       |GILMER          |
+|GEORGIA       |GLASCOCK        |
+|GEORGIA       |GLYNN           |
+|GEORGIA       |GORDON          |
+|GEORGIA       |GRADY           |
+|GEORGIA       |GREENE          |
+|GEORGIA       |GWINNETT        |
+|GEORGIA       |HALL            |
+|GEORGIA       |HARALSON        |
+|GEORGIA       |HARRIS          |
+|GEORGIA       |HART            |
+|GEORGIA       |HEARD           |
+|GEORGIA       |HENRY           |
+|GEORGIA       |HOUSTON         |
+|GEORGIA       |IRWIN           |
+|GEORGIA       |JACKSON         |
+|GEORGIA       |JASPER          |
+|GEORGIA       |LANIER          |
+|GEORGIA       |LAURENS         |
+|GEORGIA       |LEE             |
+|GEORGIA       |LOWNDES         |
+|GEORGIA       |LUMPKIN         |
+|GEORGIA       |MADISON         |
+|GEORGIA       |MCDUFFIE        |
+|GEORGIA       |MITCHELL        |
+|GEORGIA       |MORGAN          |
+|GEORGIA       |MURRAY          |
+|GEORGIA       |MUSCOGEE        |
+|GEORGIA       |NEWTON          |
+|GEORGIA       |OCONEE          |
+|GEORGIA       |PAULDING        |
+|GEORGIA       |PIERCE          |
+|GEORGIA       |PIKE            |
+|GEORGIA       |POLK            |
+|GEORGIA       |PULASKI         |
+|GEORGIA       |PUTNAM          |
+|GEORGIA       |RABUN           |
+|GEORGIA       |RICHMOND        |
+|GEORGIA       |ROCKDALE        |
+|GEORGIA       |SCHLEY          |
+|GEORGIA       |SPALDING        |
+|GEORGIA       |TALBOT          |
+|GEORGIA       |TATTNALL        |
+|GEORGIA       |TERRELL         |
+|GEORGIA       |THOMAS          |
+|GEORGIA       |TIFT            |
+|GEORGIA       |UPSON           |
+|GEORGIA       |WALKER          |
+|GEORGIA       |WALTON          |
+|GEORGIA       |WARREN          |
+|GEORGIA       |WHITFIELD       |
+|GEORGIA       |WILCOX          |
+|ILLINOIS      |BROWN           |
+|ILLINOIS      |CLINTON         |
+|ILLINOIS      |HAMILTON        |
+|ILLINOIS      |JO DAVIESS      |
+|ILLINOIS      |MONROE          |
+|ILLINOIS      |PIKE            |
+|ILLINOIS      |UNION           |
+|ILLINOIS      |WAYNE           |
+|IOWA          |DICKINSON       |
+|MARYLAND      |ALLEGANY        |
+|MARYLAND      |ANNE ARUNDEL    |
+|MARYLAND      |CALVERT         |
+|MARYLAND      |CAROLINE        |
+|MARYLAND      |CECIL           |
+|MARYLAND      |CHARLES         |
+|MARYLAND      |DORCHESTER      |
+|MARYLAND      |GARRETT         |
+|MARYLAND      |HARFORD         |
+|MARYLAND      |KENT            |
+|MARYLAND      |PRINCE GEORGE'S |
+|MARYLAND      |QUEEN ANNE'S    |
+|MARYLAND      |SOMERSET        |
+|MARYLAND      |TALBOT          |
+|MARYLAND      |WASHINGTON      |
+|MARYLAND      |WICOMICO        |
+|MICHIGAN      |ALCONA          |
+|MICHIGAN      |ALGER           |
+|MICHIGAN      |CHARLEVOIX      |
+|MICHIGAN      |CLINTON         |
+|MICHIGAN      |GLADWIN         |
+|MICHIGAN      |IRON            |
+|MICHIGAN      |MISSAUKEE       |
+|NEVADA        |CARSON CITY     |
+|NEVADA        |CHURCHILL       |
+|NEVADA        |DOUGLAS         |
+|NEVADA        |ELKO            |
+|NEVADA        |LANDER          |
+|NEVADA        |LYON            |
+|NEVADA        |PERSHING        |
+|NEVADA        |WASHOE          |
+|NEVADA        |WHITE PINE      |
+|NEW JERSEY    |BERGEN          |
+|NEW JERSEY    |CAMDEN          |
+|NEW JERSEY    |CUMBERLAND      |
+|NEW JERSEY    |GLOUCESTER      |
+|NEW JERSEY    |MONMOUTH        |
+|NEW JERSEY    |PASSAIC         |
+|NEW JERSEY    |SALEM           |
+|OHIO          |ALLEN           |
+|OHIO          |ASHTABULA       |
+|OHIO          |AUGLAIZE        |
+|OHIO          |BELMONT         |
+|OHIO          |CHAMPAIGN       |
+|OHIO          |CLARK           |
+|OHIO          |CLINTON         |
+|OHIO          |DARKE           |
+|OHIO          |ERIE            |
+|OHIO          |FAYETTE         |
+|OHIO          |FRANKLIN        |
+|OHIO          |GALLIA          |
+|OHIO          |GREENE          |
+|OHIO          |HARRISON        |
+|OHIO          |HIGHLAND        |
+|OHIO          |HOCKING         |
+|OHIO          |LOGAN           |
+|OHIO          |MIAMI           |
+|OHIO          |PICKAWAY        |
+|OHIO          |PREBLE          |
+|OHIO          |PUTNAM          |
+|OHIO          |RICHLAND        |
+|OHIO          |ROSS            |
+|OHIO          |SENECA          |
+|OHIO          |SHELBY          |
+|OHIO          |TRUMBULL        |
+|OHIO          |TUSCARAWAS      |
+|OHIO          |VAN WERT        |
+|OHIO          |WAYNE           |
+|OHIO          |WOOD            |
+|OHIO          |WYANDOT         |
+|OREGON        |COLUMBIA        |
+|OREGON        |COOS            |
+|OREGON        |DOUGLAS         |
+|OREGON        |HARNEY          |
+|OREGON        |JOSEPHINE       |
+|OREGON        |KLAMATH         |
+|OREGON        |LINCOLN         |
+|OREGON        |LINN            |
+|OREGON        |MARION          |
+|OREGON        |POLK            |
+|OREGON        |UNION           |
+|OREGON        |WASCO           |
+|OREGON        |WASHINGTON      |
+|OREGON        |YAMHILL         |
+|RHODE ISLAND  |STATEWIDE       |
+|TEXAS         |ANDREWS         |
+|TEXAS         |BOSQUE          |
+|TEXAS         |COLLIN          |
+|TEXAS         |COOKE           |
+|TEXAS         |COTTLE          |
+|TEXAS         |CRANE           |
+|TEXAS         |ELLIS           |
+|TEXAS         |ERATH           |
+|TEXAS         |FORT BEND       |
+|TEXAS         |GRAYSON         |
+|TEXAS         |GUADALUPE       |
+|TEXAS         |HIDALGO         |
+|TEXAS         |KENDALL         |
+|TEXAS         |LEE             |
+|TEXAS         |MONTAGUE        |
+|TEXAS         |NAVARRO         |
+|TEXAS         |OLDHAM          |
+|TEXAS         |ORANGE          |
+|TEXAS         |PARMER          |
+|TEXAS         |POTTER          |
+|TEXAS         |SCURRY          |
+|TEXAS         |SMITH           |
+|TEXAS         |STEPHENS        |
+|TEXAS         |TAYLOR          |
+|TEXAS         |WALKER          |
+|TEXAS         |WASHINGTON      |
+|TEXAS         |WHARTON         |
+|UTAH          |SAN JUAN        |
+|WEST VIRGINIA |NICHOLAS        |
+|WEST VIRGINIA |WOOD            |
+|WISCONSIN     |BROWN           |
+|WISCONSIN     |PIERCE          |
+|WISCONSIN     |WAUKESHA        |
