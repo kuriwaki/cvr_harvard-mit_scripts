@@ -259,6 +259,7 @@
 |OHIO          |ASHTABULA       |
 |OHIO          |AUGLAIZE        |
 |OHIO          |BELMONT         |
+|OHIO          |BUTLER          |
 |OHIO          |CHAMPAIGN       |
 |OHIO          |CLARK           |
 |OHIO          |CLINTON         |
@@ -304,6 +305,7 @@
 |TEXAS         |ANDREWS         |
 |TEXAS         |BOSQUE          |
 |TEXAS         |COLLIN          |
+|TEXAS         |COMAL           |
 |TEXAS         |COOKE           |
 |TEXAS         |COTTLE          |
 |TEXAS         |CRANE           |
