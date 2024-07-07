@@ -13,20 +13,17 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 }
 
 PATH_interim <- path(PATH_parq, "intermediate/coalesced")
-PATH_precincts <- path(PATH_parq, "intermediate/precinct_std/cvr_mdsl_precinct_crosswalk")
+PATH_precincts <- path(PATH_parq, "intermediate/precinct_crosswalk/cvr_mdsl_precinct_crosswalk")
 PATH_release <- path(PATH_parq, "release")
 
 # Data ---
 ds <- open_dataset(PATH_interim)
 
 
-# Modification functions ---
-## potentially add a simple DEM/REP designation
-
+# Classifications ----
 # update compare.xlsx
 source("R/combine/02_combine-to-wide.R")
 
-# Classifications ----
 use_counties <- read_excel(
   path(PATH_parq, "combined/compare.xlsx"),
   sheet = "by-county") |>
