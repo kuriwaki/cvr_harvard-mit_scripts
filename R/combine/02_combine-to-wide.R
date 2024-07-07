@@ -220,20 +220,6 @@ out_county |>
                   caption = "Harvard exact match (rows) vs. MEDSL exact match (cols)") |>
   write_lines("status/by-county_correct-H-vs-M.txt")
 
-out_county |>
-  mutate(across(
-    matches("color2_"),
-    \(x) {
-      fct_collapse(
-        x,
-        "any 1-10% mismatch" = c("any < 5% mismatch", "any < 10% mismatch")
-        )
-        })) |>
-  xtabs(~ color2_h + color2_m, data = _, addNA = TRUE) |>
-  addmargins() |>
-  kableExtra::kbl(format = "pipe",
-                  caption = "Harvard match (rows) vs. MEDSL match (cols)") |>
-  write_lines("status/by-county_correct-H-vs-M-2.txt")
 
 
 # Overall classification (old "color") ----
