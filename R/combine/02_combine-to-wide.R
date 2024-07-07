@@ -50,9 +50,25 @@ count_h <- dsa_h |>
   mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name)) |>
   rename(candidate_h = candidate, votes_h = votes)
 
+
 ## MIT =-------
 summ_fmt <- function(tbl) {
   tbl |>
+    # fix Thomas Hall
+    # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/174
+    mutate(
+      party_detailed = ifelse(
+        state == "OHIO" & office == "STATE HOUSE" & district == "053" & candidate == "THOMAS HELL",
+        "REPUBLICAN", party_detailed),
+      candidate = ifelse(
+        state == "OHIO" & office == "STATE HOUSE" & district == "053" & candidate == "THOMAS HELL",
+        "THOMAS HALL", candidate),
+    ) |>
+    # Add TX missing party affiliations
+    left_join(read_delim("R/combine/metadata/TX_party-metadata.txt", delim = ",", show_col_types = FALSE),
+              by = c("state", "office", "candidate", "district")) |>
+    mutate(party_detailed = coalesce(party_detailed.x, party_detailed.y),
+           party_detailed.x = NULL, party_detailed.y = NULL) |>
     count(state, county_name, office, district,
           candidate, party_detailed, contest,
           name = "votes") |>
