@@ -57,15 +57,14 @@ summ_fmt <- function(tbl) {
     # fix Thomas Hall
     # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/174
     mutate(
-      party_detailed = ifelse(
-        state == "OHIO" & office == "STATE HOUSE" & district == "053" & candidate == "THOMAS HELL",
-        "REPUBLICAN", party_detailed),
       candidate = ifelse(
         state == "OHIO" & office == "STATE HOUSE" & district == "053" & candidate == "THOMAS HELL",
         "THOMAS HALL", candidate),
     ) |>
-    # Add TX missing party affiliations
-    left_join(read_delim("R/combine/metadata/TX_party-metadata.txt", delim = ",", show_col_types = FALSE),
+    # fix district in Mason, there is only one district and medsl has it wrong
+    mutate(district = ifelse(state == "MICHIGAN" & county_name == "MASON" & district == "103", "101", district)) |>
+    # Add missing party affiliations
+    left_join(read_delim("R/combine/metadata/missing-party-metadata.txt", delim = ",", col_types = "ccccci"),
               by = c("state", "office", "candidate", "district"),
               relationship = "many-to-one") |>
     mutate(party_detailed = coalesce(party_detailed.x, party_detailed.y),
@@ -232,3 +231,15 @@ virtualenv_create(packages = c("openpyxl", "pandas")) # set force = TRUE once
 use_virtualenv("~/.virtualenvs/r-reticulate")
 py_config()
 source_python("R/combine/01a_gen_classifications.py", envir = NULL)
+
+
+out_coal |>
+  # missing candidate
+  semi_join(filter(out_county, color2_c %in% c("candidate missing", "no entry in Baltz"))) |>
+  filter(party_detailed %in% c("REPUBLICAN", "DEMOCRAT", "LIBERTARIAN"),
+         state != "DISTRICT OF COLUMBIA") |>
+  # all non-missing candidates should be below threshold
+  filter(all(abs((votes_c - votes_v)/votes_v) <= 0.01, na.rm = TRUE),
+         .by = c(state, county_name)) |>
+  distinct(state, county_name)
+

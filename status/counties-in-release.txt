@@ -236,9 +236,12 @@
 |MICHIGAN      |ALGER           |
 |MICHIGAN      |CHARLEVOIX      |
 |MICHIGAN      |CLINTON         |
+|MICHIGAN      |EATON           |
 |MICHIGAN      |GLADWIN         |
 |MICHIGAN      |IRON            |
+|MICHIGAN      |MASON           |
 |MICHIGAN      |MISSAUKEE       |
+|MICHIGAN      |WASHTENAW       |
 |NEVADA        |CARSON CITY     |
 |NEVADA        |CHURCHILL       |
 |NEVADA        |DOUGLAS         |
