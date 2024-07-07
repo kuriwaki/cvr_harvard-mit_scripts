@@ -2,11 +2,11 @@
 |:------------------|---:|
 |0 difference       | 229|
 |any < 1% mismatch  |  79|
-|any < 5% mismatch  |  27|
+|any < 5% mismatch  |  26|
 |any < 10% mismatch |   8|
 |candidate missing  |  23|
 |not collected      |  53|
-|no entry in Baltz  |   3|
+|no entry in Baltz  |   4|
 |red                |  38|
 |unclassified       |   1|
 |NA                 |   1|
