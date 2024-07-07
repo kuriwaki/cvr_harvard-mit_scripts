@@ -24,10 +24,12 @@ open_dataset(PATH_release) |>
   collect()
 
 # check for duplicates
-for (j in c("US PRESIDENT", "US HOUSE", "US SENATE")) {
+for (j in c("US PRESIDENT", "GOVERNOR", "US HOUSE", "US SENATE",
+            "STATE SENATE")) {
+
   dups_count <- open_dataset(PATH_release) |>
     filter(office == j) |>
-    count(state, county_name, cvr_id) |>
+    count(state, county_name, cvr_id, district) |>
     count(n, name = "nn") |>
     collect()
   gc()
