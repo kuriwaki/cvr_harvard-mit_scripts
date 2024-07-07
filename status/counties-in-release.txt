@@ -35,6 +35,7 @@
 |CALIFORNIA    |TUOLUMNE        |
 |CALIFORNIA    |VENTURA         |
 |CALIFORNIA    |YUBA            |
+|COLORADO      |ADAMS           |
 |COLORADO      |ALAMOSA         |
 |COLORADO      |ARCHULETA       |
 |COLORADO      |BENT            |
@@ -60,6 +61,7 @@
 |COLORADO      |GUNNISON        |
 |COLORADO      |HINSDALE        |
 |COLORADO      |HUERFANO        |
+|COLORADO      |JEFFERSON       |
 |COLORADO      |KIOWA           |
 |COLORADO      |KIT CARSON      |
 |COLORADO      |LA PLATA        |
@@ -211,13 +213,18 @@
 |IOWA          |DICKINSON       |
 |MARYLAND      |ALLEGANY        |
 |MARYLAND      |ANNE ARUNDEL    |
+|MARYLAND      |BALTIMORE       |
+|MARYLAND      |BALTIMORE CITY  |
 |MARYLAND      |CALVERT         |
 |MARYLAND      |CAROLINE        |
+|MARYLAND      |CARROLL         |
 |MARYLAND      |CECIL           |
 |MARYLAND      |CHARLES         |
 |MARYLAND      |DORCHESTER      |
+|MARYLAND      |FREDERICK       |
 |MARYLAND      |GARRETT         |
 |MARYLAND      |HARFORD         |
+|MARYLAND      |HOWARD          |
 |MARYLAND      |KENT            |
 |MARYLAND      |PRINCE GEORGE'S |
 |MARYLAND      |QUEEN ANNE'S    |
