@@ -66,7 +66,8 @@ summ_fmt <- function(tbl) {
     ) |>
     # Add TX missing party affiliations
     left_join(read_delim("R/combine/metadata/TX_party-metadata.txt", delim = ",", show_col_types = FALSE),
-              by = c("state", "office", "candidate", "district")) |>
+              by = c("state", "office", "candidate", "district"),
+              relationship = "many-to-one") |>
     mutate(party_detailed = coalesce(party_detailed.x, party_detailed.y),
            party_detailed.x = NULL, party_detailed.y = NULL) |>
     count(state, county_name, office, district,
