@@ -1,11 +1,14 @@
 # create dataset like
-# st office dist  candidate party votes_h votes_m
-# AL ST_HOU  001 JOHN SMITH     R    1299    1300
+# state       office dist  candidate  party votes_h votes_m
+# ALASKA STATE HOUSE  001 JOHN SMITH    REP    1299    1300
 
-library(tidyverse)
-library(arrow)
-library(fs)
-source("R/combine/01c_classification-R.R")
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(fs)
+})
+
+source("R/combine/01b_classification-R.R")
 
 username <- Sys.info()["user"]
 if (username %in% c("shirokuriwaki", "sk2983")) {
@@ -36,6 +39,7 @@ office_simpl <- c("US PRESIDENT" = "uspres",
                   "GOVERNOR" = "stgov")
 
 # counts -----
+cli::cli_alert_info("Collecting counts from CVRs")
 
 ## Harvard
 count_h <- dsa_h |>
@@ -54,27 +58,10 @@ count_h <- dsa_h |>
 ## MIT =-------
 summ_fmt <- function(tbl) {
   tbl |>
-    # fix Thomas Hall
-    # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/174
-    mutate(
-      candidate = ifelse(
-        state == "OHIO" & office == "STATE HOUSE" & district == "053" & candidate == "THOMAS HELL",
-        "THOMAS HALL", candidate),
-    ) |>
-    # fix district in Mason, there is only one district and medsl has it wrong
-    mutate(district = ifelse(state == "MICHIGAN" & county_name == "MASON" & district == "103", "101", district)) |>
-    # Add missing party affiliations
-    left_join(read_delim("R/combine/metadata/missing-party-metadata.txt", delim = ",", col_types = "ccccci"),
-              by = c("state", "office", "candidate", "district"),
-              relationship = "many-to-one") |>
-    mutate(party_detailed = coalesce(party_detailed.x, party_detailed.y),
-           party_detailed.x = NULL, party_detailed.y = NULL) |>
     count(state, county_name, office, district,
           candidate, party_detailed, contest,
           name = "votes") |>
     collect() |>
-    # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/41
-    filter(state != "VIRGINIA") |>
     mutate(
       county_name = replace(county_name, state %in% c("ALASKA", "DELAWARE", "RHODE ISLAND"), "STATEWIDE")
     ) |>
@@ -94,15 +81,19 @@ summ_fmt <- function(tbl) {
     mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name))
 }
 
-count_m <- dsa_m |> summ_fmt() |> rename(candidate_m = candidate, votes_m = votes)
+count_m <- dsa_m |> custom_add_party() |>  filter(state != "VIRGINIA") |>
+  summ_fmt() |> rename(candidate_m = candidate, votes_m = votes)
 count_c <- dsa_c |> summ_fmt() |> rename(candidate_c = candidate, votes_c = votes)
 
 
 ## Returns ------
+cli::cli_alert_info("Collecting returns")
 # all counties that occur in one of H or M
 all_counties <- full_join(
   count_m |> count(state, county_name, name = "count_m"),
-  count_h |> count(state, county_name, name = "count_h")
+  count_h |> count(state, county_name, name = "count_h"),
+  by = c("state", "county_name"),
+  relationship = "one-to-one"
 )
 
 count_v <- dsa_v |>
@@ -119,15 +110,8 @@ count_v <- dsa_v |>
   # ALL COUNTIES ever mentioned in H or M
   semi_join(all_counties, by = c("state", "county_name"))
 
-# Classifications ---
-precs_all <- readxl::read_excel(path(PATH_parq, "combined/precincts_match.xlsx"))
-precs <- precs_all |>
-  select(state, county, n_precincts_cvr, n_precincts_vest,
-         max_precinct_uspres_diff = max_vote_dist) |>
-  filter(state != "ALASKA") |>
-  arrange(state)
-
 # Together ------
+cli::cli_alert_info("Combining counts")
 joinvars <- c("state", "county_name", "office", "district", "party_detailed", "cand_rank")
 out_cand <- count_h |>
   full_join(count_m, by = joinvars) |>
@@ -137,7 +121,8 @@ out_cand <- count_h |>
   mutate(office = factor(office, levels = names(office_simpl))) |>
   arrange(state, county_name, office, district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein) |>
-  anti_join(read_csv("R/release/metadata/counties_remove.csv", col_types = "cc"))
+  anti_join(read_csv("R/release/metadata/counties_remove.csv", col_types = "cc"),
+            by = c("state", "county_name"))
 
 cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h, candidate_h)
 cand_summ_m <- categorize_diff(out_cand, votes_m, color2_m, candidate_m)
@@ -164,7 +149,6 @@ out_county <- out_cand |>
   mutate(match_score_h = rowMeans(pick(matches("diff_h")) == 0, na.rm = TRUE),
          match_score_m = rowMeans(pick(matches("diff_m")) == 0, na.rm = TRUE)
   ) |>
-  left_join(precs, by = c("state", "county_name" = "county")) |>
   left_join(cand_summ_h, by = c("state", "county_name")) |>
   left_join(cand_summ_m, by = c("state", "county_name")) |>
   # Declare release criterion ----
@@ -181,7 +165,7 @@ release_counties <-  out_county |>
   distinct(state, county_name, release)
 
 out_coal <- out_cand |>
-  left_join(release_counties, relationship = "many-to-one") |>
+  left_join(release_counties, relationship = "many-to-one", by = c("state", "county_name")) |>
   select(state:party_detailed, release, matches("_(c|v)$")) |>
   tidylog::filter(any(!is.na(votes_c)), .by = c(state, county_name)) |>
   mutate(diff_pct = scales::comma(((votes_v - votes_c) / votes_v), accuracy = 0.001),
@@ -191,12 +175,12 @@ out_coal <- out_cand |>
 # Write to Dropbox -----
 list(`by-cand` = select(out_cand, !matches("_c$")),
      `by-county` = select(out_county, !matches("(diff|votes)_c$")),
-     `by-cand-coalesced` = out_coal,
-     `precinct` = precs_all) |>
+     `by-cand-coalesced` = out_coal) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
 
 
 # check ----
+cli::cli_alert_info("Performing checks")
 
 # counties that don't appear in validation (all should!)
 anti_join(all_counties, count_v, by = c("state", "county_name"))
@@ -231,15 +215,3 @@ virtualenv_create(packages = c("openpyxl", "pandas")) # set force = TRUE once
 use_virtualenv("~/.virtualenvs/r-reticulate")
 py_config()
 source_python("R/combine/01a_gen_classifications.py", envir = NULL)
-
-
-out_coal |>
-  # missing candidate
-  semi_join(filter(out_county, color2_c %in% c("candidate missing", "no entry in Baltz"))) |>
-  filter(party_detailed %in% c("REPUBLICAN", "DEMOCRAT", "LIBERTARIAN"),
-         state != "DISTRICT OF COLUMBIA") |>
-  # all non-missing candidates should be below threshold
-  filter(all(abs((votes_c - votes_v)/votes_v) <= 0.01, na.rm = TRUE),
-         .by = c(state, county_name)) |>
-  distinct(state, county_name)
-

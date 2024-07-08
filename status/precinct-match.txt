@@ -1,6 +1,0 @@
-|colour       | match_within_prec| n_counties| n_states|
-|:------------|-----------------:|----------:|--------:|
-|green        |               132|        143|        8|
-|yellow       |                 7|         47|        6|
-|red          |                22|         49|        7|
-|All counties |               161|        239|        8|
