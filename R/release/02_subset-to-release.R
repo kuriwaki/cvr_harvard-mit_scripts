@@ -30,7 +30,8 @@ use_counties <- read_excel(
   select(state, county_name)
 
 # counties to remove precinct info from
-redact_precinct <- read_csv(path(PATH_parq, "intermediate/precinct_crosswalk/affected_county.csv"))
+redact_precinct <- read_csv(path(PATH_parq, "intermediate/precinct_crosswalk/affected_county.csv"),
+                            show_col_types = FALSE)
 
 
 # Subset and WRITE ----

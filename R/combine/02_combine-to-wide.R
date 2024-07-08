@@ -39,6 +39,7 @@ office_simpl <- c("US PRESIDENT" = "uspres",
                   "GOVERNOR" = "stgov")
 
 # counts -----
+cli::cli_alert_info("Collecting counts from CVRs")
 
 ## Harvard
 count_h <- dsa_h |>
@@ -102,6 +103,7 @@ count_c <- dsa_c |> summ_fmt() |> rename(candidate_c = candidate, votes_c = vote
 
 
 ## Returns ------
+cli::cli_alert_info("Collecting returns")
 # all counties that occur in one of H or M
 all_counties <- full_join(
   count_m |> count(state, county_name, name = "count_m"),
@@ -124,15 +126,8 @@ count_v <- dsa_v |>
   # ALL COUNTIES ever mentioned in H or M
   semi_join(all_counties, by = c("state", "county_name"))
 
-# Classifications ---
-precs_all <- readxl::read_excel(path(PATH_parq, "combined/precincts_match.xlsx"))
-precs <- precs_all |>
-  select(state, county, n_precincts_cvr, n_precincts_vest,
-         max_precinct_uspres_diff = max_vote_dist) |>
-  filter(state != "ALASKA") |>
-  arrange(state)
-
 # Together ------
+cli::cli_alert_info("Combining counts")
 joinvars <- c("state", "county_name", "office", "district", "party_detailed", "cand_rank")
 out_cand <- count_h |>
   full_join(count_m, by = joinvars) |>
@@ -170,7 +165,6 @@ out_county <- out_cand |>
   mutate(match_score_h = rowMeans(pick(matches("diff_h")) == 0, na.rm = TRUE),
          match_score_m = rowMeans(pick(matches("diff_m")) == 0, na.rm = TRUE)
   ) |>
-  left_join(precs, by = c("state", "county_name" = "county")) |>
   left_join(cand_summ_h, by = c("state", "county_name")) |>
   left_join(cand_summ_m, by = c("state", "county_name")) |>
   # Declare release criterion ----
@@ -197,12 +191,12 @@ out_coal <- out_cand |>
 # Write to Dropbox -----
 list(`by-cand` = select(out_cand, !matches("_c$")),
      `by-county` = select(out_county, !matches("(diff|votes)_c$")),
-     `by-cand-coalesced` = out_coal,
-     `precinct` = precs_all) |>
+     `by-cand-coalesced` = out_coal) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
 
 
 # check ----
+cli::cli_alert_info("Performing checks")
 
 # counties that don't appear in validation (all should!)
 anti_join(all_counties, count_v, by = c("state", "county_name"))
