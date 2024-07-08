@@ -5,6 +5,7 @@ suppressPackageStartupMessages({
 })
 
 source("R/prepare/custom-reallocate-precinct.R")
+source("R/prepare/custom_add-party-metadata.R")
 source("R/prepare/fmt_release.R")
 
 gc()
@@ -30,7 +31,7 @@ rm_counties <- read_csv("R/release/metadata/counties_remove.csv", col_types = "c
   mutate(county_name = replace_na(county_name, ""))
 
 ## swap these out of MIT if available and add to Harvad
-hv_counties <- read_csv("R/release/metadata/counties_harv.csv")
+hv_counties <- read_csv("R/release/metadata/counties_harv.csv", col_types = "cc")
 
 
 # Data ----
@@ -52,6 +53,7 @@ ds_meds |>
   anti_join(hv_counties, by = c("state", "county_name")) |>
   anti_join(seneca_rm, by = c("state", "county_name", "cvr_id", "office", "district")) |>
   reallocate_wi_prec() |>
+  custom_add_party() |>
   fmt_for_release() |>
   left_join(prec_names, by = c("state", "county_name", "precinct"), relationship = "many-to-one") |>
   write_dataset(

@@ -58,27 +58,10 @@ count_h <- dsa_h |>
 ## MIT =-------
 summ_fmt <- function(tbl) {
   tbl |>
-    # fix Thomas Hall
-    # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/174
-    mutate(
-      candidate = ifelse(
-        state == "OHIO" & office == "STATE HOUSE" & district == "053" & candidate == "THOMAS HELL",
-        "THOMAS HALL", candidate),
-    ) |>
-    # fix district in Mason, there is only one district and medsl has it wrong
-    mutate(district = ifelse(state == "MICHIGAN" & county_name == "MASON" & district == "103", "101", district)) |>
-    # Add missing party affiliations
-    left_join(read_delim("R/combine/metadata/missing-party-metadata.txt", delim = ",", col_types = "ccccci"),
-              by = c("state", "office", "candidate", "district"),
-              relationship = "many-to-one") |>
-    mutate(party_detailed = coalesce(party_detailed.x, party_detailed.y),
-           party_detailed.x = NULL, party_detailed.y = NULL) |>
     count(state, county_name, office, district,
           candidate, party_detailed, contest,
           name = "votes") |>
     collect() |>
-    # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/41
-    filter(state != "VIRGINIA") |>
     mutate(
       county_name = replace(county_name, state %in% c("ALASKA", "DELAWARE", "RHODE ISLAND"), "STATEWIDE")
     ) |>
@@ -98,7 +81,8 @@ summ_fmt <- function(tbl) {
     mutate(cand_rank = 1:n(), .by = c(state, office, district, party_detailed, county_name))
 }
 
-count_m <- dsa_m |> summ_fmt() |> rename(candidate_m = candidate, votes_m = votes)
+count_m <- dsa_m |> custom_add_party() |>  filter(state != "VIRGINIA") |>
+  summ_fmt() |> rename(candidate_m = candidate, votes_m = votes)
 count_c <- dsa_c |> summ_fmt() |> rename(candidate_c = candidate, votes_c = votes)
 
 
