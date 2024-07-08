@@ -8,7 +8,7 @@ suppressPackageStartupMessages({
   library(fs)
 })
 
-source("R/combine/01c_classification-R.R")
+source("R/combine/01b_classification-R.R")
 
 username <- Sys.info()["user"]
 if (username %in% c("shirokuriwaki", "sk2983")) {
