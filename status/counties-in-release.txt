@@ -14,6 +14,7 @@
 |CALIFORNIA    |HUMBOLDT        |
 |CALIFORNIA    |KERN            |
 |CALIFORNIA    |KINGS           |
+|CALIFORNIA    |LAKE            |
 |CALIFORNIA    |LOS ANGELES     |
 |CALIFORNIA    |MARIN           |
 |CALIFORNIA    |MENDOCINO       |
@@ -30,6 +31,7 @@
 |CALIFORNIA    |SAN MATEO       |
 |CALIFORNIA    |SANTA BARBARA   |
 |CALIFORNIA    |SANTA CRUZ      |
+|CALIFORNIA    |SHASTA          |
 |CALIFORNIA    |SONOMA          |
 |CALIFORNIA    |SUTTER          |
 |CALIFORNIA    |TEHAMA          |
@@ -121,6 +123,7 @@
 |FLORIDA       |WALTON          |
 |GEORGIA       |BACON           |
 |GEORGIA       |BARROW          |
+|GEORGIA       |BARTOW          |
 |GEORGIA       |BEN HILL        |
 |GEORGIA       |BERRIEN         |
 |GEORGIA       |BIBB            |
