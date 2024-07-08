@@ -18,6 +18,11 @@ if (username %in% c("shirokuriwaki", "sk2983")) {
 
 ## destination for coalesced data
 PATH_interim <- path(PATH_parq, "intermediate/coalesced")
+PATH_precincts <- path(PATH_parq, "intermediate/precinct_crosswalk/cvr_mdsl_precinct_crosswalk")
+
+# Precincts ----
+prec_names <- open_dataset(PATH_precincts) |>
+  select(-discrepancy)
 
 # Manual counties ----
 ## explicitly remove the following counties
@@ -39,6 +44,7 @@ ds_meds |>
   anti_join(hv_counties, by = c("state", "county_name")) |>
   reallocate_wi_prec() |>
   fmt_for_release() |>
+  left_join(prec_names, by = c("state", "county_name", "precinct"), relationship = "many-to-one") |>
   write_dataset(
     path = PATH_interim,
     existing_data_behavior = "overwrite",
@@ -48,6 +54,7 @@ ds_meds |>
 ## add Harvard
 ds_harv_sel |>
   fmt_for_release() |>
+  left_join(prec_names, by = c("state", "county_name", "precinct"), relationship = "many-to-one") |>
   write_dataset(
     path = PATH_interim,
     existing_data_behavior = "delete_matching",
