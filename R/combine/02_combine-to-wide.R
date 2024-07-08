@@ -1,10 +1,13 @@
 # create dataset like
-# st office dist  candidate party votes_h votes_m
-# AL ST_HOU  001 JOHN SMITH     R    1299    1300
+# state       office dist  candidate  party votes_h votes_m
+# ALASKA STATE HOUSE  001 JOHN SMITH    REP    1299    1300
 
-library(tidyverse)
-library(arrow)
-library(fs)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(fs)
+})
+
 source("R/combine/01c_classification-R.R")
 
 username <- Sys.info()["user"]
@@ -102,7 +105,9 @@ count_c <- dsa_c |> summ_fmt() |> rename(candidate_c = candidate, votes_c = vote
 # all counties that occur in one of H or M
 all_counties <- full_join(
   count_m |> count(state, county_name, name = "count_m"),
-  count_h |> count(state, county_name, name = "count_h")
+  count_h |> count(state, county_name, name = "count_h"),
+  by = c("state", "county_name"),
+  relationship = "one-to-one"
 )
 
 count_v <- dsa_v |>
@@ -137,7 +142,8 @@ out_cand <- count_h |>
   mutate(office = factor(office, levels = names(office_simpl))) |>
   arrange(state, county_name, office, district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein) |>
-  anti_join(read_csv("R/release/metadata/counties_remove.csv", col_types = "cc"))
+  anti_join(read_csv("R/release/metadata/counties_remove.csv", col_types = "cc"),
+            by = c("state", "county_name"))
 
 cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h, candidate_h)
 cand_summ_m <- categorize_diff(out_cand, votes_m, color2_m, candidate_m)
@@ -181,7 +187,7 @@ release_counties <-  out_county |>
   distinct(state, county_name, release)
 
 out_coal <- out_cand |>
-  left_join(release_counties, relationship = "many-to-one") |>
+  left_join(release_counties, relationship = "many-to-one", by = c("state", "county_name")) |>
   select(state:party_detailed, release, matches("_(c|v)$")) |>
   tidylog::filter(any(!is.na(votes_c)), .by = c(state, county_name)) |>
   mutate(diff_pct = scales::comma(((votes_v - votes_c) / votes_v), accuracy = 0.001),
@@ -231,15 +237,3 @@ virtualenv_create(packages = c("openpyxl", "pandas")) # set force = TRUE once
 use_virtualenv("~/.virtualenvs/r-reticulate")
 py_config()
 source_python("R/combine/01a_gen_classifications.py", envir = NULL)
-
-
-out_coal |>
-  # missing candidate
-  semi_join(filter(out_county, color2_c %in% c("candidate missing", "no entry in Baltz"))) |>
-  filter(party_detailed %in% c("REPUBLICAN", "DEMOCRAT", "LIBERTARIAN"),
-         state != "DISTRICT OF COLUMBIA") |>
-  # all non-missing candidates should be below threshold
-  filter(all(abs((votes_c - votes_v)/votes_v) <= 0.01, na.rm = TRUE),
-         .by = c(state, county_name)) |>
-  distinct(state, county_name)
-

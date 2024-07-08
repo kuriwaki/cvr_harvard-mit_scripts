@@ -1,6 +1,8 @@
-library(tidyverse)
-library(arrow)
-library(fs)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(fs)
+})
 
 source("R/prepare/custom-reallocate-precinct.R")
 source("R/prepare/fmt_release.R")

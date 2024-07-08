@@ -1,9 +1,9 @@
-library(tidyverse)
-library(arrow)
-library(readxl)
-library(fs)
-
-gc()
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(readxl)
+  library(fs)
+})
 
 username <- Sys.info()["user"]
 if (username %in% c("shirokuriwaki", "sk2983")) {
@@ -49,4 +49,5 @@ ds |>
     format = "parquet"
   )
 
+gc()
 
