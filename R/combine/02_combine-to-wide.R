@@ -9,6 +9,7 @@ suppressPackageStartupMessages({
 })
 
 source("R/combine/01b_classification-R.R")
+source("R/prepare/custom_add-party-metadata.R")
 
 username <- Sys.info()["user"]
 if (username %in% c("shirokuriwaki", "sk2983")) {
