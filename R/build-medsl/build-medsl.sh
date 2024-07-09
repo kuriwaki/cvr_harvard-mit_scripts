@@ -44,9 +44,10 @@ parallel -j 4 Rscript code/process_headers.R ::: \
 
 # then convert them to their unpaginated form
 # run this locally, it is many magnitudes faster than on Supercloud
+python code/parse_pagination.py --path data/raw/California/Alameda/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden and Kamala d Harris" --groupcol "Ballot Type"
 python code/parse_pagination.py --path data/raw/California/Contra\ Costa/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden Dem" --groupcol "Ballot Type"
 python code/parse_pagination.py --path data/raw/California/King/cvr_headers.csv --targetcol "President of the United States Vote for 1 Joseph r Biden and Kamala d Harris Dem" --groupcol "Ballot Type"
-python code/parse_pagination.py --path data/raw/California/Merced/cvr.csv --targetcol "PRESIDENT AND VICE PRESIDENT Countywide (1731)" --groupcol "Ballot Style"
+python code/parse_pagination.py --path data/raw/California/Merced/cvr.csv --targetcol "UNITED STATES REPRESENTATIVE, DISTRICT 16 Countywide (1734)" --groupcol "Ballot Style"
 python code/parse_pagination.py --path data/raw/California/San\ Mateo/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden Kamala d Harris Dem" --groupcol "Ballot Type"
 python code/parse_pagination.py --path data/raw/California/Santa\ Clara/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden Kamala d Harris Dem" --groupcol "Ballot Type"
 python code/parse_pagination.py --path data/raw/California/Sonoma/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph p Biden Dem" --groupcol "Ballot Type"
@@ -64,7 +65,6 @@ python code/parse_pagination.py --path data/raw/Ohio/Champaign/cvr.csv --targetc
 python code/parse_pagination.py --path data/raw/Ohio/Cuyahoga/cvr.csv --targetcol "PRESIDENT AND VICE PRESIDENT" --groupcol "Ballot Style"
 python code/parse_pagination.py --path data/raw/Ohio/Greene/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden Dem" --groupcol "Ballot Type"
 python code/parse_pagination.py --path data/raw/Rhode\ Island/ri.csv --targetcol "Presidential Electors For: (29562)" --groupcol "Ballot Style"
-python code/parse_pagination.py --path data/raw/California/Alameda/cvr_headers.csv --targetcol "President and Vice President Vote for 1 Joseph r Biden and Kamala d Harris" --groupcol "Ballot Type"
 
 # Manually process some weird edge cases
 

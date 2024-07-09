@@ -17,7 +17,7 @@ DROP_COLS <- c(
   "Box Id", "Box Position", "Ballot Id", "Ballot Style Id", "Scan Computer Name"
 )
 
-REDACT_NAMES = c("X", "redacted for voter privacy", "REDACTED", "Redacted", "*")
+REDACT_NAMES = c("X", "redacted for voter privacy", "REDACTED", "Redacted", "*", "redacted")
 
 # various permutations of the precinct column name
 RENAME_COLS <- c(
