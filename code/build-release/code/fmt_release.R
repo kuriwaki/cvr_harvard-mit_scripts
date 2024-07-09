@@ -17,8 +17,9 @@ fmt_for_release <- function(tbl) {
       party = ifelse(party_detailed == "REPUBLICAN",  "REP", party),
       party = ifelse(party_detailed == "LIBERTARIAN", "LBT", party),
       party = ifelse(party_detailed == "GREEN",       "GRN", party),
-      party = ifelse(party_detailed == "WRITEIN",     "W-I", party),
-      party = ifelse(!party %in% c("DEM", "REP", "LBT", "GRN", "W-I"), "OTH", party),
+      party = ifelse(!party %in% c("DEM", "REP", "LBT", "GRN"), "OTH", party),
+      # revert invalid votes to party = NA
+      party = ifelse(candidate %in% c("UNDERVOTE", "OVERVOTE", "WRITEIN", "NOT QUALIFIED"), NA, party),
       .before = party_detailed
     )
 }
