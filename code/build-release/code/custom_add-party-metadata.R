@@ -13,7 +13,7 @@ custom_add_party <- function(tbl) {
     mutate(district = ifelse(state == "MICHIGAN" & county_name == "MASON" & district == "103", "101", district)) |>
     # Add missing party affiliations
     # https://github.com/kuriwaki/cvr_harvard-mit_scripts/pull/170
-    left_join(read_delim("R/combine/metadata/missing-party-metadata.txt", delim = ",", col_types = "ccccci"),
+    left_join(read_delim("metadata/missing-party-metadata.txt", delim = ",", col_types = "ccccci"),
               by = c("state", "office", "candidate", "district"),
               relationship = "many-to-one") |>
     mutate(party_detailed = ifelse(is.na(party_detailed.x), party_detailed.y, party_detailed.x),

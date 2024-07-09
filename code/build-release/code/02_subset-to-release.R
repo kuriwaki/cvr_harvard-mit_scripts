@@ -21,7 +21,7 @@ ds <- open_dataset(PATH_interim)
 
 # Classifications ----
 # update compare.xlsx
-source("R/combine/02_combine-to-wide.R")
+source("code/02_combine-to-wide.R")
 Sys.sleep(3)
 
 use_counties <- read_excel(

@@ -4,9 +4,9 @@ suppressPackageStartupMessages({
   library(fs)
 })
 
-source("R/prepare/custom-reallocate-precinct.R")
-source("R/prepare/custom_add-party-metadata.R")
-source("R/prepare/fmt_release.R")
+source("code/custom-reallocate-precinct.R")
+source("code/custom_add-party-metadata.R")
+source("code/fmt_release.R")
 
 gc()
 
@@ -27,11 +27,11 @@ prec_names <- open_dataset(PATH_precincts) |>
 
 # Manual counties ----
 ## explicitly remove the following counties
-rm_counties <- read_csv("R/release/metadata/counties_remove.csv", col_types = "cc") |>
+rm_counties <- read_csv("metadata/counties_remove.csv", col_types = "cc") |>
   mutate(county_name = replace_na(county_name, ""))
 
 ## swap these out of MIT if available and add to Harvad
-hv_counties <- read_csv("R/release/metadata/counties_harv.csv", col_types = "cc")
+hv_counties <- read_csv("metadata/counties_harv.csv", col_types = "cc")
 
 
 # Data ----

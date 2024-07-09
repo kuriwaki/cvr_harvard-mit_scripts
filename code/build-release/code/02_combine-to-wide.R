@@ -8,8 +8,8 @@ suppressPackageStartupMessages({
   library(fs)
 })
 
-source("R/combine/01b_classification-R.R")
-source("R/prepare/custom_add-party-metadata.R")
+source("code/01b_classification-R.R")
+source("code/custom_add-party-metadata.R")
 
 username <- Sys.info()["user"]
 if (username %in% c("shirokuriwaki", "sk2983")) {
@@ -122,7 +122,7 @@ out_cand <- count_h |>
   mutate(office = factor(office, levels = names(office_simpl))) |>
   arrange(state, county_name, office, district, party_detailed) |>
   relocate(state:district, party_detailed, special, writein) |>
-  anti_join(read_csv("R/release/metadata/counties_remove.csv", col_types = "cc"),
+  anti_join(read_csv("metadata/counties_remove.csv", col_types = "cc"),
             by = c("state", "county_name"))
 
 cand_summ_h <- categorize_diff(out_cand, votes_h, color2_h, candidate_h)
@@ -179,7 +179,6 @@ list(`by-cand` = select(out_cand, !matches("_c$")),
      `by-cand-coalesced` = out_coal) |>
   writexl::write_xlsx(path(PATH_parq, "combined/compare.xlsx"))
 
-
 # check ----
 cli::cli_alert_info("Performing checks")
 
@@ -193,9 +192,9 @@ print_tab <- function(tbl, var, path) {
     kableExtra::kbl(format = "pipe") |>
     write_lines(path)
 }
-out_county |> print_tab(color2_h, "status/colors2_h.txt")
-out_county |> print_tab(color2_m, "status/colors2_m.txt")
-out_county |> print_tab(color2_c, "status/colors2_c.txt")
+out_county |> print_tab(color2_h, "../../status/colors2_h.txt")
+out_county |> print_tab(color2_m, "../../status/colors2_m.txt")
+out_county |> print_tab(color2_c, "../../status/colors2_c.txt")
 
 ## 2 by 2 comparisons
 out_county |>
@@ -205,9 +204,7 @@ out_county |>
   addmargins() |>
   kableExtra::kbl(format = "pipe",
                   caption = "Harvard exact match (rows) vs. MEDSL exact match (cols)") |>
-  write_lines("status/by-county_correct-H-vs-M.txt")
-
-
+  write_lines("../../status/by-county_correct-H-vs-M.txt")
 
 # Overall classification (old "color") ----
 library(reticulate)
@@ -215,4 +212,4 @@ library(reticulate)
 virtualenv_create(packages = c("openpyxl", "pandas")) # set force = TRUE once
 use_virtualenv("~/.virtualenvs/r-reticulate")
 py_config()
-source_python("R/combine/01a_gen_classifications.py", envir = NULL)
+source_python("code/01a_gen_classifications.py", envir = NULL)

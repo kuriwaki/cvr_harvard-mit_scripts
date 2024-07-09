@@ -24,12 +24,12 @@ if user in ['root']:
   if os.getenv("USER") in ['shirokuriwaki', 'sk2983', 'sbaltz']:
     DATA_DIR = os.path.expanduser("~/Dropbox/CVR_parquet/")
 elif user in ['mason']:
-    DATA_DIR = "../CVR_parquet/"
+    DATA_DIR = os.path.expanduser("~/Dropbox (MIT)/Research/CVR_parquet/")
 elif user in ['josephloffredo']:
     DATA_DIR = os.path.expanduser("~/Dropbox (MIT)/CVR_parquet/")
 
-OUT_DIR = 'status/'
-OUT_DIR2 = 'status/counties-classified/'
+OUT_DIR = '../../status/'
+OUT_DIR2 = '../../status/counties-classified/'
 
 # Define the difference and missingness proportions allowed for a yellow county
 Y_DIFF_TAU = 0.1

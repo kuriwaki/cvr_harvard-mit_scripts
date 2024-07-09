@@ -21,7 +21,7 @@ c_release <- open_dataset(PATH_release) |>
 c_release |>
   arrange(state, county_name) |>
   kableExtra::kbl(format = "pipe") |>
-  write_lines("status/counties-in-release.txt")
+  write_lines("../../status/counties-in-release.txt")
 
 c_release |>
   count(state) |>
