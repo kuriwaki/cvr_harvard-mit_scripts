@@ -51,7 +51,7 @@ green_counties = readxl::read_excel("metadata/compare.xlsx", sheet = "by-county"
 
 # remove the counties that have persistent issues or are perfect, it's a waste of time to rerun them
 raw_paths = filter(raw_paths, is.na(build)) |> 
-  anti_join(green_counties, by = c("state", "county_name")) |> 
+  # anti_join(green_counties, by = c("state", "county_name")) |> 
   select(-build)
 
 ## Begin `targets` pipeline

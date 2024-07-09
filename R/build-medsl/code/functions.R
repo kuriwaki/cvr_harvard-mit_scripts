@@ -101,7 +101,7 @@ clean_data <- function(df, st, cnty, type, contests) {
         str_detect(candidate, regex("^IND |^IAP ", ignore_case = TRUE)) ~ "INDEPENDENT",
         str_detect(candidate, regex("^GLC ", ignore_case = TRUE)) ~ "GRASSROOTS-LEGALIZE CANNABIS",
         str_detect(candidate, regex("^NME ", ignore_case = TRUE)) ~ "END THE CORRUPTION",
-        str_detect(candidate, regex("Write", ignore_case = TRUE)) ~ "OTHER",
+        str_detect(candidate, regex("Write", ignore_case = TRUE)) ~ "WRITEIN",
         str_detect(candidate, regex("undervote|overvote|No image found", ignore_case=TRUE)) ~ NA_character_,
         is.na(candidate) ~ NA_character_,
         .default = party_detailed
@@ -124,7 +124,7 @@ clean_data <- function(df, st, cnty, type, contests) {
         str_detect(candidate, regex("^IND |^IAP ", ignore_case = TRUE)) ~ "INDEPENDENT",
         str_detect(candidate, regex("^GLC ", ignore_case = TRUE)) ~ "GRASSROOTS-LEGALIZE CANNABIS",
         str_detect(candidate, regex("^NME ", ignore_case = TRUE)) ~ "END THE CORRUPTION",
-        str_detect(candidate, regex("Write", ignore_case = TRUE)) ~ "OTHER",
+        str_detect(candidate, regex("Write", ignore_case = TRUE)) ~ "WRITEIN",
         str_detect(candidate, regex("undervote|overvote|No image found", ignore_case=TRUE)) ~ NA_character_,
         is.na(candidate) ~ NA_character_,
         .default = party_detailed
@@ -310,7 +310,8 @@ preprocess_json <- function(dir, contest_only = FALSE){
         .col = Contests,
         contest_id = "Id",
         marks = "Marks",
-        overvotes = "Overvotes"
+        overvotes = "Overvotes",
+        undervotes = "Undervotes"
       ) |>
       unnest_longer(marks) |>
       hoist(
@@ -321,13 +322,13 @@ preprocess_json <- function(dir, contest_only = FALSE){
         is_vote = "IsVote",
         is_ambiguous = "IsAmbiguous"
       ) |>
-      filter(is_vote, !is_ambiguous) |>
-      select(TabulatorId, BatchId, RecordId, precinctportion_id:magnitude)
+      filter((is_vote | undervotes > 0 | overvotes > 0) | (!is_ambiguous & undervotes == 0 & overvotes == 0)) |>
+      select(TabulatorId, BatchId, RecordId, precinctportion_id:magnitude, undervotes, overvotes)
   }
   
   files <- list.files(path = dir, pattern = "CvrExport|CVRExport", full.names = TRUE, recursive = TRUE)
   
-  plan(multisession, workers = 16)
+  plan(multisession, workers = 4)
   
   d <- future_map(files, possibly(clean_json, quiet = FALSE)) |>
     list_rbind() |>
@@ -344,7 +345,14 @@ preprocess_json <- function(dir, contest_only = FALSE){
       party_detailed = party,
       precinct = precinct_portion
     ) |>
-    mutate(magnitude = as.character(magnitude)) |>
+    mutate(
+      magnitude = as.character(magnitude),
+      candidate = case_when(
+        undervotes > 0 ~ "UNDERVOTE",
+        overvotes > 0 ~ "OVERVOTE",
+        .default = candidate
+      )
+    ) |>
     select(cvr_id, precinct, contest, candidate, party_detailed, magnitude)
   
   plan(sequential)
@@ -469,7 +477,7 @@ process_special <- function(path, s, c, contests) {
           str_detect(candidate, regex("^PRO ", ignore_case = TRUE)) ~ "PROGRESSIVE",
           str_detect(candidate, regex("^IND |^IAP ", ignore_case = TRUE)) ~ "INDEPENDENT",
           str_detect(candidate, regex("^GLC ", ignore_case = TRUE)) ~ "GRASSROOTS-LEGALIZE CANNABIS",
-          str_detect(candidate, regex("Write", ignore_case = TRUE)) ~ "OTHER",
+          str_detect(candidate, regex("Write", ignore_case = TRUE)) ~ "WRITEIN",
           str_detect(candidate, "undervote|overvote|No image found") ~ NA_character_,
           is.na(candidate) ~ NA_character_,
           .default = party_detailed
@@ -624,6 +632,7 @@ merge_party <- function(party_meta, pass1, state, county_name){
       county_name = county_name
     ) |> 
     left_join(party_meta, by = join_by(state, office, district, candidate)) |> 
+    filter(is.na(issue)) |> 
     mutate(party_detailed = ifelse(is.na(party_detailed.y), party_detailed.x, party_detailed.y)) |> 
     select(-party_detailed.x, -party_detailed.y) |>
     write_dataset("data/pass2", format = "parquet", partitioning = c("state", "county_name"))
@@ -635,7 +644,6 @@ merge_party <- function(party_meta, pass1, state, county_name){
 get_party_meta <- function(path){
   
   read_csv(path) |> 
-    filter(is.na(issue) | (!is.na(`fixed error?`))) |> 
     drop_na(candidate_medsl) |> 
     mutate(across(everything(), str_to_upper)) |> 
     mutate(
@@ -644,7 +652,7 @@ get_party_meta <- function(path){
         district
       )
     ) |> 
-    distinct(state, office, district, candidate_medsl, party_detailed) |> 
+    distinct(state, office, district, candidate_medsl, party_detailed, issue) |> 
     rename(candidate = candidate_medsl)
   
 }
