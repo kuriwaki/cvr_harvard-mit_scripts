@@ -38,12 +38,11 @@ ret_oregon <- get_dataframe_by_name(
   .f = read_csv) |>
   mutate(jurisdiction_fips = as.character(jurisdiction_fips))
 
-ret_nm_adds <- read_csv(
-  path(path_outdir, "returns", "raw", "nm20_adds.csv"),
-  col_types = "cciccccc"
+ret_adds <- read_csv(
+  path(path_outdir, "returns", "raw", "manual_additions.csv"),
+  col_types = "ccccicccc"
 ) |>
   mutate(
-    state = "NEW MEXICO",
     mode = "TOTAL",
     jurisdiction_name = county_name
   )
@@ -99,7 +98,7 @@ ret_sel <- ret_all |>
   # add Oregon
   filter(state != "OREGON") |>
   bind_rows(ret_oregon) |>
-  bind_rows(ret_nm_adds) |>
+  bind_rows(ret_adds) |>
   tidylog::filter(office %in% c("US PRESIDENT", "US HOUSE", "US SENATE",
                                 "STATE HOUSE", "STATE SENATE", "GOVERNOR")) |>
   mutate(jurisdiction_name = replace(jurisdiction_name, state %in% statewide, NA)) |>
@@ -160,7 +159,8 @@ ret_sel <- ret_all |>
   mutate(across(matches("party_"), \(x) case_match(x, "DEMOCRATIC FARMER LABOR" ~ "DEMOCRAT", .default = x))) |>
   tidylog::left_join(fl_npas, by = c("state", "office", "candidate", "district")) |>
   mutate(party_detailed = coalesce(party_detailed.x, party_detailed.y),
-         party_detailed.x = NULL, party_detailed.y = NULL)
+         party_detailed.x = NULL, party_detailed.y = NULL) |>
+  mutate(writein = ifelse(state == "WISCONSIN" & office == "STATE HOUSE" & candidate == "STEVE KUNDERT", 1, writein))
 
 
 # sum by county x mode ------
