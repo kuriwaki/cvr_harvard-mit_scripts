@@ -1,6 +1,6 @@
 fmt_for_release <- function(tbl) {
   tbl |>
-    select(-matches("jurisdiction_"), -matches("issue")) |>
+    select(-matches("jurisdiction_"), -matches("issue"), -matches("^n$")) |>
     # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/308#issuecomment-2212053293
     filter(!(candidate %in% c("KANYE WEST", "JOE MCHUGH ELIZABETH STORM") & is.na(party_detailed) & state == "UTAH" & county_name == "SAN JUAN")) |>
     mutate(
