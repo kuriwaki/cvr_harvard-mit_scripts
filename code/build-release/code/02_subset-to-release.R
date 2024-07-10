@@ -46,9 +46,11 @@ ds |>
   mutate(precinct_cvr   = ifelse(redact == 1 & !is.na(redact), NA, precinct_cvr)) |>
   relocate(precinct_medsl, precinct_cvr, .after = precinct) |>
   select(-precinct, -matches("revealed_in_"), -matches("redact"), -matches("precs_revel")) |>
+  # stray writein
+  mutate(party = ifelse(candidate == "PROGRESSIVE" & state == "NEW JERSEY", NA, party)) |>
   write_dataset(
     path = PATH_release,
-    existing_data_behavior = "overwrite",
+    existing_data_behavior = "delete_matching",
     partitioning = c("state", "county_name"),
     format = "parquet"
   )
