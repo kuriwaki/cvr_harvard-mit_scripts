@@ -4,6 +4,10 @@
 
 suppressPackageStartupMessages({
   library(tidyverse)
+  library(tidylog)
+  library(kableExtra)
+  library(reticulate)
+  library(writexl)
   library(arrow)
   library(fs)
 })
