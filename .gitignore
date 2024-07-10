@@ -27,3 +27,4 @@ _targets
 *.html
 *._cache
 .venv
+/code/paper

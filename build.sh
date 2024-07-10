@@ -16,3 +16,9 @@ cd code/build-release
 bash build-release.sh
 cd ..
 cd ..
+
+echo "Generating Paper"
+cd code/paper
+bash paper.sh
+cd ..
+cd ..
