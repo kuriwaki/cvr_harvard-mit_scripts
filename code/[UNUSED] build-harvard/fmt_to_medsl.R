@@ -71,6 +71,8 @@ fmt_harv_to_medsl <- function(tbl) {
            matches("cvr_id"),
            matches("precinct"),
            matches("pres"),
+           matches("voter_id"),
+           matches("choice2"),
            office,
            district,
            candidate,
