@@ -101,6 +101,7 @@
 |FLORIDA       |CALHOUN         |
 |FLORIDA       |CITRUS          |
 |FLORIDA       |COLLIER         |
+|FLORIDA       |DUVAL           |
 |FLORIDA       |ESCAMBIA        |
 |FLORIDA       |FLAGLER         |
 |FLORIDA       |GULF            |
@@ -147,6 +148,7 @@
 |GEORGIA       |DADE            |
 |GEORGIA       |DAWSON          |
 |GEORGIA       |DEKALB          |
+|GEORGIA       |DOUGLAS         |
 |GEORGIA       |EARLY           |
 |GEORGIA       |ECHOLS          |
 |GEORGIA       |ELBERT          |
@@ -251,7 +253,9 @@
 |NEVADA        |DOUGLAS         |
 |NEVADA        |ELKO            |
 |NEVADA        |LANDER          |
+|NEVADA        |LINCOLN         |
 |NEVADA        |LYON            |
+|NEVADA        |NYE             |
 |NEVADA        |PERSHING        |
 |NEVADA        |WASHOE          |
 |NEVADA        |WHITE PINE      |
@@ -276,6 +280,7 @@
 |OHIO          |FRANKLIN        |
 |OHIO          |GALLIA          |
 |OHIO          |GREENE          |
+|OHIO          |HANCOCK         |
 |OHIO          |HARRISON        |
 |OHIO          |HIGHLAND        |
 |OHIO          |HOCKING         |
@@ -309,6 +314,10 @@
 |OREGON        |WASHINGTON      |
 |OREGON        |YAMHILL         |
 |RHODE ISLAND  |STATEWIDE       |
+|TENNESSEE     |LOUDON          |
+|TENNESSEE     |PICKETT         |
+|TENNESSEE     |SEVIER          |
+|TENNESSEE     |WILLIAMSON      |
 |TEXAS         |ANDREWS         |
 |TEXAS         |BOSQUE          |
 |TEXAS         |COLLIN          |
@@ -341,5 +350,6 @@
 |WEST VIRGINIA |NICHOLAS        |
 |WEST VIRGINIA |WOOD            |
 |WISCONSIN     |BROWN           |
+|WISCONSIN     |KENOSHA         |
 |WISCONSIN     |PIERCE          |
 |WISCONSIN     |WAUKESHA        |
