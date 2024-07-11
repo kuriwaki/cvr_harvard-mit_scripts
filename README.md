@@ -5,10 +5,7 @@
 
 ##### Project leads: Shiro Kuriwaki and Mason Reece
 
-<!-- badges: start -->
-
 [![](https://img.shields.io/badge/Dataverse%20DOI-10.7910/DVN/PQQ3KV-blue)](https://www.doi.org/10.7910/DVN/PQQ3KV)
-<!-- badges: end -->
 
 This repository includes the code to create the cast vote record dataset
 in <https://doi.org/10.7910/DVN/PQQ3KV>. The repository is limited to
