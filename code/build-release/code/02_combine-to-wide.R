@@ -12,7 +12,7 @@ suppressPackageStartupMessages({
   library(fs)
 })
 
-source("code/01b_classification-R.R")
+source("code/classification-R.R")
 source("code/custom_add-party-metadata.R")
 
 username <- Sys.info()["user"]
@@ -216,4 +216,4 @@ library(reticulate)
 virtualenv_create(packages = c("openpyxl", "pandas")) # set force = TRUE once
 use_virtualenv("~/.virtualenvs/r-reticulate")
 py_config()
-source_python("code/01a_gen_classifications.py", envir = NULL)
+source_python("code/classifications-python.py", envir = NULL)
