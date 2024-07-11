@@ -10,7 +10,7 @@ source("R/build-harvard/fmt_to_medsl.R")
 
 
 # other users should make a different clause
-if (username %in% c("shirokuriwaki", "sk2983")) {
+if (username == "shirokuriwaki" | str_detect(username, "^sk[0-9]+")) {
   PATH_merged2 = "~/Downloads/stata_long/*/*/*.parquet"
   PATH_medsl_share = "~/Dropbox/CVR_parquet/harvard"
 }

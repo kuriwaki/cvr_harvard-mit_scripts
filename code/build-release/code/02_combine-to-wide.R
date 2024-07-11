@@ -16,7 +16,7 @@ source("code/01b_classification-R.R")
 source("code/custom_add-party-metadata.R")
 
 username <- Sys.info()["user"]
-if (username %in% c("shirokuriwaki", "sk2983")) {
+if (username == "shirokuriwaki" | str_detect(username, "^sk[0-9]+")) {
   PATH_parq <- "~/Dropbox/CVR_parquet"
 } else if (username %in% c("mason")) {
   PATH_parq <- "~/Dropbox (MIT)/Research/CVR_parquet"

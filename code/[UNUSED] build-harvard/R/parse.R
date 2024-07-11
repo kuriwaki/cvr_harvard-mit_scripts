@@ -3,7 +3,7 @@
 username <- Sys.info()["user"]
 
 # other users should make a different clause
-if (username %in% c("shirokuriwaki", "sk2983")) {
+if (username == "shirokuriwaki" | str_detect(username, "^sk[0-9]+")) {
   PATH_projdir <- "~/Dropbox/CVR_Data_Shared/data_main"
   PATH_jbldir <- "~/Dropbox/CVR_Data_Shared/data_main/to-parquet/JBL/"
   PATH_long <- "~/Downloads/stata_init"

@@ -9,7 +9,7 @@ suppressPackageStartupMessages({
 username <- Sys.info()["user"]
 
 # other users should make a different clause
-if (username %in% c("shirokuriwaki", "sk2983")) {
+if (username == "shirokuriwaki" | str_detect(username, "^sk[0-9]+")) {
   path_source <- "~/Dropbox/CVR_parquet/returns/raw/precincts_20240429.zip"
   path_outdir <- "~/Dropbox/CVR_parquet"
 } else if (username == "mason") {
