@@ -12,7 +12,7 @@ The goal of `cvr_harvard-mit_scripts` is to coordinate the “Harvard” and
 “MIT” team’s CVR data. We track/resolve issues in each county and state
 and write scripts to fix and merge our raw data. A convenient way to
 update the status indicators is to run the file
-`update_counbined-release.sh` in shell.
+`update_combined-release.sh` in shell.
 
 The github repo is kept for *issue tracking purposes* and *maintaining
 data construction scripts* only.
