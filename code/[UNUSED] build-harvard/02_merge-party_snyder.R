@@ -10,7 +10,7 @@ library(fs)
 
 Sys.setenv(DUCKPLYR_FORCE = TRUE)
 
-source("R/build-harvard/R/parse.R")
+source("R/parse.R")
 
 # Datasets -- metadata----
 meta    <- duckplyr_df_from_parquet(path(PATH_projdir, "to-parquet", "item_choice_info/*.parquet"))
@@ -19,7 +19,7 @@ ds_orig <- duckplyr_df_from_parquet(PATH_long2) |>
 ds_prec <- duckplyr_df_from_parquet(path(PATH_prec_js, "*/*.parquet"))
 
 # filenames
-filenames <- read_csv("R/build-harvard/metadata/input_files.txt",
+filenames <- read_csv("metadata/input_files.txt",
                       name_repair = "unique_quiet",
                       show_col_types = FALSE)$file
 

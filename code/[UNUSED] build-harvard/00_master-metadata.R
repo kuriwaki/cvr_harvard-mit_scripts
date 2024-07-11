@@ -4,8 +4,8 @@ library(fs)
 library(arrow)
 library(purrr)
 
-source("R/build-harvard/R/parse.R")
-source("R/build-harvard/fmt_to_medsl.R")
+source("R/parse.R")
+source("R/fmt_to_medsl.R")
 meta <- read_dta("~/Dropbox/CVR_Data_Shared/data_main/item_choice_info.dta")
 
 # to csv ----

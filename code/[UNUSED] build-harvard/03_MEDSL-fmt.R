@@ -5,8 +5,8 @@ library(arrow)
 library(duckplyr)
 
 
-source("R/build-harvard/R/parse.R")
-source("R/build-harvard/fmt_to_medsl.R")
+source("R/parse.R")
+source("R/fmt_to_medsl.R")
 
 
 # other users should make a different clause

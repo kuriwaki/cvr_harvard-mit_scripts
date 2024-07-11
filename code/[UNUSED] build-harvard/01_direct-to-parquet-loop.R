@@ -7,10 +7,10 @@ library(glue)
 library(fs)
 library(DBI)
 
-source("R/build-harvard/R/parse.R")
+source("R/parse.R")
 
 # All files -- setup -----
-filenames <- read_csv("R/build-harvard/metadata/input_files.txt",
+filenames <- read_csv("metadata/input_files.txt",
                       name_repair = "unique_quiet",
                       show_col_types = FALSE)$file
 
