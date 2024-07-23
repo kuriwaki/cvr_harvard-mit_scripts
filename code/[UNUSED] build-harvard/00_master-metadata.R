@@ -13,7 +13,7 @@ meta |>
   filter(item %in% c("US_PRES", "US_REP", "US_SEN", "US_SEN (S)", "ST_SEN", "ST_REP", "ST_GOV")) |>
   fmt_harv_to_medsl() |>
   arrange(state, county_name, office, district, party_detailed) |>
-  write_csv("R/build-harvard/metadata/contests_snyder.csv", na = "")
+  write_csv("metadata/contests_snyder.csv", na = "")
 
 
 
@@ -40,7 +40,7 @@ read_dta(path(PATH_projdir, "item_choice_info.dta")) |>
 
 
 # md5sum
-filenames <- read_csv("R/build-harvard/metadata/input_files.txt",
+filenames <- read_csv("metadata/input_files.txt",
                       name_repair = "unique_quiet",
                       show_col_types = FALSE) |>
   mutate(md5sum_latest = NA)
