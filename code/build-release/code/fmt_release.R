@@ -12,14 +12,15 @@ fmt_for_release <- function(tbl) {
       party_detailed = ifelse(candidate == "WRITEIN", "WRITEIN", party_detailed)
       ) |>
     mutate(
-      party = NA_character_,
-      party = ifelse(party_detailed == "DEMOCRAT",    "DEM", party),
-      party = ifelse(party_detailed == "REPUBLICAN",  "REP", party),
-      party = ifelse(party_detailed == "LIBERTARIAN", "LBT", party),
-      party = ifelse(party_detailed == "GREEN",       "GRN", party),
-      party = ifelse(!party %in% c("DEM", "REP", "LBT", "GRN"), "OTH", party),
-      # revert invalid votes to party = NA
-      party = ifelse(candidate %in% c("UNDERVOTE", "OVERVOTE", "WRITEIN", "NOT QUALIFIED"), NA, party),
+      party = case_when(
+        candidate %in% c("UNDERVOTE", "OVERVOTE", "NOT QUALIFIED") ~ NA_character_,
+        party_detailed == "WRITEIN" ~ NA_character_,
+        party_detailed == "DEMOCRAT" ~ "DEM",
+        party_detailed == "REPUBLICAN" ~ "REP",
+        party_detailed == "LIBERTARIAN" ~ "LBT",
+        party_detailed == "GREEN" ~ "GRN",
+        .default = "OTH"
+      ),
       .before = party_detailed
     )
 }

@@ -22,6 +22,7 @@ setdiff(db_files, filenames)
 paths_to_merge <-
   c("CA_Alameda_long.dta",
     "CA_Contra_Costa_long.dta",
+    "CA_Glenn_long.dta",
     "CA_Kings_long.dta",
     "CA_Merced_long.dta",
     "CA_Orange_long.dta",
@@ -101,4 +102,4 @@ walk(
   },
   .progress = "counties"
 )
-tictoc::toc() # about an hour in dta; 40 minutes after Los Angeles
+tictoc::toc() # 70min in dta; 40 minutes after Los Angeles

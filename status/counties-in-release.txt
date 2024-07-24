@@ -260,7 +260,6 @@
 |NEVADA        |WASHOE          |
 |NEVADA        |WHITE PINE      |
 |NEW JERSEY    |BERGEN          |
-|NEW JERSEY    |CAMDEN          |
 |NEW JERSEY    |CUMBERLAND      |
 |NEW JERSEY    |GLOUCESTER      |
 |NEW JERSEY    |MONMOUTH        |
