@@ -10,8 +10,6 @@
 [![](https://img.shields.io/badge/Dataverse%20DOI-10.7910/DVN/PQQ3KV-blue)](https://www.doi.org/10.7910/DVN/PQQ3KV)
 <!-- badges: end -->
 
-(dataverse is currently not public at this time)
-
 This repository includes the code to create the cast vote record
 dataset,
 
@@ -29,7 +27,8 @@ for subsets of cleaned in parquet format.
 `build.sh` is the root script for the entire project.
 
 There is a data descriptor accompanying this dataset, with the following
-abstract. Please contact the project leads for a copy.
+abstract. Please access <https://www.doi.org/10.7910/DVN/PQQ3KV> for a
+copy.
 
 > Ballots are the basis of the electoral process. A growing group of
 > political scientists, election administrators, and computer scientists
