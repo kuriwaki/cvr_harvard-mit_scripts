@@ -18,7 +18,7 @@ cd ..
 cd ..
 
 echo "Generating Paper"
-cd code/paper
-bash paper.sh
+cd code/build-analysiss
+bash  analysis.sh
 cd ..
 cd ..
