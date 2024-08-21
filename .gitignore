@@ -15,6 +15,8 @@ _targets
 *.zip
 *.pdf
 *.csv
+*.xlsx
+*.jpg
 !contests.csv
 !contests_snyder.csv
 !paths.csv
