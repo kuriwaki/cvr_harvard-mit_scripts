@@ -1,8 +1,7 @@
 library(tidyverse)
 library(tidycensus)
 library(arrow)
-library(kableExtra)
-library(knitr)
+library(gt)
 
 calc_summary_stats <- function(data, variable) { #func to calculate sum stats
   tibble(
@@ -140,16 +139,19 @@ summary_all <- bind_rows(
 
 
 ##load cvr data subset
-cty_codes <- read_csv("combined/countycodes.csv") |>
-  select(-st) |>
-  mutate(state = toupper(state),
-         county_fips = str_pad(county_fips, pad = "0", width = 5))
+cty_codes <- fips_codes |>
+  mutate(
+    county_fips = str_c(state_code, county_code) |> str_pad(pad = "0", width = 5),
+    state_name = toupper(state_name),
+    county = str_remove_all(county, " County$") |> toupper()) |>
+  select(-c(state, state_code, county_code)) |>
+  rename(state = state_name, county_name = county)
 
-ds <- open_dataset("release") |>
+ds <- open_dataset(path(PATH_parq, "release")) |>
   select(county_name, state) |>
   distinct() |>
   collect() |>
-  tidylog::left_join(cty_codes, by = c("state", "county_name")) |>
+  tidylog::inner_join(cty_codes, by = c("state", "county_name")) |>
   bind_rows(
     tribble(
       ~state, ~county_name,  ~county_fips,
@@ -193,7 +195,7 @@ sum_stats <- data.frame(
                  summary_subset$SD))
 
 
-##make combined summaries wide
+## Create Table D.1
 sumstats_w <- sum_stats |>
   pivot_wider(names_from = Statistic,
               values_from = c(All.U.S..Counties,
@@ -205,35 +207,13 @@ sumstats_w <- sum_stats |>
     `Median_OurData` = Our.Data_Median,
     `SD_Census` = All.U.S..Counties_SD,
     `SD_OurData` = Our.Data_SD) |>
-  relocate(Variable, starts_with("Mean"), starts_with("Median"), starts_with("SD"))
-
-stop("TODO: make sure this writes to censuss_cvr_table.tex with the right column names.")
-# Caption can be edited in overleaf
-sumstats_w |>
-  kableExtra::kbl(
-    digits = 2,
-    format = "latex",
-    booktabs = TRUE,
-    linesep = ""
-  )
-
-
-dat_long |>
-  summarize(
-    prop_urb_w = weighted.mean(prop_urb, w = tot_urb_rur),
-    .by = source
-  )
-
-
-# quick t-test
-dat_long <- bind_rows(
-  list(
-    nat = cen,
-    cvr = cvr_cen
-  ),
-  .id = "source"
-)
-
-t.test(prop_u18 ~ source, dat_long)
-ks.test(prop_urb ~ source, dat_long)
+  relocate(Variable, starts_with("Mean"), starts_with("Median"), starts_with("SD")) |>
+  gt() |>
+  fmt_percent(matches("_Census|_OurData"), decimals = 3,scale_values = F) |>
+  cols_label_with(fn = \(x) case_when(x == "Variable" ~ "", str_detect(x, "OurData") ~ "CVR", str_detect(x, "Census") ~ "Nation")) |>
+  tab_spanner("Mean", columns = matches("^Mean")) |>
+  tab_spanner("Median", columns = matches("^Median")) |>
+  tab_spanner("Standard Dev.", columns = matches("^SD")) |>
+  gt::sub_missing() |>
+  gtsave("tables/table_D1.docx")
 

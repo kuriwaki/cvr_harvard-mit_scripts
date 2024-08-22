@@ -74,7 +74,7 @@ state_info <- ds_v |>
   bind_rows(all_states_v)
 
 
-# Merge and Table
+# Merge and create Table 3
 state_cvr |>
   add_row(state = "All 50 States") |>
   left_join(state_info, by = c("state")) |>
@@ -90,8 +90,5 @@ state_cvr |>
   cols_label_with(fn = \(x) case_when(x == "state" ~ "State", str_detect(x, "\\.x$") ~ "CVR", str_detect(x, "\\.y$") ~ "Pop.", str_detect(x,"^net_diff") ~ "Diff.")) |>
   tab_spanner("% Biden", columns = matches("_prez")) |>
   tab_spanner("Voters", columns = matches("voters")) |>
-  tab_style(style = cell_borders(sides = c("top"), weight = px(1)),
-            locations = cells_body(rows = nrow(state_cvr))) |>
-  tab_options(table.font.size = px(13)) |>
   gt::sub_missing() |>
-  gtsave("tables/table_03.tex")
+  gtsave("tables/table_03.docx")
