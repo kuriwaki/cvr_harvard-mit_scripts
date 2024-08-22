@@ -72,11 +72,10 @@ gg_gt <- county_level |>
   gt::cols_label("color2_c" ~ "",
                  release ~ "Released",
                  n ~ "N") |>
-  gt::as_gtable()
-# need to use gt version on github AFTER JUNE 21 (> 0.10.1.9000), pak::pkg_install("rstudio/gt@2af68b7")
+  gtsave("tables/table_02a.docx")
 
 ##### State x Office #####
-gg_pop <- cand_dist_level |>
+cand_dist_level |>
   filter(!(state == "RHODE ISLAND" & district == "057" & office == "STATE HOUSE")) |>
   ggplot(aes(x = total_votes, y = perc_diff, color = factor(release))) +
   geom_point(alpha = 0.4) +
@@ -88,10 +87,11 @@ gg_pop <- cand_dist_level |>
   theme(legend.position = "none", legend.position.inside = c(0.8, 0.8)) +
   labs(x = "Total Votes Cast", y = "Discrepancy (%)", color = NULL)
 
+ggsave("figs/figure_2c.pdf",width = 3.5, height = 3, units = "in",dpi = 300)
+
 
 ### Histogram
-gg_hist <-
-  cand_dist_level |>
+cand_dist_level |>
   # filter(between(perc_diff, -0.05, 0.01)) |>
   ggplot(aes(x = perc_diff,
              fill = factor(release))) +
@@ -114,12 +114,8 @@ gg_hist <-
   labs(fill = NULL, x = "Discrepancy (%)", y = "Fraction of sample",
        caption = "x-axis display limited to [-0.05, +0.01]") +
   theme(legend.position = "inside", legend.position.inside = c(0.4, 0.9))
-gg_hist
 
-wrap_elements(gg_gt) + gg_hist + gg_pop +
-  plot_layout(widths = c(1, 0.5, 0.5)) +
-  plot_annotation(tag_levels = "A")
-ggsave("figs/error_plots.png", w = 10, h = 3)
+ggsave("figs/figure_2b.pdf",width = 3.5, height = 3, units = "in",dpi = 300)
 
 
 
