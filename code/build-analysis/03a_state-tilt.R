@@ -75,20 +75,33 @@ state_info <- ds_v |>
 
 
 # Merge and create Table 3
-state_cvr |>
+state_tb <- state_cvr |>
   add_row(state = "All 50 States") |>
   left_join(state_info, by = c("state")) |>
   select(-matches("counties")) |>
   mutate(
     state = str_to_title(state),
-    net_diff_prez = dem_prez.x - dem_prez.y,
-    net_diff_voters = n_voters.x - n_voters.y) |>
+    diff_prez  = scales::percent(dem_prez.x - dem_prez.y, accuracy = 1, suffix = "pp"),
+    pct_voters = scales::percent(n_voters.x / n_voters.y, accuracy = 1)
+    ) |>
   gt() |>
   fmt_percent(matches("_prez"), decimals = 1) |>
-  fmt_percent(matches("net_diff_prez"), decimals = 2) |>
   fmt_integer(matches("voters")) |>
-  cols_label_with(fn = \(x) case_when(x == "state" ~ "State", str_detect(x, "\\.x$") ~ "CVR", str_detect(x, "\\.y$") ~ "Pop.", str_detect(x,"^net_diff") ~ "Diff.")) |>
+  cols_label_with(fn = \(x) case_when(
+    x == "state" ~ "State",
+    str_detect(x, "\\.x$") ~ "CVR",
+    str_detect(x, "\\.y$") ~ "Pop.",
+    str_detect(x, "^diff") ~ "Diff.",
+    str_detect(x, "pct") ~ "%"
+    )) |>
   tab_spanner("% Biden", columns = matches("_prez")) |>
   tab_spanner("Voters", columns = matches("voters")) |>
   gt::sub_missing() |>
+  cols_add(SPACE = "", .after = diff_prez) |>
+  cols_label(SPACE = md("&emsp;&emsp;&emsp;&emsp;"))
+
+state_tb |>
+  gtsave("tables/table_03.tex")
+
+state_tb |>
   gtsave("tables/table_03.docx")
