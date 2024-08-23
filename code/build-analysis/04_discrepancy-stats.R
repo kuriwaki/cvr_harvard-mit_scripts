@@ -59,9 +59,7 @@ cand_dist_level <- dat_cand |>
     perc_diff = ifelse(total_votes != 0 & cvr_votes != 0, diff/total_votes, NA),
     .groups = "drop"
   ) |>
-  # Temporary filter
   tidylog::filter(total_votes >= 150) # |>  # avoid super big percentages
-  # tidylog::filter(abs(perc_diff) <= 2)
 
 
 #### Figures ####
@@ -72,10 +70,10 @@ gg_gt <- county_level |>
   gt::cols_label("color2_c" ~ "",
                  release ~ "Released",
                  n ~ "N") |>
-  gtsave("tables/table_02a.docx")
+  as_gtable()
 
 ##### State x Office #####
-cand_dist_level |>
+fig_b <- cand_dist_level |>
   filter(!(state == "RHODE ISLAND" & district == "057" & office == "STATE HOUSE")) |>
   ggplot(aes(x = total_votes, y = perc_diff, color = factor(release))) +
   geom_point(alpha = 0.4) +
@@ -87,12 +85,8 @@ cand_dist_level |>
   theme(legend.position = "none", legend.position.inside = c(0.8, 0.8)) +
   labs(x = "Total Votes Cast", y = "Discrepancy (%)", color = NULL)
 
-ggsave("figs/figure_2c.pdf",width = 3.5, height = 3, units = "in",dpi = 300)
-
-
 ### Histogram
-cand_dist_level |>
-  # filter(between(perc_diff, -0.05, 0.01)) |>
+fig_c <- cand_dist_level |>
   ggplot(aes(x = perc_diff,
              fill = factor(release))) +
   geom_histogram(
@@ -115,10 +109,15 @@ cand_dist_level |>
        caption = "x-axis display limited to [-0.05, +0.01]") +
   theme(legend.position = "inside", legend.position.inside = c(0.4, 0.9))
 
-ggsave("figs/figure_2b.pdf",width = 3.5, height = 3, units = "in",dpi = 300)
+
+wrap_elements(gg_gt) + fig_b + fig_c +
+  plot_layout(widths = c(1, 0.5, 0.5)) +
+  plot_annotation(tag_levels = "a")
+ggsave("figs/figure_2.pdf", w = 10, h = 3, units = "in")
 
 
 
+# Stats -----
 dat_county |>
   filter(color2_c == "0 difference") |>
   nrow() |>
