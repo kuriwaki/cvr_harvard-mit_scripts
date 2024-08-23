@@ -160,9 +160,11 @@ summary_all <- bind_rows(
 ## load cvr data subset
 cty_codes <- tidycensus::fips_codes |>
   mutate(
-    county_fips = str_c(state_code, county_code) |> str_pad(pad = "0", width = 5),
-    state_name = toupper(state_name),
-    county = str_remove_all(county, " County$") |> toupper()
+    county_fips = str_c(state_code, county_code) |>
+      str_pad(pad = "0", width = 5),
+    state_name = str_to_upper(state_name),
+    county = str_to_upper(str_remove_all(county, " County$")),
+    county = str_replace(county, "^ST\\.", "ST")
   ) |>
   select(-c(state, state_code, county_code)) |>
   rename(state = state_name, county_name = county) |>
