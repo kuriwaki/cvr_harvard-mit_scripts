@@ -17,10 +17,8 @@ calc_se <- function(x, y) {#calculate standard errors for difference in means
          var(y, na.rm = TRUE) / length(na.omit(y)))
 }
 
-# set API
-# ideally, make this a secret for release
-census_api_key("5241b7834ca3181e92e126a6347110afd2c831d7",
-               install = TRUE, overwrite = TRUE)
+# set API (include your own)
+# census_api_key("XXXXXX", install = TRUE, overwrite = TRUE)
 
 
 # load var names
@@ -129,9 +127,7 @@ sum_vars <- c("prop_urb", "prop_white", # designate our final summary variables
 
 ##calc summary stats for all counties
 summary_all <- bind_rows(
-  lapply(sum_vars,
-         function(var) calc_summary_stats(cen,
-                                          var))
+  lapply(sum_vars, function(var) calc_summary_stats(cen, var))
 )
 
 
@@ -180,7 +176,7 @@ summary_subset <- bind_rows(
 )
 
 
-##combine census and cvr subset
+## combine census and cvr subset
 sum_stats <- data.frame(
   Statistic = rep(c("Mean", "Median", "SD"), each = 7),
   Variable = rep(c("Percent Urban", "Percent White",
@@ -215,5 +211,5 @@ sumstats_w <- sum_stats |>
   tab_spanner("Median", columns = matches("^Median")) |>
   tab_spanner("Standard Dev.", columns = matches("^SD")) |>
   gt::sub_missing() |>
-  gtsave("tables/table_D1.docx")
+  gtsave("tables/table_S2.docx")
 
