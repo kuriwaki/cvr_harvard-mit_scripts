@@ -158,14 +158,15 @@ summary_all <- bind_rows(
 
 
 ## load cvr data subset
-cty_codes <- fips_codes |>
+cty_codes <- tidycensus::fips_codes |>
   mutate(
     county_fips = str_c(state_code, county_code) |> str_pad(pad = "0", width = 5),
     state_name = toupper(state_name),
     county = str_remove_all(county, " County$") |> toupper()
   ) |>
   select(-c(state, state_code, county_code)) |>
-  rename(state = state_name, county_name = county)
+  rename(state = state_name, county_name = county) |>
+  as_tibble()
 
 ds <- open_dataset(path(PATH_parq, "release")) |>
   select(county_name, state) |>
@@ -252,5 +253,10 @@ sumstats_w <- sum_stats |>
   tab_spanner("Mean", columns = matches("^Mean")) |>
   tab_spanner("Median", columns = matches("^Median")) |>
   tab_spanner("Standard Dev.", columns = matches("^SD")) |>
-  gt::sub_missing() |>
+  gt::sub_missing()
+
+sumstats_w |>
   gtsave("tables/table_S2.docx")
+
+sumstats_w |>
+  gtsave("tables/table_S2.tex")
