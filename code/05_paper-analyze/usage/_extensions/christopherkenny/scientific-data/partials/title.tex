@@ -1,0 +1,27 @@
+$if(title)$
+\title{$title$}
+$endif$
+
+$for(by-author)$
+  \author[$for(it.affiliations/first)$$it.name$$endfor$]{$by-author.name.literal$}
+$endfor$
+
+$for(authornotes)$
+\affil[$authornotes.note$]{$authornotes.text$}
+$endfor$
+
+
+$if(abstract)$
+\begin{abstract}
+$abstract$
+\end{abstract}
+$endif$
+
+$if(keywords)$
+\keywords{
+  $for(keywords)$
+  $keywords$
+  $sep$ \and
+  $endfor$
+}
+$endif$

@@ -1,0 +1,298 @@
+---
+title: |
+  SciData Code example
+author: 
+    - name: John Doe
+      affiliation: 
+        name: "1,2,* "
+authornotes:
+    - note: "1"
+      text: Department of Statistics
+    - note: "2"
+      text: Department of Government
+    - note: "*"
+      text: "`correspondingauthor@email.com`"
+format:
+  scientific-data-pdf: 
+    keep-tex: true
+date: last-modified
+abstract: "abstract"
+bibliography: bibliography.bib
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+
+```{r}
+#| echo: false
+suppressPackageStartupMessages(
+  {
+    library(tidyverse)
+    library(arrow)
+    library(here)
+  }
+)
+```
+
+```{r}
+#| echo: false
+ds <- open_dataset(here("release"))
+```
+
+\paragraph{Reading in the Data}
+
+We recommend using the `open_dataset()` function in `arrow` to connect to the parquet files.
+Parquet files are a file storage format optimized for querying subsets of large datasets.
+It is both partitioned by grouping variables, and columnar (so that users do not need to read in an entire row to extract a value from one column).\
+Our dataset is prohibitively large to read and write in a plain-text format (20 Gb), but is compact  and easy to read from in parquet (800 Mb).[^1]
+
+[^1]: For more information on how to read and write parquet files in R, see \url{https://r4ds.hadley.nz/arrow}.
+    Parquet is also designed for usage in Python (\url{https://arrow.apache.org/docs/python/parquet.html}) and several other programming languages.
+
+```{r, eval=FALSE}
+library(tidyverse)
+library(arrow)
+
+ds <- open_dataset("cvrs")
+```
+
+\noindent where \texttt{cvrs} indicates the path to the top-level folder containing the parquet files.
+We have organized the parquet collection as a hierarchy of contests nested within states. 
+Users can see that the folder has the following structure:
+
+```{text}
+├── state=ARIZONA
+│   ├── county_name=MARICOPA
+│   │   └── part-0.parquet
+│   ├── county_name=PIMA
+│   │   └── part-0.parquet
+│   ├── county_name=SANTA%20CRUZ
+│   │   └── part-0.parquet
+│   └── county_name=YUMA
+│       └── part-0.parquet
+...
+── state=UTAH
+│   └── county_name=SAN%20JUAN
+│       └── part-0.parquet
+└── state=WISCONSIN
+    ├── county_name=BROWN
+    │   └── part-0.parquet
+    ├── county_name=KENOSHA
+    │   └── part-0.parquet
+    ├── county_name=PIERCE
+    │   └── part-0.parquet
+    └── county_name=WAUKESHA
+        └── part-0.parquet
+```
+
+`open_dataset()` links to all these subdirectories. 
+Our data release provides entire collection in a single zip file, but users may still visualize the file hierarchy and track the collection's individual files prior to download by using Dataverse's "Preview" feature.
+
+Because parquet does not need to read all rows at once to count it, it is much faster to provide summary statistics of subsets. 
+Even though the code below counts some `r round(pull(collect(count(ds)))/1e6)` million rows, it performs the count in one second on a personal laptop. 
+
+```{r}
+ds |> count(office) |> collect()
+```
+
+In the arrow package, we use the `collect()` command to extract the data. To perform the count, we use `count()` from `dplyr`, which totals the number of occurrences of each unique value in our `office` variable. 
+We make use of R's pipe operator, `|>` to pass our data objects forward onto subsequent operations we want to perform. 
+All previous transformations are _lazily-loaded_, meaning that they are not executed until needed.
+The arrow program combines the transformations internally in a way that avoids duplicative operations.
+
+\paragraph{Extracting Summaries}
+
+We can typically use the combination of `state`, `office`, and `party` variable to identify candidates.
+The code below counts the number of records for each candidate-party collection, sorted from most frequent to least.
+With `filter()` from `dplyr`, we subset our count to presidential votes in the state of Wisconsin. 
+
+```{r}
+ds |> 
+  filter(state == "WISCONSIN", office == "US PRESIDENT") |> 
+  count(candidate, party, sort = TRUE) |> 
+  collect()
+```
+
+For individual voters, use the `cvr_id` variable.
+This is a numeric variable that is defined within counties.
+The following code extracts the vote from the voter marked with the `cvr_id == 1`. By setting the `sort` argument to `TRUE`, we ensure the output is sorted by most to least frequent value. 
+These numbers do not in any way indicate the time in which the ballot was cast, or the personal identity of the voter.
+However, it does show that this voter split their ticket, voting for Democrats in the Presidential and Congressional race, while voting for one Republican candidate in state senate.
+
+```{r}
+ds |> 
+  filter(state == "ARIZONA", county_name == "MARICOPA") |> 
+  filter(cvr_id == 1) |> 
+  select(county_name, cvr_id, office, district, candidate, party) |> 
+  collect()
+```
+
+However, a further investigation into this voter's state senate district shows that this was uncontested by a Democratic candidate.
+Therefore, the voter had no choice to vote a fully straight ticket.
+The code shows that contests are defined by state, office, and district number. 
+
+```{r}
+ds |> 
+  filter(state == "ARIZONA", office == "STATE SENATE", district == "013") |> 
+  count(candidate, party) |> 
+  collect()
+```
+
+\paragraph{Application: Biden and Trump's Party Loyalty}
+
+As our main exercise, we ask whether partisans --- defined by their votes for Congress and state legislature --- vote for their party's presidential candidate.
+Trump was a polarizing candidate.
+Election observers have wondered if Trump drew less support from Republican voters compare to Biden's support among Democratic voters. 
+Some referred to these group of voters as ``Never Trump Republicans.''
+
+For this analysis, we look at the counties in five battleground states which together decided the election: Wisconsin, Michigan, Georgia, Arizona, and Nevada. 
+
+```{r}
+ds_states <- ds |> 
+  filter(state %in% c("WISCONSIN", "MICHIGAN", "GEORGIA", "ARIZONA", "NEVADA"))
+```
+
+While aggregate election results report how many votes Biden and Trump received, they do not reveal which of those votes came from Republicans and Democratic voters.
+As the previous example showed, the cast vote records reveal exactly how each individual voter voted on the sets of offices available.
+We therefore classify voters into (non-Presidential) partisans based on how they voted in all offices except President.
+
+We first need to narrow down our data so that we only use voter-contest pairs in contests contested by a Democrat and a Republican.
+In other words, the voter needed to have a choice to vote for a Republican or Democrat.
+
+```{r}
+ds_contested <- ds_states |> 
+  collect() |> 
+  # Contested contests
+  filter(any(party == "REP") & any(party == "DEM"), 
+         .by = c(state, office, district)) |> 
+  # Ballots with Presidential vote
+  filter(any(office == "US PRESIDENT"), 
+         .by = c(state, county_name, cvr_id))
+```
+
+The first `filter()` command in the above snippet limits to contested rows.
+For each state-office-district combination, we examine if there are any Republican candidates *and* any Democrats.
+Contests that do not meet this criteria are dropped.
+The second `filter()` command limits to ballots with a Presidential choice.
+This excludes fragmented ballots where the President and the rest of the ballot is separated.
+Both commands are done after `collect()` because the `arrow` package does not support group-specific filter commands as of version 16.1.0.
+
+```{r}
+#| echo: false
+#| eval: false
+## This is 3x faster because we can use arrow verbs
+tictoc::tic()
+rows_contes <- ds_states |> 
+  summarize(
+    contested = any(party == "REP") & 
+      any(party == "DEM"), 
+    .by = c(state, office, district)
+  ) |> 
+  filter(contested)
+
+rows_has_pres <- ds_states |> 
+  summarize(
+    has_pres = any(office == "US PRESIDENT"), 
+     .by = c(state, county_name, cvr_id)
+  ) |> 
+  filter(has_pres)
+
+ds_contested <- ds_states |> 
+  semi_join(rows_contes) |> 
+  semi_join(rows_has_pres) |> 
+  collect()
+
+tictoc::toc()
+```
+
+\noindent We now construct a dataset where each row is a single voter.
+We first create a table of Presidential votes:
+
+```{r}
+## Voters based on President
+ds_pres <- ds_contested |> 
+  filter(office == "US PRESIDENT") |> 
+  select(
+    state, county_name, 
+    cvr_id, candidate,
+    pres_party = party) |> 
+  mutate(pres = case_when(
+    pres_party == "REP" ~ "Trump", 
+    pres_party == "DEM" ~ "Biden", 
+    pres_party == "LBT" ~ "Libertarian", 
+    candidate == "UNDERVOTE" ~ "Undervote",
+    .default = "Other"))
+```
+
+Separately, we construct a dataset that classifies the same voters based on their non-Presidential vote choice.
+The variable `nonpres_party` is `Down-ballot Democrat` if the voter only votes for Democrats down-ballot (using the `all()` command) and it is `Down-ballot Republican` if the voter only votes for Republicans down-ballot.
+
+```{r}
+## subset to all-Dem voters based on everything except President
+ds_D <- ds_contested |> 
+  filter(office != "US PRESIDENT") |> 
+  filter(all(party == "DEM"), .by = c(state, county_name, cvr_id)) |> 
+  distinct(state, county_name, cvr_id) |> 
+  mutate(nonpres_party = "Down-ballot Democrat")
+
+## same subset, but for all-Rep voters
+ds_R <- ds_contested |> 
+  filter(office != "US PRESIDENT") |> 
+  filter(all(party == "REP"), .by = c(state, county_name, cvr_id)) |> 
+  distinct(state, county_name, cvr_id) |> 
+  mutate(nonpres_party = "Down-ballot Republican")
+
+```
+
+Now we join the Presidential data with the non-Presidential classifications.
+Because each row is a voter, we perform a one to one match using `cvr_id` to link back the two office choices.
+Voters who were not classified into DEM or REP, are, by construction, voters who voted for some Democratic down-ballot candidates and Republican down-ballot candidates.
+We label these voters `nonpres_party = Mixed`.
+
+```{r}
+ds_analysis <- ds_pres |> 
+  left_join(
+    bind_rows(ds_D, ds_R), 
+    by = c("state", "county_name", "cvr_id"), relationship = "one-to-one") |> 
+  mutate(nonpres_party = replace_na(nonpres_party, "Mixed"))
+```
+
+\noindent Finally, we construct a cross-tabulation of this dataset using the base-R `xtabs()` function.
+
+```{r}
+xtabs(~ nonpres_party + pres, ds_analysis) |> 
+  addmargins()
+```
+
+This table shows for example that among `r format(nrow(filter(ds_analysis, nonpres_party == "DEM")), big.mark = ",")` solidly Democratic voters, `r format(nrow(filter(ds_analysis, nonpres_party == "DEM", pres == "BIDEN")), big.mark = ",")` voted for Joe Biden.\
+We can show cell counts in terms of proportions of the entire row, with the following operation:
+```{r}
+xtprop <- xtabs(~ nonpres_party + pres, ds_analysis) |> 
+  prop.table(margin = 1) |> 
+  round(3) 
+
+## add margins
+N <- xtabs(~ nonpres_party, ds_analysis)
+
+## reorder columns and append totals
+xtprop[, c("Biden", "Trump", "Libertarian", "Undervote", "Other")] |> 
+  cbind(format(N, big.mark = ",")) |> 
+  kableExtra::kbl(format = "latex", booktabs = TRUE)
+
+```
+
+\bigskip
+
+This formatted table shows more clearly that the "ticket splitting" rate among solid partisans was on the order of 1 percent in this sample.
+In contrast, 97 percent of solid Republicans stuck with their party's nominee, Trump, and 98 percent of solid Democrats stuck with Biden.
+This suggests that Trump's party loyalty was only a percentage point smaller than Biden's.
+However, a starker difference arises in the mixed group (those who vote for some Republicans and some Democrats down-ballot).
+Such small samples are almost impossible to detect in a survey.
+Biden won this group of weak partisans by close to 10 points. 
+
+
+
+More can be done to examine if these results vary by state, county, or precinct.
+Future versions of this dataset can also include ballot measures and local candidates that give more context of these patterns.
+
