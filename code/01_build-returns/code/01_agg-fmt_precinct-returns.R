@@ -51,6 +51,12 @@ ret_nv_totals <- read_csv(
     county_name, county_fips,
     office, district, candidate,
     candidatevotes
+  ) |>
+  mutate(
+    district = ifelse(office %in% c("STATE HOUSE", "STATE SENATE", "US HOUSE"),
+      str_pad(district, width = 3, side = "left", pad = "0"),
+      district
+    )
   )
 
 fl_sh096_agg <- tibble(
@@ -141,6 +147,9 @@ ret_sel <- ret_all |>
     # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/181
     party_detailed = replace(party_detailed, candidate == "HOWIE HAWKINS" & state == "WEST VIRGINIA", "GREEN"),
     party_simplified = replace(party_detailed, candidate == "HOWIE HAWKINS" & state == "WEST VIRGINIA", "GREEN"),
+    # Clark, NV fix
+    party_detailed = replace(party_detailed, candidate == "GREGORY T HAFEN II" & state == "NEVADA" & county_name == "CLARK", "REPUBLICAN"),
+    party_simplified = replace(party_detailed, candidate == "GREGORY T HAFEN II" & state == "NEVADA" & county_name == "CLARK", "REPUBLICAN"),
     # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/33
     across(matches("party_"), \(x) case_match(x, "DEMOCRATIC FARMER LABOR" ~ "DEMOCRAT", .default = x)),
     writein = ifelse(state == "WISCONSIN" & office == "STATE HOUSE" & candidate == "STEVE KUNDERT", 1, writein)

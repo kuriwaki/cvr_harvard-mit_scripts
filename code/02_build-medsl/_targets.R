@@ -12,7 +12,7 @@ options(
 )
 
 tar_option_set(
-  packages = c("tidyverse", "arrow", "janitor", "jsonlite", "furrr", "readxl", "xml2", "stringi", "fs", "data.table"),
+  packages = c("tidyverse", "arrow", "janitor", "jsonlite", "furrr", "readxl", "xml2", "stringi", "fs", "data.table", "dominionCVR"),
   memory = "transient",
   format = "parquet",
   garbage_collection = TRUE,

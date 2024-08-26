@@ -250,16 +250,20 @@
 |MICHIGAN      |WASHTENAW       |
 |NEVADA        |CARSON CITY     |
 |NEVADA        |CHURCHILL       |
+|NEVADA        |CLARK           |
 |NEVADA        |DOUGLAS         |
 |NEVADA        |ELKO            |
 |NEVADA        |LANDER          |
 |NEVADA        |LINCOLN         |
 |NEVADA        |LYON            |
+|NEVADA        |MINERAL         |
 |NEVADA        |NYE             |
 |NEVADA        |PERSHING        |
+|NEVADA        |STOREY          |
 |NEVADA        |WASHOE          |
 |NEVADA        |WHITE PINE      |
 |NEW JERSEY    |BERGEN          |
+|NEW JERSEY    |CAMDEN          |
 |NEW JERSEY    |CUMBERLAND      |
 |NEW JERSEY    |GLOUCESTER      |
 |NEW JERSEY    |MONMOUTH        |
