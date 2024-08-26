@@ -2,6 +2,6 @@ Table: Harvard exact match (rows) vs. MEDSL exact match (cols)
 
 |    |   0|   1| Sum|
 |:---|---:|---:|---:|
-|0   | 215|  15| 230|
+|0   | 216|  15| 231|
 |1   |   4| 228| 232|
-|Sum | 219| 243| 462|
+|Sum | 220| 243| 463|
