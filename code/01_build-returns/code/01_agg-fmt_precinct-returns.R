@@ -209,4 +209,3 @@ write_pq <- function(obj, pq_name, dir = path_outdir) {
 
 write_pq(ret_sel, "returns/by-precinct-mode")
 write_pq(county_summ, "returns/by-county")
-write_pq(county_mode_summ, "returns/by-county-mode")
