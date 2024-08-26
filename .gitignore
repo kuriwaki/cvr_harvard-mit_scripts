@@ -22,6 +22,8 @@ _targets
 !contest_parties.csv
 !counties_harv.csv
 !counties_remove.csv
+!nv_res_complete.csv
+!manual_additions.csv
 
 *.sql
 *.html
