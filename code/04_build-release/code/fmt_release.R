@@ -8,6 +8,8 @@ fmt_for_release <- function(tbl) {
       party_detailed = ifelse(candidate == "WRITE-IN" | party_detailed == "W-I", "WRITEIN", party_detailed),
       # standardize harvard candidate field to match medsl
       candidate = ifelse(candidate == "WRITE-IN", "WRITEIN", candidate),
+      # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/194#issuecomment-2221716247
+      candidate = ifelse(candidate == "NO SELECTION", "UNDERVOTE", candidate),
       # standardized MEDSL's writein's parties to simply WRITEIN as well
       party_detailed = ifelse(candidate == "WRITEIN", "WRITEIN", party_detailed)
       ) |>
