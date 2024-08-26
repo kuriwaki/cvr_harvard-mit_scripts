@@ -282,82 +282,57 @@ preprocess_json <- function(dir, contest_only = FALSE){
     ) |>
     select(-Version, -List)
   
-  clean_json <- function(path) {
-  
-    read_json(path) |>
-      as_tibble() |>
-      unnest_wider(col = Sessions) |>
-      bind_rows(
-        tibble(
-          TabulatorId = integer(),
-          BatchId = integer(),
-          RecordId = integer(),
-          CountingGroupId = integer(),
-          Original = list(),
-          Modified = list()
-        )
-      ) |> 
-      mutate(Original = coalesce(Modified, Original)) |>
-      hoist(
-        .col = Original,
-        precinctportion_id = "PrecinctPortionId",
-        cards = list("Cards", 1L)
-      ) |>
-      unnest_wider(cards) |>
-      select(-Id, -PaperIndex, -OutstackConditionIds) |>
-      unnest_longer(Contests) |>
-      hoist(
-        .col = Contests,
-        contest_id = "Id",
-        marks = "Marks",
-        overvotes = "Overvotes",
-        undervotes = "Undervotes"
-      ) |>
-      unnest_longer(marks) |>
-      hoist(
-        .col = marks,
-        candidate_id = "CandidateId",
-        party_id = "PartyId",
-        magnitude = "Rank",
-        is_vote = "IsVote",
-        is_ambiguous = "IsAmbiguous"
-      ) |>
-      filter((is_vote | undervotes > 0 | overvotes > 0) | (!is_ambiguous & undervotes == 0 & overvotes == 0)) |>
-      select(TabulatorId, BatchId, RecordId, precinctportion_id:magnitude, undervotes, overvotes)
-  }
-  
   files <- list.files(path = dir, pattern = "CvrExport|CVRExport", full.names = TRUE, recursive = TRUE)
   
-  plan(multisession, workers = 4)
+  plan(multisession, workers = 24)
   
-  d <- future_map(files, possibly(clean_json, quiet = FALSE)) |>
-    list_rbind() |>
+  base = extract_cvr(path = files, future = TRUE, verbose = FALSE) |> 
+    as_tibble() |> 
+    filter(isCurrent) |> 
     mutate(
       cvr_id = cur_group_id(),
-      .by = c(TabulatorId, BatchId, RecordId)
-    ) |>
-    left_join(lookup_candidates, by = c("candidate_id" = "id")) |>
-    left_join(lookup_contests, by = c("contest_id" = "id")) |>
-    left_join(lookup_party, by = c("party_id" = "id")) |>
-    left_join(lookup_precinct_portion, by = c("precinctportion_id" = "id")) |>
-    select(-precinct) |>
-    rename(
-      party_detailed = party,
+      magnitude = as.character(rank),
+      .by = c(batchId, cardId, tabulatorId, recordId)
+    ) |> 
+    left_join(lookup_candidates, by = c("candidateId" = "id")) |>
+    left_join(lookup_contests, by = c("contestId" = "id")) |>
+    left_join(lookup_party, by = c("partyId" = "id")) |>
+    left_join(lookup_precinct_portion, by = c("precinctPortionId" = "id")) |>
+    select(
+      -precinct, 
+      party_detailed = party, 
       precinct = precinct_portion
-    ) |>
-    mutate(
-      magnitude = as.character(magnitude),
-      candidate = case_when(
-        undervotes > 0 ~ "UNDERVOTE",
-        overvotes > 0 ~ "OVERVOTE",
-        .default = candidate
-      )
-    ) |>
-    select(cvr_id, precinct, contest, candidate, party_detailed, magnitude)
+    )
   
   plan(sequential)
   
-  return(d)
+  # PROPER PARTITION OF VOTERS ----
+  # (1) valid votes
+  # (2) undervotes (incl. all ambiguous) -->  need to collappse
+  # (3) all overvotes --> need to collapse
+  # (4) partial undervotes/overvotes (only relevant in VoteFor=2 race)
+  
+  # (1)
+  part1 = filter(base, isVote, !isAmbiguous) |> 
+    select(cvr_id, precinct, contest, candidate, party_detailed, magnitude)
+
+  # (2)
+  part2 = base |>
+    anti_join(part1, join_by(cvr_id, contest)) |>
+    filter(undervotes > 0) |>
+    ## remove ambiguous votes, except when the votes are all ambiguous (that's an undervote)
+    filter(!(isAmbiguous & !all(isAmbiguous)), .by = c(cvr_id, contestId)) |>
+    distinct(cvr_id, precinct, contest, magnitude) |>
+    mutate(candidate = "UNDERVOTE") # treat cand as undervote
+
+  # (3)
+  part3 = base |>
+    anti_join(part1, join_by(cvr_id, contest)) |>
+    filter(overvotes > 0) |>
+    distinct(cvr_id, precinct, contest, magnitude) |>
+    mutate(candidate = "OVERVOTE") # treat cand as overvote
+  
+  bind_rows(part1, part2, part3)
   
 }
 
@@ -412,7 +387,7 @@ preprocess_xml <- function(dir, contest_only = FALSE){
     full.names = TRUE
   )
   
-  plan(multisession, workers = 4)
+  plan(multisession, workers = 24)
   
   xmls <- future_imap(files, xml_parser) |> list_rbind()
   
