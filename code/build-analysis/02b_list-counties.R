@@ -1,11 +1,12 @@
 library(tidyverse)
 library(arrow)
+library(fs)
 library(glue)
-library(readxl)
-library(openxlsx)
+library(writexl)
+source("00_paths.R")
 
 # count voters by county
-dat <- open_dataset("release") |>
+dat <- open_dataset(path(PATH_parq, "release")) |>
   filter(office == "US PRESIDENT") |>
   count(state, county_name, name = "voters_pres") |>
   collect() |>
@@ -64,7 +65,6 @@ for (i in 1:nrow(dat_fmt)) {
 
 sink()
 
-output_df <- data.frame(data = unlist(rows_list), stringsAsFactors = FALSE)
-
-write.xlsx(output_df, "tables/tab_counties_text.xlsx", rowNames = FALSE)
+output_df <- tibble(x = unlist(rows_list))
+write_xlsx(output_df, "tables/table_05.xlsx")
 
