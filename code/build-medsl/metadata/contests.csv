@@ -9703,50 +9703,6 @@ NEVADA,CHURCHILL,United States Representative in Congress District 2 Vote for1 A
 NEVADA,CHURCHILL,United States Representative in Congress District 2 Vote for1 Amodei Mark e Rep,US HOUSE,2,MARK E AMODEI,REPUBLICAN,1,34009
 NEVADA,CHURCHILL,United States Representative in Congress District 2 Vote for1 Hansen Janine Iap,US HOUSE,2,JANINE HANSEN,INDEPENDENT AMERICAN,1,34010
 NEVADA,CHURCHILL,State Assembly District 38 Vote for1 Titus Robin l Rep,STATE HOUSE,38,ROBIN L TITUS,REPUBLICAN,1,34011
-NEVADA,CLARK,State Senate District 11,STATE SENATE,11,NA,NA,1,34041
-NEVADA,CLARK,Representative in Congress District 1,US HOUSE,1,NA,NA,1,34046
-NEVADA,CLARK,Representative in Congress District 3,US HOUSE,3,NA,NA,1,34047
-NEVADA,CLARK,Representative in Congress District 4,US HOUSE,4,NA,NA,1,34048
-NEVADA,CLARK,"State Assembly, District 1",STATE HOUSE,1,NA,NA,1,34049
-NEVADA,CLARK,"State Assembly, District 10",STATE HOUSE,10,NA,NA,1,34050
-NEVADA,CLARK,"State Assembly, District 11",STATE HOUSE,11,NA,NA,1,34051
-NEVADA,CLARK,"State Assembly, District 12",STATE HOUSE,12,NA,NA,1,34052
-NEVADA,CLARK,"State Assembly, District 13",STATE HOUSE,13,NA,NA,1,34053
-NEVADA,CLARK,"State Assembly, District 14",STATE HOUSE,14,NA,NA,1,34054
-NEVADA,CLARK,"State Assembly, District 15",STATE HOUSE,15,NA,NA,1,34055
-NEVADA,CLARK,"State Assembly, District 16",STATE HOUSE,16,NA,NA,1,34056
-NEVADA,CLARK,"State Assembly, District 17",STATE HOUSE,17,NA,NA,1,34057
-NEVADA,CLARK,"State Assembly, District 18",STATE HOUSE,18,NA,NA,1,34058
-NEVADA,CLARK,"State Assembly, District 19",STATE HOUSE,19,NA,NA,1,34059
-NEVADA,CLARK,"State Assembly, District 2",STATE HOUSE,2,NA,NA,1,34060
-NEVADA,CLARK,"State Assembly, District 20",STATE HOUSE,20,NA,NA,1,34061
-NEVADA,CLARK,"State Assembly, District 21",STATE HOUSE,21,NA,NA,1,34062
-NEVADA,CLARK,"State Assembly, District 22",STATE HOUSE,22,NA,NA,1,34063
-NEVADA,CLARK,"State Assembly, District 23",STATE HOUSE,23,NA,NA,1,34064
-NEVADA,CLARK,"State Assembly, District 28",STATE HOUSE,28,NA,NA,1,34065
-NEVADA,CLARK,"State Assembly, District 29",STATE HOUSE,29,NA,NA,1,34066
-NEVADA,CLARK,"State Assembly, District 3",STATE HOUSE,3,NA,NA,1,34067
-NEVADA,CLARK,"State Assembly, District 34",STATE HOUSE,34,NA,NA,1,34068
-NEVADA,CLARK,"State Assembly, District 35",STATE HOUSE,35,NA,NA,1,34069
-NEVADA,CLARK,"State Assembly, District 36",STATE HOUSE,36,NA,NA,1,34070
-NEVADA,CLARK,"State Assembly, District 37",STATE HOUSE,37,NA,NA,1,34071
-NEVADA,CLARK,"State Assembly, District 4",STATE HOUSE,4,NA,NA,1,34072
-NEVADA,CLARK,"State Assembly, District 41",STATE HOUSE,41,NA,NA,1,34073
-NEVADA,CLARK,"State Assembly, District 42",STATE HOUSE,42,NA,NA,1,34074
-NEVADA,CLARK,"State Assembly, District 5",STATE HOUSE,5,NA,NA,1,34075
-NEVADA,CLARK,"State Assembly, District 6",STATE HOUSE,6,NA,NA,1,34076
-NEVADA,CLARK,"State Assembly, District 7",STATE HOUSE,7,NA,NA,1,34077
-NEVADA,CLARK,"State Assembly, District 8",STATE HOUSE,8,NA,NA,1,34078
-NEVADA,CLARK,"State Assembly, District 9",STATE HOUSE,9,NA,NA,1,34079
-NEVADA,CLARK,President,US PRESIDENT,FEDERAL,NA,NA,1,34080
-NEVADA,CLARK,State Senate District 1,STATE SENATE,1,NA,NA,1,34081
-NEVADA,CLARK,"State Senate, District 18",STATE SENATE,18,NA,NA,1,34082
-NEVADA,CLARK,"State Senate, District 19",STATE SENATE,19,NA,NA,1,34083
-NEVADA,CLARK,State Senate District 3,STATE SENATE,3,NA,NA,1,34084
-NEVADA,CLARK,State Senate District 4,STATE SENATE,4,NA,NA,1,34085
-NEVADA,CLARK,State Senate District 5,STATE SENATE,5,NA,NA,1,34086
-NEVADA,CLARK,State Senate District 6,STATE SENATE,6,NA,NA,1,34087
-NEVADA,CLARK,State Senate District 7,STATE SENATE,7,NA,NA,1,34088
 NEVADA,DOUGLAS,United States President and Vice President Vote for1 Biden Joseph r Harris Kamala d Dem,US PRESIDENT,FEDERAL,"JOSEPH R BIDEN, KAMALA D HARRIS",DEMOCRAT,1,34089
 NEVADA,DOUGLAS,United States President and Vice President Vote for1 Blankenship Don Mohr William Iap,US PRESIDENT,FEDERAL,"DON BLANKENSHIP, WILLIAM MOHR",INDEPENDENT AMERICAN,1,34090
 NEVADA,DOUGLAS,United States President and Vice President Vote for1 Jorgensen Jo Cohen Jeremy Spike Lpn,US PRESIDENT,FEDERAL,JO JORGENSEN,LIBERTARIAN,1,34091
@@ -13708,3 +13664,97 @@ RHODE ISLAND,STATEWIDE,Representative in General Assembly District 72 (29898),ST
 RHODE ISLAND,STATEWIDE,Representative in General Assembly District 73 (29901),STATE HOUSE,73,NA,NA,1,NA
 RHODE ISLAND,STATEWIDE,Representative in General Assembly District 74 (29904),STATE HOUSE,74,NA,NA,1,NA
 RHODE ISLAND,STATEWIDE,Representative in General Assembly District 75 (29907),STATE HOUSE,75,NA,NA,1,NA
+NEVADA,CLARK,President Vote for 1 Biden Joseph r Dem,US PRESIDENT,FEDERAL,JOSEPH R BIDEN,DEMOCRAT,1,NA
+NEVADA,CLARK,President Vote for 1 Blankenship Don Iap,US PRESIDENT,FEDERAL,DON BLANKENSHIP,INDEPENDENT AMERICAN PARTY,1,NA
+NEVADA,CLARK,President Vote for 1 Jorgensen Jo Lpn,US PRESIDENT,FEDERAL,JO JORGENSEN,LIBERTARIAN,1,NA
+NEVADA,CLARK,President Vote for 1 Trump Donald j Rep,US PRESIDENT,FEDERAL,DONALD TRUMP,REPUBLICAN,1,NA
+NEVADA,CLARK,President Vote for 1 None of These Candidates Np,US PRESIDENT,FEDERAL,NONE OF THESE CANDIDATES,NA,1,NA
+NEVADA,CLARK,Representative in Congress District 1 Vote for 1 Bakari Kamau Iap,US HOUSE,1,KAMAU BAKARI,INDEPENDENT AMERICAN PARTY,1,NA
+NEVADA,CLARK,Representative in Congress District 1 Vote for 1 Bentley Joyce Rep,US HOUSE,1,JOYCE BENTLEY,REPUBLICAN,1,NA
+NEVADA,CLARK,Representative in Congress District 1 Vote for 1 Strawder Jr Robert Van Lpn,US HOUSE,1,ROBERT VAN STRAWDER JR,LIBERTARIAN,1,NA
+NEVADA,CLARK,Representative in Congress District 1 Vote for 1 Titus Dina Dem,US HOUSE,1,DINA TITUS,DEMOCRAT,1,NA
+NEVADA,CLARK,Representative in Congress District 3 Vote for 1 Bridges Ii Ed s Iap,US HOUSE,3,ED S BRIDGES II,INDEPENDENT AMERICAN PARTY,1,NA
+NEVADA,CLARK,Representative in Congress District 3 Vote for 1 Brown Steve Lpn,US HOUSE,3,STEVE BROWN,LIBERTARIAN,1,NA
+NEVADA,CLARK,Representative in Congress District 3 Vote for 1 Lee Susie Dem,US HOUSE,3,SUSIE LEE,DEMOCRAT,1,NA
+NEVADA,CLARK,Representative in Congress District 3 Vote for 1 Rodimer Dan Big Dan Rep,US HOUSE,3,DAN BIG DAN RODIMER,REPUBLICAN,1,NA
+NEVADA,CLARK,Representative in Congress District 4 Vote for 1 Esteban Jonathan Royce Lpn,US HOUSE,4,JONATHAN ROYCE ESTEBAN,LIBERTARIAN,1,NA
+NEVADA,CLARK,Representative in Congress District 4 Vote for 1 Horsford Steven Dem,US HOUSE,4,STEVEN HORSFORD,DEMOCRAT,1,NA
+NEVADA,CLARK,Representative in Congress District 4 Vote for 1 Marchant Jim Rep,US HOUSE,4,JIM MARCHANT,REPUBLICAN,1,NA
+NEVADA,CLARK,Representative in Congress District 4 Vote for 1 Rubinson Barry Iap,US HOUSE,4,BARRY RUBINSON,INDEPENDENT AMERICAN PARTY,1,NA
+NEVADA,CLARK,State Senate District 1 Vote for 1 Spearman Patricia Pat Dem,STATE SENATE,1,PATRICIA PAT SPEARMAN,DEMOCRAT,1,NA
+NEVADA,CLARK,State Senate District 3 Vote for 1 Brooks Chris Dem,STATE SENATE,3,CHRIS BROOKS,DEMOCRAT,1,NA
+NEVADA,CLARK,State Senate District 4 Vote for 1 Hickman Esper m Rep,STATE SENATE,4,ESPER M HICKMAN,REPUBLICAN,1,NA
+NEVADA,CLARK,State Senate District 4 Vote for 1 Neal Dina Dem,STATE SENATE,4,DINA NEAL,DEMOCRAT,1,NA
+NEVADA,CLARK,State Senate District 5 Vote for 1 Buck Carrie Ann Rep,STATE SENATE,5,CARRIE ANN BUCK,REPUBLICAN,1,NA
+NEVADA,CLARK,State Senate District 5 Vote for 1 Hagan Tim Lpn,STATE SENATE,5,TIM HAGAN,LIBERTARIAN,1,NA
+NEVADA,CLARK,State Senate District 5 Vote for 1 Watson Kristee Dem,STATE SENATE,5,KRISTEE WATSON,DEMOCRAT,1,NA
+NEVADA,CLARK,State Senate District 6 Vote for 1 Becker April Rep,STATE SENATE,6,APRIL BECKER,REPUBLICAN,1,NA
+NEVADA,CLARK,State Senate District 6 Vote for 1 Cannizzaro Nicole Jeanette Dem,STATE SENATE,6,NICOLE JEANETTE CANNIZZARO,DEMOCRAT,1,NA
+NEVADA,CLARK,State Senate District 7 Vote for 1 Lange Roberta Dem,STATE SENATE,7,ROBERTA LANGE,DEMOCRAT,1,NA
+NEVADA,CLARK,State Senate District 11 Vote for 1 Dowden Joshua Rep,STATE SENATE,11,JOSHUA DOWDEN,REPUBLICAN,1,NA
+NEVADA,CLARK,State Senate District 11 Vote for 1 Harris Dallas Dem,STATE SENATE,11,DALLAS HARRIS,DEMOCRAT,1,NA
+NEVADA,CLARK,State Senate District 18 Vote for 1 Becker Liz Dem,STATE SENATE,18,LIZ BECKER,DEMOCRAT,1,NA
+NEVADA,CLARK,State Senate District 18 Vote for 1 Hammond Scott t Rep,STATE SENATE,18,SCOTT T HAMMOND,REPUBLICAN,1,NA
+NEVADA,CLARK,State Senate District 19 Vote for 1 Goicoechea Pete Rep,STATE SENATE,19,PETE GOICOECHEA,REPUBLICAN,1,NA
+NEVADA,CLARK,State Senate District 19 Vote for 1 Seeback Tiffany Gholson Iap,STATE SENATE,19,TIFFANY GHOLSON SEEBACK,INDEPENDENT AMERICAN PARTY,1,NA
+NEVADA,CLARK,State Assembly District 1 Vote for 1 Monroe Moreno Daniele Dem,STATE HOUSE,1,DANIELE MONROE MORENO,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 2 Vote for 1 Kasama Heidi Rep,STATE HOUSE,2,HEIDI KASAMA,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 2 Vote for 1 Kunnel Radhika Rpk Dem,STATE HOUSE,2,RADHIKA RPK KUNNEL,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 2 Vote for 1 Le Duff Garrett Npp,STATE HOUSE,2,GARRETT LE DUFF,NO POLITICAL PARTY,1,NA
+NEVADA,CLARK,State Assembly District 3 Vote for 1 Torres Selena Dem,STATE HOUSE,3,SELENA TORRES,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 4 Vote for 1 Mc Arthur Richard Rep,STATE HOUSE,4,RICHARD MCARTHUR,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 4 Vote for 1 Munk Connie Dem,STATE HOUSE,4,CONNIE MUNK,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 5 Vote for 1 Miller Brittney Dem,STATE HOUSE,5,BRITTNEY MILLER,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 5 Vote for 1 Miller Mack Rep,STATE HOUSE,5,MACK MILLER,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 6 Vote for 1 Duncan Katie Rep,STATE HOUSE,6,KATIE DUNCAN,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 6 Vote for 1 Summers Armstrong Shondra Dem,STATE HOUSE,6,SHONDRA SUMMERS ARMSTRONG,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 7 Vote for 1 Miller Cameron c h Dem,STATE HOUSE,7,CAMERON C H MILLER,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 7 Vote for 1 Palmer Anthony Tony Rep,STATE HOUSE,7,TONY PALMER ANTHONY,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 8 Vote for 1 Facey Edward Eddie Rep,STATE HOUSE,8,EDWARD EDDIE FACEY,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 8 Vote for 1 Frierson Jason Dem,STATE HOUSE,8,JASON FRIERSON,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 9 Vote for 1 Altman Barbara Rep,STATE HOUSE,9,BARBARA ALTMAN,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 9 Vote for 1 Yeager Steve Dem,STATE HOUSE,9,STEVE YEAGER,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 10 Vote for 1 Friedrich Jonathan Iap,STATE HOUSE,10,JONATHAN FRIEDRICH,INDEPENDENT AMERICAN PARTY,1,NA
+NEVADA,CLARK,State Assembly District 10 Vote for 1 Hisgen Chris Rep,STATE HOUSE,10,CHRIS HISGEN,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 10 Vote for 1 Nguyen Rochelle Dem,STATE HOUSE,10,ROCHELLE NGUYEN,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 11 Vote for 1 Duran Beatrice a Dem,STATE HOUSE,11,BEATRICE A DURAN,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 11 Vote for 1 Krattiger Eric Rep,STATE HOUSE,11,ERIC KRATTIGER,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 12 Vote for 1 Gerhardt John Cardiff Npp,STATE HOUSE,12,JOHN CARDIFF GERHARDT,NO POLITICAL PARTY,1,NA
+NEVADA,CLARK,State Assembly District 12 Vote for 1 Graves Jeremy a Rep,STATE HOUSE,12,JEREMEY A GRAVES,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 12 Vote for 1 Martinez Susan Dem,STATE HOUSE,12,SUSAN MARTINEZ,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 13 Vote for 1 Roberts Tom Rep,STATE HOUSE,13,TOM ROBERTS,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 14 Vote for 1 Carlton Maggie Dem,STATE HOUSE,14,MAGGIE CARLTON,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 14 Vote for 1 Wayerski Robert Lpn,STATE HOUSE,14,ROBERT WAYERSKI,LIBERTARIAN,1,NA
+NEVADA,CLARK,State Assembly District 15 Vote for 1 Vaughan Stan Rep,STATE HOUSE,15,STAN VAUGHAN,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 15 Vote for 1 Watts Howard Dem,STATE HOUSE,15,HOWARD WATTS,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 16 Vote for 1 Gonzalez Cecelia Dem,STATE HOUSE,16,CECELIA GONZALEZ,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 16 Vote for 1 Sajdak Reyna Alex Rep,STATE HOUSE,16,ALEX SAJDAK REYNA,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 17 Vote for 1 Polcyn Jack Rep,STATE HOUSE,17,JACK POLCYN,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 17 Vote for 1 Thomas Clara Claire Dem,STATE HOUSE,17,CLARA CLAIRE THOMAS,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 18 Vote for 1 Considine Venicia Dem,STATE HOUSE,18,VENICIA CONSIDINE,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 18 Vote for 1 Florian Heather Ann Rep,STATE HOUSE,18,HEATHER ANN FLORIAN,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 19 Vote for 1 Black Ann Annie Rep,STATE HOUSE,19,ANN ANNIE BLACK,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 20 Vote for 1 Orentlicher David Dem,STATE HOUSE,20,DAVID ORENTILCHER,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 21 Vote for 1 Arrington Cherlyn Rep,STATE HOUSE,21,CHERYLYN ARRINGTON,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 21 Vote for 1 Marzola Elaine Dem,STATE HOUSE,21,ELAINE MARZOLA,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 22 Vote for 1 Hardy Melissa Rep,STATE HOUSE,22,MELISSA HARDY,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 23 Vote for 1 Foutz Brent Dem,STATE HOUSE,23,BRENT FOUTZ,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 23 Vote for 1 Hoge Bill Iap,STATE HOUSE,23,BILL HOGE,INDEPENDENT AMERICAN PARTY,1,NA
+NEVADA,CLARK,State Assembly District 23 Vote for 1 Leavitt Glen Rep,STATE HOUSE,23,GLEN LEAVITT,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 28 Vote for 1 Bousley Natasha Lpn,STATE HOUSE,28,NATASHA BOUSLEY,LIBERTARIAN,1,NA
+NEVADA,CLARK,State Assembly District 28 Vote for 1 Flores Edgar Dem,STATE HOUSE,28,EDGAR FLORES,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 29 Vote for 1 Cohen Lesley Elizabeth Dem,STATE HOUSE,29,LESLEY ELIZABETH COHEN,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 29 Vote for 1 Delisle Steven e Rep,STATE HOUSE,29,STEVEN E DELISLE,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 34 Vote for 1 Bilbray Axelrod Shannon Dem,STATE HOUSE,34,AXELROD SHANNON BILBRAY,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 34 Vote for 1 Carlson Jay Thomas Rep,STATE HOUSE,34,JAY THOMAS CARLSON,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 35 Vote for 1 Calhoun Jay Rep,STATE HOUSE,35,JAY CALHOUN,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 35 Vote for 1 Gorelow Michelle Dem,STATE HOUSE,35,MICHELLE GORELOW,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 36 Vote for 1 Hafen Ii Gregory t Rep,STATE HOUSE,36,GREGROY T HAFEN,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 37 Vote for 1 Backus Shea Dem,STATE HOUSE,37,SHEA BACKUS,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 37 Vote for 1 Matthews Andy Rep,STATE HOUSE,37,ANDY MATTHEWS,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 41 Vote for 1 Da Costa Victoria k Iap,STATE HOUSE,41,VICTORIA K DA COSTA,INDEPENDENT AMERICAN PARTY,1,NA
+NEVADA,CLARK,State Assembly District 41 Vote for 1 Jauregui Sandra Dem,STATE HOUSE,41,SANDRA JAUREGUI,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 41 Vote for 1 Smith Erika Rep,STATE HOUSE,41,ERIKA SMITH,REPUBLICAN,1,NA
+NEVADA,CLARK,State Assembly District 42 Vote for 1 Assefa Alexander Dem,STATE HOUSE,42,ALEXANDER ASSEFA,DEMOCRAT,1,NA
+NEVADA,CLARK,State Assembly District 42 Vote for 1 Delsignore Liz Lpn,STATE HOUSE,42,LIZ DELSIGNORE,LIBERTARIAN,1,NA
+NEVADA,CLARK,State Assembly District 42 Vote for 1 Zaidi Sayed Sm Npp,STATE HOUSE,42,SAYED SM ZAIDI,NO POLITICAL PARTY,1,NA
