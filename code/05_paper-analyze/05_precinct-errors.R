@@ -49,7 +49,7 @@ prec_comp |>
   count(state, county_name, sort = TRUE)
 
 # plot
-prec_comp |>
+fig_prec <- prec_comp |>
   filter(!is.na(n_v), !is.na(n_cvr)) |>
   ggplot(aes(n_v, n_cvr)) +
   geom_abline(alpha = 0.5, linetype = "dotted") +
@@ -64,7 +64,7 @@ prec_comp |>
        y = "Votes in CVR (matched precinct-level)"
   )
 
-ggsave("figs/figure_03.pdf", w = 6, h = 3)
+ggsave("figs/figure_03.pdf", fig_prec, w = 6, h = 3)
 
 # stats ----
 prec_comp |> filter(!is.na(n_v)) |> distinct(state, county_name, precinct) |>
