@@ -14,7 +14,7 @@ prec_cvr <- open_dataset(path(PATH_parq, "intermediate/coalesced/")) |>
   rename(precinct = precinct_medsl) |>
   collect()
 
-prec_v <- open_dataset("returns/by-precinct-mode/") |>
+prec_v <- open_dataset(path(PATH_parq, "returns/by-precinct-mode/")) |>
   filter(office == "US PRESIDENT",
          party_detailed %in% c("REPUBLICAN", "DEMOCRAT")) |>
   collect() |>
@@ -64,7 +64,7 @@ prec_comp |>
        y = "Votes in CVR (matched precinct-level)"
   )
 
-ggsave("figs/precinct_discrep.png", w = 6, h = 3)
+ggsave("figs/figure_3.pdf", w = 6, h = 3)
 
 # stats ----
 prec_comp |> filter(!is.na(n_v)) |> distinct(state, county_name, precinct) |>
