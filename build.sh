@@ -1,24 +1,15 @@
 
-echo "Building MEDSL"
-cd code/build-medsl
-bash build-medsl.sh
-cd ..
-cd ..
-
 echo "Building Returns"
-cd code/build-returns
-bash build-returns.sh
-cd ..
-cd ..
+(cd 01_build-returns ; bash build-returns.sh)
+
+echo "Building MEDSL"
+(cd 02_build-medsl ; bash build-medsl.sh)
+
+# echo "Building Harvard"
+# (cd 03_build-harvard ; bash build-harvard.sh)
 
 echo "Building Release"
-cd code/build-release
-bash build-release.sh
-cd ..
-cd ..
+(cd 04_build-release ; bash build-release.sh)
 
-echo "Generating Paper"
-cd code/paper
-bash paper.sh
-cd ..
-cd ..
+echo "Building Paper"
+(cd 05_paper-analyze ; bash paper.sh)
