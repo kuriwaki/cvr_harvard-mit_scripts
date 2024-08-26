@@ -1,7 +1,6 @@
 library(tidyverse)
 library(arrow)
 library(glue)
-library(readxl)
 source("00_paths.R")
 
 write_n <- function (tbl, path, dir = "numbers") {

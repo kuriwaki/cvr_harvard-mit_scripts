@@ -113,7 +113,7 @@ fig_c <- cand_dist_level |>
 wrap_elements(gg_gt) + fig_b + fig_c +
   plot_layout(widths = c(1, 0.5, 0.5)) +
   plot_annotation(tag_levels = "a")
-ggsave("figs/figure_2.pdf", w = 10, h = 3, units = "in")
+ggsave("figs/figure_02.pdf", w = 10, h = 3, units = "in")
 
 
 

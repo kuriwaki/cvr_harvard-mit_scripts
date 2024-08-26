@@ -2,7 +2,7 @@ library(tidyverse)
 library(sf)
 library(scales)
 library(arrow)
-library(urbnmapr) # pak::pkg_install("UrbanInstitute/urbnmapr")
+library(urbnmapr) # renv::install("UrbanInstitute/urbnmapr")
 source("00_paths.R")
 
 shp_us <- urbnmapr::get_urbn_map(map = "states", sf = TRUE) #
@@ -69,7 +69,7 @@ gg_cov <-
   theme(strip.text = ggtext::element_markdown()) +
   labs(fill = "CVR Coverage")
 
-ggsave("figs/coverage_frac.png",
-       gg_cov, dpi = 400,
+ggsave("figs/figure_S1.pdf",
+       gg_cov,
        w = 7.5, h = 4)
 

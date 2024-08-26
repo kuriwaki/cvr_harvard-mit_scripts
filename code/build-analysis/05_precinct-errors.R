@@ -64,7 +64,7 @@ prec_comp |>
        y = "Votes in CVR (matched precinct-level)"
   )
 
-ggsave("figs/figure_3.pdf", w = 6, h = 3)
+ggsave("figs/figure_03.pdf", w = 6, h = 3)
 
 # stats ----
 prec_comp |> filter(!is.na(n_v)) |> distinct(state, county_name, precinct) |>
