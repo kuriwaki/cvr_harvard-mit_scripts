@@ -94,6 +94,7 @@ state_tb <- state_cvr |>
     str_detect(x, "^diff") ~ "Diff.",
     str_detect(x, "pct") ~ "%"
     )) |>
+  tab_options(table.font.size = px(13)) |>
   tab_spanner("% Biden", columns = matches("_prez")) |>
   tab_spanner("Voters", columns = matches("voters")) |>
   gt::sub_missing() |>
