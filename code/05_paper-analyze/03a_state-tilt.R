@@ -100,8 +100,14 @@ state_tb <- state_cvr |>
   cols_add(SPACE = "", .after = diff_prez) |>
   cols_label(SPACE = md("&emsp;&emsp;&emsp;&emsp;"))
 
+# Save table
 state_tb |>
   gtsave("tables/table_03.tex")
 
 state_tb |>
   gtsave("tables/table_03.docx")
+
+# Save stat
+tail(state_cvr$dem_prez, 1) |>
+  scales::number(scale = 100, accuracy = 0.1) |>
+  write_lines("numbers/sample_pct-dem.tex")
