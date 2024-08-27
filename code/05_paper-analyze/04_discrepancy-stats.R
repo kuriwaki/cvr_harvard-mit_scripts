@@ -94,7 +94,7 @@ fig_c <- cand_dist_level |>
     position = position_stack(),
     boundary = 0,
     color = "white",
-    size = 0.1,
+    linewidth = 0.1,
     binwidth = 0.002) +
   theme_classic() +
   scale_fill_manual(values = used_val, labels = used_lab) +
