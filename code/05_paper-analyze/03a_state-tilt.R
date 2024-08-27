@@ -19,7 +19,7 @@ tally_cvrs <- function(tbl) {
       dem_prez = sum(party_detailed == "DEMOCRAT", na.rm = TRUE) /
         sum(party_detailed %in% c("DEMOCRAT", "REPUBLICAN"), na.rm = TRUE),
       n_counties = n_distinct(county_name),
-      n_voters = sum(!candidate %in% c("OVERVOTE", "UNDERVOTE"), na.rm = TRUE),
+      n_voters = sum(party_detailed %in% c("DEMOCRAT", "REPUBLICAN", "LIBERTARIAN"), na.rm = TRUE),
     ) |>
     collect()
 }
@@ -31,7 +31,7 @@ tally_votes <- function(tbl) {
       dem_prez = sum(votes*as.numeric(party_detailed == "DEMOCRAT"), na.rm = TRUE) /
         sum(votes*as.numeric(party_detailed %in% c("DEMOCRAT", "REPUBLICAN")), na.rm = TRUE),
       n_counties = n_distinct(county_name),
-      n_voters = sum(votes*(as.numeric(!candidate %in% c("OVERVOTE", "UNDERVOTE"))), na.rm = TRUE)
+      n_voters = sum(votes*(as.numeric(party_detailed %in% c("DEMOCRAT", "REPUBLICAN", "LIBERTARIAN"))), na.rm = TRUE)
     ) |>
     collect()
 }
@@ -81,8 +81,10 @@ state_tb <- state_cvr |>
   select(-matches("counties")) |>
   mutate(
     state = str_to_title(state),
-    diff_prez  = scales::percent(dem_prez.x - dem_prez.y, accuracy = 1, suffix = "pp"),
-    pct_voters = scales::percent(n_voters.x / n_voters.y, accuracy = 1)
+    diff_prez  = scales::percent(dem_prez.x - dem_prez.y, accuracy = 1, suffix = "",
+                                 style_positive = "plus"),
+    pct_voters = scales::percent(n_voters.x / n_voters.y, accuracy = 1),
+    pct_voters = replace(pct_voters, pct_voters == "0%", "<1%")
     ) |>
   gt() |>
   fmt_percent(matches("_prez"), decimals = 1) |>
