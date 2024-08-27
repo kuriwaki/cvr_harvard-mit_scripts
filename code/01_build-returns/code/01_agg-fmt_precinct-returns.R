@@ -194,7 +194,11 @@ county_summ <- county_mode_summ |>
   mutate(
     votes = coalesce(candidatevotes, votes),
     candidatevotes = NULL
-  )
+  ) |>
+  mutate(votes = replace(
+    votes,
+    county_name == "NYE" & str_detect(candidate, "HAFEN") & party_detailed == "REPUBLICAN",
+    19852))
 
 
 # write to parquet ---
