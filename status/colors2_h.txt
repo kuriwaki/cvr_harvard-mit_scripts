@@ -5,7 +5,7 @@
 |any < 5% mismatch  |  24|
 |any < 10% mismatch |   9|
 |candidate missing  |  13|
-|not collected      |  54|
+|not collected      |  55|
 |no entry in Baltz  |   1|
 |red                |  39|
 |unclassified       |   1|
