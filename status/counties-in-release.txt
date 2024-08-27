@@ -253,6 +253,8 @@
 |NEVADA        |CLARK           |
 |NEVADA        |DOUGLAS         |
 |NEVADA        |ELKO            |
+|NEVADA        |ESMERALDA       |
+|NEVADA        |EUREKA          |
 |NEVADA        |LANDER          |
 |NEVADA        |LINCOLN         |
 |NEVADA        |LYON            |
