@@ -255,6 +255,7 @@
 |NEVADA        |ELKO            |
 |NEVADA        |ESMERALDA       |
 |NEVADA        |EUREKA          |
+|NEVADA        |HUMBOLDT        |
 |NEVADA        |LANDER          |
 |NEVADA        |LINCOLN         |
 |NEVADA        |LYON            |
