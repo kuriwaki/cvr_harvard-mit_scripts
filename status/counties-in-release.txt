@@ -212,6 +212,7 @@
 |ILLINOIS      |CLINTON         |
 |ILLINOIS      |HAMILTON        |
 |ILLINOIS      |JO DAVIESS      |
+|ILLINOIS      |MCHENRY         |
 |ILLINOIS      |MONROE          |
 |ILLINOIS      |PIKE            |
 |ILLINOIS      |UNION           |
@@ -268,7 +269,9 @@
 |NEW JERSEY    |BERGEN          |
 |NEW JERSEY    |CAMDEN          |
 |NEW JERSEY    |CUMBERLAND      |
+|NEW JERSEY    |ESSEX           |
 |NEW JERSEY    |GLOUCESTER      |
+|NEW JERSEY    |HUDSON          |
 |NEW JERSEY    |MONMOUTH        |
 |NEW JERSEY    |PASSAIC         |
 |NEW JERSEY    |SALEM           |
