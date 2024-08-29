@@ -105,10 +105,10 @@ state_tb <- state_cvr |>
 
 # Save table
 state_tb |>
-  gtsave("tables/table_03.tex")
+  gtsave("tables/table_02.tex")
 
 state_tb |>
-  gtsave("tables/table_03.docx")
+  gtsave("tables/table_02.docx")
 
 # Save stat
 tail(state_cvr$dem_prez, 1) |>
