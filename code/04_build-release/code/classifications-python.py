@@ -20,7 +20,7 @@ import os
 ################################################################################
 user = os.getlogin()
 
-if user in ['root']:
+if user in ['root', 'shirokuriwaki', 'sk2983', 'sbaltz']:
   if os.getenv("USER") in ['shirokuriwaki', 'sk2983', 'sbaltz']:
     DATA_DIR = os.path.expanduser("~/Dropbox/CVR_parquet/")
 elif user in ['mason']:
