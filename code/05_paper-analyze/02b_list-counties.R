@@ -24,7 +24,10 @@ dat_fmt <- dat |>
   ) |>
   mutate(state = str_to_title(state),
          county = str_to_title(county_name),
-         county = recode(county, Statewide = "(Statewide)")) |>
+         county = recode(county, Statewide = "(Statewide)"),
+         county = recode(county, Mchenry = "McHenry",
+                         Dekalb = "DeKalb", Mcduffie = "McDuffie")
+         ) |>
   arrange(state, county)
 
 rows_list <- list()
@@ -66,5 +69,5 @@ for (i in 1:nrow(dat_fmt)) {
 sink()
 
 output_df <- tibble(x = unlist(rows_list))
-write_xlsx(output_df, "tables/table_05.xlsx")
+write_xlsx(output_df, "tables/table_04.xlsx")
 
