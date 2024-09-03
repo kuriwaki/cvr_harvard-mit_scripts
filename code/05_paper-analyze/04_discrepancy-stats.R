@@ -1,8 +1,11 @@
-library(tidyverse)
-library(readxl)
-library(arrow)
-library(patchwork)
-library(gt)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(glue)
+  library(readxl)
+  library(patchwork)
+  library(gt)
+})
 source("00_paths.R")
 
 # Read in comparison data
@@ -45,8 +48,8 @@ county_level <- dat_county |>
       # "no entry in Baltz",
       "unclassified"
     )
-    )
-    )
+  )
+  )
 
 # State x Office-level % differences
 cand_dist_level <- dat_cand |>

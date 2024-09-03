@@ -1,4 +1,4 @@
-library(fs)
+suppressPackageStartupMessages(library(fs))
 
 username <- Sys.info()["user"]
 if (username == "shirokuriwaki" | str_detect(username, "^sk[0-9]+")) {

@@ -42,7 +42,7 @@ ds_harv_sel <- ds_harv |> semi_join(hv_counties, by = c("state", "county_name"))
 # temp Fixes
 # https://github.com/kuriwaki/cvr_harvard-mit_scripts/issues/308#issuecomment-2212066285
 seneca_rm <- ds_meds |>
-  filter( state == "OHIO", county_name == "SENECA", office == "STATE HOUSE") |>
+  filter(state == "OHIO", county_name == "SENECA", office == "STATE HOUSE") |>
   collect() |>
   filter(n() == 2, .by = cvr_id) |>
   filter(district == "087")
@@ -55,6 +55,7 @@ ds_meds |>
   reallocate_wi_prec() |>
   custom_add_party() |>
   fmt_for_release() |>
+  fill_magnitude() |>
   left_join(prec_names, by = c("state", "county_name", "precinct"), relationship = "many-to-one") |>
   write_dataset(
     path = PATH_interim,
@@ -65,6 +66,7 @@ ds_meds |>
 ## add Harvard
 ds_harv_sel |>
   fmt_for_release() |>
+  fill_magnitude() |>
   left_join(prec_names, by = c("state", "county_name", "precinct"), relationship = "many-to-one") |>
   write_dataset(
     path = PATH_interim,

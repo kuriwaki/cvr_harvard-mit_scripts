@@ -1,33 +1,27 @@
-library(tidyverse)
-library(tidycensus)
-library(arrow)
-library(gt)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(tidycensus)
+  library(arrow)
+  library(glue)
+  library(gt)
+})
+source("00_paths.R")
 
 calc_summary_stats <- function(data, variable) { # func to calculate sum stats
   tibble(
     Variable = variable,
+    Total = weighted.mean(data[[variable]], data[["tot"]], na.rm = TRUE),
     Mean = mean(data[[variable]], na.rm = TRUE),
     Median = median(data[[variable]], na.rm = TRUE),
     SD = sd(data[[variable]], na.rm = TRUE)
   )
 }
 
-calc_se <- function(x, y) { # calculate standard errors for difference in means
-  sqrt(var(x, na.rm = TRUE) / length(na.omit(x)) +
-    var(y, na.rm = TRUE) / length(na.omit(y)))
-}
-
 # set API (include your own)
 # census_api_key("XXXXXX", install = TRUE, overwrite = TRUE)
 
-
 # load var names
-dec2020dhc_vars <- load_variables(
-  year = 2020,
-  "dhc",
-  cache = TRUE
-)
-
+# dec2020dhc_vars <- load_variables(year = 2020, "dhc", cache = TRUE)
 # store vars needed - dhc dataset
 vars <- c(
   "P1_001N", # total population
@@ -68,8 +62,6 @@ vars <- c(
   "P12_049N"
 )
 
-
-
 ## load census data using get_decennial function from tidycensus
 cen <- get_decennial(
   year = 2020,
@@ -91,19 +83,14 @@ cen <- get_decennial(
     white = P3_002N,
     black = P3_003N,
     hisp_og_tot = P4_001N,
-    hisp_og = P4_003N,
-    hisp_race_tot = P5_001N,
-    his_race = P5_010N
+    hisp_og = P4_003N
   ) |>
   mutate(
     prop_urb = tot_urb / tot_urb_rur * 100, # calculate proportion vars
     prop_white = white / tot_races * 100,
     prop_black = black / tot_races * 100,
     prop_hisp = hisp_og / hisp_og_tot * 100,
-    prop_hisp_race = his_race / hisp_race_tot * 100,
-    own_occupy = rowSums(across(c(tot_own_mort, tot_own_free)),
-      na.rm = TRUE
-    ),
+    own_occupy = rowSums(across(c(tot_own_mort, tot_own_free)), na.rm = TRUE),
     prop_own_occ = own_occupy / tot * 100,
     all18 = rowSums(
       across(c(
@@ -140,22 +127,6 @@ cen <- get_decennial(
     county = toupper(county)
   ) |>
   select(-starts_with("P1"))
-
-sum_vars <- c(
-  "prop_urb", "prop_white", # designate our final summary variables
-  "prop_black", "prop_hisp",
-  "prop_u18", "prop_o65",
-  "prop_own_occ"
-)
-
-## calc summary stats for all counties
-summary_all <- bind_rows(
-  lapply(sum_vars, function(var) calc_summary_stats(cen, var))
-)
-
-
-
-
 
 ## load cvr data subset
 cty_codes <- tidycensus::fips_codes |>
@@ -196,69 +167,43 @@ cvr_cen <- ds |>
 
 
 ## calc summary stats for cvr data counties
-summary_subset <- bind_rows(
-  lapply(
-    sum_vars,
-    function(var) {
-      calc_summary_stats(
-        cvr_cen,
-        var
-      )
-    }
-  )
+sum_vars <- c(
+  "prop_white",
+  "prop_black", "prop_hisp",
+  "prop_u18", "prop_o65",
+  "prop_urb",
+  "prop_own_occ"
 )
 
+## calc summary stats for all counties
+summary_all <- map(sum_vars, \(x) calc_summary_stats(cen, x)) |> bind_rows()
+summary_sub <- map(sum_vars, \(x) calc_summary_stats(cvr_cen, x)) |> bind_rows()
 
 ## combine census and cvr subset
-sum_stats <- data.frame(
-  Statistic = rep(c("Mean", "Median", "SD"), each = 7),
-  Variable = rep(c(
-    "Percent Urban", "Percent White",
-    "Percent Black", "Percent Hispanic",
-    "Percent Under 18", "Percent Over 65",
-    "Percent Homeowning"
-  ), 3),
-  `All U.S. Counties` = c(
-    summary_all$Mean,
-    summary_all$Median,
-    summary_all$SD
-  ),
-  `Our Data` = c(
-    summary_subset$Mean,
-    summary_subset$Median,
-    summary_subset$SD
+sum_stats <-
+  left_join(summary_sub, summary_all, by = "Variable",
+            suffix = c("_OurData", "_National")) |>
+  mutate(Variable = case_match(
+    Variable,
+    "prop_white" ~ "Percent White",
+    "prop_black" ~ "Percent Black",
+    "prop_hisp" ~ "Percent Hispanic",
+    "prop_u18" ~ "Percent Under 18",
+    "prop_o65" ~ "Percent Over 65",
+    "prop_urb" ~ "Percent Urban",
+    "prop_own_occ" ~ "Percent Homeowning")
   )
-)
 
-
-## Create Table D.1
 sumstats_w <- sum_stats |>
-  pivot_wider(
-    names_from = Statistic,
-    values_from = c(
-      All.U.S..Counties,
-      Our.Data
-    )
-  ) |>
-  dplyr::rename(
-    `Mean_Census` = All.U.S..Counties_Mean,
-    `Mean_OurData` = Our.Data_Mean,
-    `Median_Census` = All.U.S..Counties_Median,
-    `Median_OurData` = Our.Data_Median,
-    `SD_Census` = All.U.S..Counties_SD,
-    `SD_OurData` = Our.Data_SD
-  ) |>
-  relocate(Variable, starts_with("Mean"), starts_with("Median"), starts_with("SD")) |>
   gt() |>
-  fmt_percent(matches("_Census|_OurData"), decimals = 3, scale_values = F) |>
-  cols_label_with(fn = \(x) case_when(x == "Variable" ~ "", str_detect(x, "OurData") ~ "CVR", str_detect(x, "Census") ~ "Nation")) |>
-  tab_spanner("Mean", columns = matches("^Mean")) |>
+  tab_options(table.font.size = px(13)) |>
+  fmt_number(matches("_National|_OurData"), decimals = 1) |>
+  cols_label("Variable" ~ "", ends_with("OurData") ~ "CVR", ends_with("National") ~ "Nation") |>
+  tab_spanner("Overall", columns = matches("^Total")) |>
+  tab_spanner("Average", columns = matches("^Mean")) |>
   tab_spanner("Median", columns = matches("^Median")) |>
-  tab_spanner("Standard Dev.", columns = matches("^SD")) |>
-  gt::sub_missing()
+  tab_spanner("Std. Dev.", columns = matches("^SD")) |>
+  tab_caption(caption = "\\textbf{Characteristics of Counties Used}. \\textit{Comparison of the counties in our sample (CVR) with all counties in the United States (Nation). Data come from the 2020 Decennial Census}. \\label{tab:census}")
 
 sumstats_w |>
-  gtsave("tables/table_S2.docx")
-
-sumstats_w |>
-  gtsave("tables/table_S2.tex")
+  gtsave("tables/table_03.tex")

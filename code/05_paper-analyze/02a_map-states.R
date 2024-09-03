@@ -1,8 +1,10 @@
-library(tidyverse)
-library(sf)
-library(scales)
-library(arrow)
-library(urbnmapr) # renv::install("UrbanInstitute/urbnmapr")
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(sf)
+  library(scales)
+  library(urbnmapr) # renv::install("UrbanInstitute/urbnmapr")
+})
 source("00_paths.R")
 
 shp_us <- urbnmapr::get_urbn_map(map = "states", sf = TRUE) #
