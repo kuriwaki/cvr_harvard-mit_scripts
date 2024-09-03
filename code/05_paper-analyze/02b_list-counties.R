@@ -1,8 +1,10 @@
-library(tidyverse)
-library(arrow)
-library(fs)
-library(glue)
-library(writexl)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(glue)
+  library(fs)
+  library(writexl)
+})
 source("00_paths.R")
 
 # count voters by county
@@ -24,7 +26,10 @@ dat_fmt <- dat |>
   ) |>
   mutate(state = str_to_title(state),
          county = str_to_title(county_name),
-         county = recode(county, Statewide = "(Statewide)")) |>
+         county = recode(county, Statewide = "(Statewide)"),
+         county = recode(county, Mchenry = "McHenry",
+                         Dekalb = "DeKalb", Mcduffie = "McDuffie")
+         ) |>
   arrange(state, county)
 
 rows_list <- list()
@@ -32,7 +37,7 @@ rows_list <- list()
 # line by line so we can do multicols ----
 st_counter <- ""
 
-sink("tables/tab_counties_text.tex")
+sink("tables/table_05.tex")
 
 for (i in 1:nrow(dat_fmt)) {
   # new state

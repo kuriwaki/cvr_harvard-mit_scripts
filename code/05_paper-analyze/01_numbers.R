@@ -1,6 +1,8 @@
-library(tidyverse)
-library(arrow)
-library(glue)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(glue)
+})
 source("00_paths.R")
 
 write_n <- function (tbl, path, dir = "numbers") {

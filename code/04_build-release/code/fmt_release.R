@@ -26,3 +26,19 @@ fmt_for_release <- function(tbl) {
       .before = party_detailed
     )
 }
+
+
+fill_magnitude <- function(tbl) {
+  m_states <- c("ARIZONA", "WEST VIRGINIA")
+
+  tbl |>
+    mutate(
+      magnitude = ifelse(
+        (is.na(magnitude) | magnitude == -1) &
+          !(state %in% m_states & office == "STATE HOUSE"), 1, magnitude),
+      magnitude = ifelse(
+        (is.na(magnitude) | magnitude == -1) &
+          (state %in% "ARIZONA" & office == "STATE HOUSE"), 2, magnitude)
+      # WV districts differ in their magnitude, but AZ is all 2
+    )
+}

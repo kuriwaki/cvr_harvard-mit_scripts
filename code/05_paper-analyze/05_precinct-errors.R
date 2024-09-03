@@ -1,5 +1,8 @@
-library(tidyverse)
-library(arrow)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(glue)
+})
 source("00_paths.R")
 
 # counties to compare
