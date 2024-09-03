@@ -1,3 +1,4 @@
+cd code
 
 echo "Building Returns"
 (cd 01_build-returns ; bash build-returns.sh)
@@ -12,4 +13,4 @@ echo "Building Release"
 (cd 04_build-release ; bash build-release.sh)
 
 echo "Building Paper"
-(cd 05_paper-analyze ; bash paper.sh)
+(cd 05_paper-analyze ; bash analysis.sh)
