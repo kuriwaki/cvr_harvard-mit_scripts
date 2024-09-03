@@ -18,7 +18,6 @@ PATH_release <- path(PATH_parq, "release")
 # Data ---
 ds <- open_dataset(PATH_interim)
 
-
 # Classifications ----
 # update compare.xlsx
 source("code/compare.R")
@@ -32,9 +31,11 @@ use_counties <- read_excel(
 
 # counties to remove precinct info from
 redact_precinct <- read_csv(
-  path(PATH_parq, "intermediate/precinct_crosswalk/group_revealed-precinct.csv"),
-  show_col_types = FALSE) |>
-  select(-matches("^precinct$"))
+  path(PATH_parq, "intermediate/precinct_crosswalk/cvr_id_to_precinct_group.csv.gz"),
+  show_col_types = FALSE
+) |>
+  distinct() |>
+  mutate(cvr_id = as.integer(cvr_id))
 
 # clear out release directory so we get a fresh copy everytime, if needed
 # if (dir_exists(PATH_release)) dir_delete(PATH_release)
@@ -45,7 +46,7 @@ ds |>
   semi_join(use_counties, by = c("state", "county_name")) |>
   select(-matches("contest")) |>
   # redact precincts
-  left_join(redact_precinct, by = c("state", "county_name", "precinct_cvr", "precinct_medsl")) |>
+  left_join(redact_precinct, by = c("state", "county_name", "cvr_id", "precinct_cvr", "precinct_medsl")) |>
   mutate(precinct_medsl = coalesce(precinct_medsl_group, precinct_medsl)) |>
   mutate(precinct_cvr   = coalesce(precinct_cvr_group, precinct_cvr)) |>
   relocate(precinct_medsl, precinct_cvr, .after = precinct) |>
