@@ -55,6 +55,7 @@ state_cvr <- ds |>
 # Population ---
 # all 50 states
 all_states_v <- ds_v |>
+  filter(state != "DISTRICT OF COLUMBIA") |>
   tally_votes() |>
   mutate(state = "All 50 States")
 
