@@ -35,7 +35,8 @@ redact_precinct <- read_csv(
   show_col_types = FALSE
 ) |>
   distinct() |>
-  mutate(cvr_id = as.integer(cvr_id))
+  mutate(cvr_id = as.integer(cvr_id)) |>
+  select(-matches("style"))
 
 # clear out release directory so we get a fresh copy everytime, if needed
 # if (dir_exists(PATH_release)) dir_delete(PATH_release)
