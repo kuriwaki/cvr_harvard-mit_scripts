@@ -69,5 +69,5 @@ for (i in 1:nrow(dat_fmt)) {
 sink()
 
 output_df <- tibble(x = unlist(rows_list))
-write_xlsx(output_df, "tables/table_04.xlsx")
+write_xlsx(output_df, "tables/table_05.xlsx")
 
