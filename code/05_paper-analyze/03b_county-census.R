@@ -262,4 +262,4 @@ sumstats_w <- sum_stats |>
 
 
 sumstats_w |>
-  gtsave("tables/table_S2.tex")
+  gtsave("tables/table_03.tex")
