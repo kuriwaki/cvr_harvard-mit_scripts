@@ -1,8 +1,10 @@
-library(tidyverse)
-library(scales)
-library(arrow)
-library(gt)
-library(glue)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(glue)
+  library(gt)
+  library(scales)
+})
 source("00_paths.R")
 
 # Database connections
@@ -99,7 +101,7 @@ state_tb <- state_cvr |>
     )) |>
   tab_options(table.font.size = px(13)) |>
   tab_spanner("Percent Biden", columns = matches("_prez")) |>
-  tab_spanner("Voters", columns = matches("voters")) |>
+  tab_spanner("Biden, Trump, and Jorgensen Voters", columns = matches("voters")) |>
   gt::sub_missing() |>
   cols_add(SPACE = "", .after = diff_prez) |>
   cols_label(SPACE = md("&emsp;&emsp;&emsp;&emsp;"))

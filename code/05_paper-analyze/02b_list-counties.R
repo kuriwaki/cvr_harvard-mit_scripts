@@ -1,8 +1,10 @@
-library(tidyverse)
-library(arrow)
-library(fs)
-library(glue)
-library(writexl)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(arrow)
+  library(glue)
+  library(fs)
+  library(writexl)
+})
 source("00_paths.R")
 
 # count voters by county

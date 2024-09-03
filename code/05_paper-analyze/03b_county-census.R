@@ -1,8 +1,10 @@
-library(tidyverse)
-library(tidycensus)
-library(arrow)
-library(gt)
-library(fs)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(tidycensus)
+  library(arrow)
+  library(glue)
+  library(gt)
+})
 source("00_paths.R")
 
 calc_summary_stats <- function(data, variable) { # func to calculate sum stats
@@ -200,6 +202,8 @@ sumstats_w <- sum_stats |>
   tab_spanner("Overall", columns = matches("^Total")) |>
   tab_spanner("Average", columns = matches("^Mean")) |>
   tab_spanner("Median", columns = matches("^Median")) |>
+  tab_spanner("Std. Dev.", columns = matches("^SD")) |>
+  tab_caption(caption = "\\textbf{Characteristics of Counties Used}. \\textit{Comparison of the counties in our sample (CVR) with all counties in the United States (Nation). Data come from the 2020 Decennial Census}. \\label{tab:census}")
 
 sumstats_w |>
   gtsave("tables/table_03.tex")
