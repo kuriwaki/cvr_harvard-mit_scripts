@@ -84,8 +84,8 @@ state_tb <- state_cvr |>
     state = str_to_title(state),
     diff_prez  = scales::percent(dem_prez.x - dem_prez.y, accuracy = 1, suffix = "",
                                  style_positive = "plus"),
-    pct_voters = scales::percent(n_voters.x / n_voters.y, accuracy = 1),
-    pct_voters = replace(pct_voters, pct_voters == "0%", "<1%")
+    pct_voters = scales::percent(n_voters.x / n_voters.y, accuracy = 1, suffix = ""),
+    pct_voters = replace(pct_voters, pct_voters == "0", "<1")
     ) |>
   gt() |>
   fmt_percent(matches("_prez"), decimals = 1) |>
@@ -98,7 +98,7 @@ state_tb <- state_cvr |>
     str_detect(x, "pct") ~ "%"
     )) |>
   tab_options(table.font.size = px(13)) |>
-  tab_spanner("% Biden", columns = matches("_prez")) |>
+  tab_spanner("Percent Biden", columns = matches("_prez")) |>
   tab_spanner("Voters", columns = matches("voters")) |>
   gt::sub_missing() |>
   cols_add(SPACE = "", .after = diff_prez) |>
