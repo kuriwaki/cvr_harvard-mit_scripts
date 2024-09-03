@@ -46,7 +46,8 @@ ds |>
   semi_join(use_counties, by = c("state", "county_name")) |>
   select(-matches("contest")) |>
   # redact precincts
-  left_join(redact_precinct, by = c("state", "county_name", "cvr_id", "precinct_cvr", "precinct_medsl")) |>
+  left_join(redact_precinct, by = c("state", "county_name", "cvr_id", "precinct_cvr", "precinct_medsl"),
+            relationship = "many-to-one") |>
   mutate(precinct_medsl = coalesce(precinct_medsl_group, precinct_medsl)) |>
   mutate(precinct_cvr   = coalesce(precinct_cvr_group, precinct_cvr)) |>
   relocate(precinct_medsl, precinct_cvr, .after = precinct) |>
