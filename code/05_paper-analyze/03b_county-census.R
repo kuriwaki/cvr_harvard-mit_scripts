@@ -2,6 +2,8 @@ library(tidyverse)
 library(tidycensus)
 library(arrow)
 library(gt)
+library(fs)
+source("00_paths.R")
 
 calc_summary_stats <- function(data, variable) { # func to calculate sum stats
   tibble(
@@ -240,25 +242,24 @@ sumstats_w <- sum_stats |>
       Our.Data
     )
   ) |>
-  dplyr::rename(
-    `Mean_Census` = All.U.S..Counties_Mean,
+  dplyr::select(
+    Variable,
     `Mean_OurData` = Our.Data_Mean,
-    `Median_Census` = All.U.S..Counties_Median,
+    `Mean_Census` = All.U.S..Counties_Mean,
     `Median_OurData` = Our.Data_Median,
-    `SD_Census` = All.U.S..Counties_SD,
-    `SD_OurData` = Our.Data_SD
+    `Median_Census` = All.U.S..Counties_Median,
+    `SD_OurData` = Our.Data_SD,
+    `SD_Census` = All.U.S..Counties_SD
   ) |>
   relocate(Variable, starts_with("Mean"), starts_with("Median"), starts_with("SD")) |>
   gt() |>
-  fmt_percent(matches("_Census|_OurData"), decimals = 3, scale_values = F) |>
+  tab_options(table.font.size = px(13)) |>
+  fmt_number(matches("_Census|_OurData"), decimals = 1) |>
   cols_label_with(fn = \(x) case_when(x == "Variable" ~ "", str_detect(x, "OurData") ~ "CVR", str_detect(x, "Census") ~ "Nation")) |>
   tab_spanner("Mean", columns = matches("^Mean")) |>
   tab_spanner("Median", columns = matches("^Median")) |>
-  tab_spanner("Standard Dev.", columns = matches("^SD")) |>
-  gt::sub_missing()
+  tab_spanner("Standard Dev.", columns = matches("^SD"))
 
-sumstats_w |>
-  gtsave("tables/table_S2.docx")
 
 sumstats_w |>
   gtsave("tables/table_S2.tex")
