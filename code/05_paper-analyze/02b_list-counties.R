@@ -35,7 +35,7 @@ rows_list <- list()
 # line by line so we can do multicols ----
 st_counter <- ""
 
-sink("tables/tab_counties_text.tex")
+sink("tables/table_05.tex")
 
 for (i in 1:nrow(dat_fmt)) {
   # new state
