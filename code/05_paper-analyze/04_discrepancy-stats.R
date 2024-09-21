@@ -81,7 +81,7 @@ fig_b <- cand_dist_level |>
   ggplot(aes(x = total_votes, y = perc_diff, color = factor(release))) +
   geom_point(alpha = 0.4) +
   scale_y_continuous(labels = scales::percent) +
-  scale_x_log10(labels = scales::comma) +
+  scale_x_log10(labels = scales::label_comma(scale_cut = scales::cut_short_scale())) +
   scale_color_manual(values = used_val, labels = used_lab) +
   theme_classic() +
   labs(fill = NULL) +
@@ -117,8 +117,6 @@ wrap_elements(gg_gt) + fig_b + fig_c +
   plot_layout(widths = c(1, 0.5, 0.5)) +
   plot_annotation(tag_levels = "a")
 ggsave("figs/figure_02.pdf", w = 10, h = 3, units = "in")
-
-
 
 # Stats -----
 dat_county |>
