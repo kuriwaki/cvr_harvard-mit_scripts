@@ -203,7 +203,7 @@ sumstats_w <- sum_stats |>
   tab_spanner("Average", columns = matches("^Mean")) |>
   tab_spanner("Median", columns = matches("^Median")) |>
   tab_spanner("Std. Dev.", columns = matches("^SD")) |>
-  tab_caption(caption = "\\textbf{Characteristics of Counties Used}. \\textit{Comparison of the counties in our sample (CVR) with all counties in the United States (Nation). Data come from the 2020 Decennial Census}. \\label{tab:census}")
+  tab_caption(caption = "\\textbf{Characteristics of Counties Used}. \\textit{Comparison of the counties in our sample (CVR) with all counties in the United States (Nation). All statistics are computed using data from the 2020 Decennial Census at the county level.}. \\label{tab:census}")
 
 sumstats_w |>
   gtsave("tables/table_03.tex")
