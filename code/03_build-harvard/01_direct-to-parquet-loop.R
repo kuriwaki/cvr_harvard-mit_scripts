@@ -23,20 +23,28 @@ paths_to_merge <-
   c("CA_Alameda_long.dta",
     "CA_Contra_Costa_long.dta",
     "CA_Glenn_long.dta",
+    "CA_Humboldt_long.dta",
     "CA_Kings_long.dta",
+    "CA_Lake_long.dta",
     "CA_Merced_long.dta",
+    "CA_Nevada_long.dta",
     "CA_Orange_long.dta",
     "CA_San_Benito_long.dta",
     "CA_San_Bernardino_long.dta",
     "CA_San_Francisco_long.dta",
+    "CA_San_Joaquin_long.dta",
+    "CA_San_Mateo_long.dta",
     "CA_Santa_Clara_long.dta",
     "CA_Sonoma_long.dta",
+    "CA_Stanislaus_long.dta",
     "CA_Ventura_long.dta",
     "CO_Denver_long.dta",
     "CO_Eagle_long.dta" ,
+    "CO_Saguache_long.dta" ,
     "MD_Baltimore_long.dta",
     "MD_Baltimore_City_long.dta",
-    "MD_Montgomery_long.dta")
+    "MD_Montgomery_long.dta",
+    "NV_Clark_long.dta")
 
 Sys.setenv(DUCKPLYR_FALLBACK_AUTOUPLOAD = 1)
 Sys.setenv(DUCKPLYR_FORCE = TRUE)
