@@ -12,7 +12,7 @@ meta <- read_dta("~/Dropbox/CVR_Data_Shared/data_main/item_choice_info.dta")
 meta |>
   filter(item %in% c("US_PRES", "US_REP", "US_SEN", "US_SEN (S)", "ST_SEN", "ST_REP", "ST_GOV")) |>
   fmt_harv_to_medsl() |>
-  arrange(state, county_name, office, district, party_detailed) |>
+  arrange(state, county_name, office, district, party_detailed, candidate) |>
   write_csv("metadata/contests_snyder.csv", na = "")
 
 
