@@ -66,7 +66,10 @@ walk(
     #   path("~/Downloads/stata_csv/", x_csv),
     #   "read_csv",
     #   options = list(col_types = "dccddddd"))
-    dat <- read_dta(fs::path(dir, "STATA_long", x)) |>
+    R.utils::gunzip(fs::path(dir, "STATA_long", glue::glue("{x}.gz")),
+                    destname = "~/Downloads/unzipped.dta",
+                    remove = FALSE, overwrite = TRUE)
+    dat <- read_dta("~/Downloads/unzipped.dta") |>
       zap_label() |> zap_formats() |>
       duckplyr::as_duckplyr_df()
 

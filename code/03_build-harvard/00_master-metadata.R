@@ -38,3 +38,7 @@ read_dta(path(PATH_projdir, "item_choice_info.dta")) |>
   write_dataset(path(PATH_projdir, "to-parquet", "item_choice_info"), format = "parquet")
 
 
+## precincts
+prec_long <- read_dta(path(PATH_projdir, "tmp_precincts_long.dta"))
+prec_long |> select(-cvr_id_merged) |> group_by(state) |> write_dataset("~/Downloads/cvr_prec_js")
+# dsp <- open_dataset("~/Downloads/cvr_prec_js")
